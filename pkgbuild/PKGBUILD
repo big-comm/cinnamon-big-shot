@@ -1,14 +1,12 @@
 # Maintainer: Tales A. Mendonça <talesam@gmail.com>
 
-pkgname=pkgbuild-template-translate
-pkgdesc="Package template for BigCommunity"
-# Uncomment and edit the following lines as needed
-#depends=('')
-#makedepends=('')
-#optdepends=('')
-#conflicts=('')
-#provides=('')
-#replaces=('')
+pkgname=cinnamon-big-shot
+pkgdesc="Enhanced Screenshot & Screencast for Cinnamon — annotation tools, audio recording, FPS/resolution control"
+depends=('cinnamon>=5.4' 'gstreamer' 'gst-plugins-base' 'gst-plugins-good' 'gst-plugins-bad' 'gst-plugin-va' 'pciutils')
+optdepends=(
+    'gst-plugins-ugly: additional GStreamer codecs (x264, mpeg2, a52)'
+)
+makedepends=('gettext')
 pkgver=$(date +%y.%m.%d)
 pkgrel=$(date +%H%M)
 arch=('any')
@@ -17,7 +15,6 @@ url="https://github.com/big-comm/${pkgname}"
 source=("git+${url}.git")
 md5sums=('SKIP')
 
-# Automatically detect and use the correct install file
 if [ -e "${pkgname}.install" ]; then
     install=${pkgname}.install
 elif [ -e "pkgbuild.install" ]; then
@@ -26,33 +23,37 @@ fi
 
 prepare() {
     cd "${srcdir}/${pkgname}"
-    # Add any preparation steps here, if needed
-    # For example: patch -p1 < "${srcdir}/patch-file.patch"
 }
 
 build() {
     cd "${srcdir}/${pkgname}"
-    # Add build steps here, if needed
-    # For example: make
+    local _uuid="big-shot@bigcommunity.org"
+    local _extdir="usr/share/cinnamon/extensions/${_uuid}"
+    local _podir="${_extdir}/po"
+    local _localedir="${_extdir}/locale"
+
+    for po_file in "${_podir}"/*.po; do
+        [ -f "$po_file" ] || continue
+        local lang=$(basename "$po_file" .po)
+        local mo_dir="${_localedir}/${lang}/LC_MESSAGES"
+        mkdir -p "$mo_dir"
+        msgfmt "$po_file" -o "${mo_dir}/${_uuid}.mo"
+    done
 }
 
 check() {
     cd "${srcdir}/${pkgname}"
-    # Add check/test steps here, if needed
-    # For example: make check
 }
 
 package() {
     cd "${srcdir}/${pkgname}"
 
-    # Determine the correct source directory
     if [ -d "${pkgname}" ]; then
         srcdir="${srcdir}/${pkgname}/${pkgname}"
     else
         srcdir="${srcdir}/${pkgname}"
     fi
 
-    # Install files
     local dirs=("usr" "etc" "opt")
     for dir in "${dirs[@]}"; do
         if [ -d "${srcdir}/${dir}" ]; then
@@ -60,12 +61,10 @@ package() {
         fi
     done
 
-    # Install license file if present
     if [ -f "LICENSE" ]; then
         install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
     fi
 
-    # Install documentation if present
     if [ -f "README.md" ]; then
         install -Dm644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
     fi

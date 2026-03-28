@@ -1,0 +1,236 @@
+/* Big Shot — Extension Stylesheet (Cinnamon)
+ *
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ */
+
+/* ===== Screenshot UI Modal ===== */
+.big-shot-ui {
+    background-color: transparent;
+}
+
+.big-shot-bottom-bar {
+    background-color: rgba(30, 30, 30, 0.92);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 6px 12px;
+    spacing: 6px;
+}
+
+/* Mode buttons (Fullscreen / Window / Area) */
+.big-shot-mode-button {
+    border-radius: 8px;
+    padding: 4px 12px;
+    color: #ffffff;
+    font-size: 13px;
+    min-height: 28px;
+}
+
+.big-shot-mode-button:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.big-shot-mode-button:checked {
+    background-color: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.big-shot-mode-button:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Photo/Video toggle */
+.big-shot-type-button {
+    border-radius: 8px;
+    padding: 4px 8px;
+    color: #ffffff;
+    min-height: 28px;
+    min-width: 28px;
+}
+
+.big-shot-type-button:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.big-shot-type-button:checked {
+    background-color: rgba(53, 132, 228, 0.5);
+}
+
+/* Capture button — big circular */
+.big-shot-capture-button {
+    border-radius: 22px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.big-shot-capture-button:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Close button */
+.big-shot-action-button {
+    border-radius: 8px;
+    padding: 4px 8px;
+    min-height: 28px;
+    min-width: 28px;
+}
+
+.big-shot-action-cancel {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
+.big-shot-action-cancel:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Control container — constrain children sizes */
+.big-shot-control-box {
+    spacing: 4px;
+}
+
+.big-shot-control-box StButton {
+    border-radius: 8px;
+    padding: 2px 6px;
+    min-height: 28px;
+    font-size: 11px;
+    color: #ffffff;
+}
+
+.big-shot-control-box StIcon {
+    icon-size: 16px;
+}
+
+.big-shot-control-box StButton:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.big-shot-control-box StButton:checked {
+    background-color: rgba(53, 132, 228, 0.4);
+}
+
+/* ===== Selection handles ===== */
+.big-shot-selection-overlay {
+    border: 2px solid rgba(53, 132, 228, 0.9);
+}
+
+.big-shot-handle {
+    background-color: #ffffff;
+    border: 2px solid rgba(53, 132, 228, 0.9);
+    border-radius: 2px;
+}
+
+.big-shot-dim {
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
+/* ===== Edit Container (annotation toolbar) ===== */
+.big-shot-edit-container {
+    spacing: 4px;
+}
+
+.big-shot-edit-popup {
+    background-color: rgba(30, 30, 30, 0.92);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 10px 14px;
+    spacing: 4px;
+    color: #ffffff;
+}
+
+.big-shot-edit-row {
+    spacing: 4px;
+}
+
+/* Floating draggable toolbar */
+.big-shot-edit-floating {
+    background-color: rgba(30, 30, 30, 0.85);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 6px 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.big-shot-edit-tool-btn {
+    border-radius: 8px;
+    padding: 3px;
+    min-width: 22px;
+    min-height: 22px;
+    color: #ffffff;
+}
+
+.big-shot-edit-tool-btn StIcon {
+    color: #ffffff;
+    -st-icon-style: symbolic;
+}
+
+.big-shot-edit-tool-btn:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.big-shot-edit-tool-btn:checked {
+    background-color: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.big-shot-edit-tool-btn:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.big-shot-edit-sep {
+    width: 1px;
+    background-color: rgba(255, 255, 255, 0.12);
+    margin: 2px 4px;
+}
+
+/* ===== Audio Toggle Buttons ===== */
+.big-shot-audio-button {
+    border-radius: 8px;
+    padding: 2px 6px;
+    spacing: 4px;
+    color: #ffffff;
+    min-height: 28px;
+    font-size: 11px;
+}
+
+.big-shot-audio-button StIcon {
+    icon-size: 16px;
+}
+
+.big-shot-audio-button:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.big-shot-audio-button:checked {
+    background-color: rgba(53, 132, 228, 0.4);
+}
+
+/* ===== Panel Indicator ===== */
+.big-shot-indicator {
+    spacing: 6px;
+}
+
+.big-shot-indicator-timer {
+    font-weight: bold;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ===== Gradient Picker ===== */
+.big-shot-gradient-picker {
+    background-color: rgba(30, 30, 30, 0.92);
+    border-radius: 12px;
+    padding: 6px;
+    spacing: 4px;
+}
+
+/* ===== Crop Overlay ===== */
+.big-shot-crop-overlay {
+    border: 2px dashed rgba(255, 255, 255, 0.8);
+}
+
+.big-shot-crop-handle {
+    background: white;
+    border: 1px solid #62a0ea;
+    border-radius: 1px;
+}

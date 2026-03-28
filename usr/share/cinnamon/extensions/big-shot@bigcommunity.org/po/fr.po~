@@ -1,0 +1,287 @@
+# French translation for Big Shot
+# Copyright (C) 2024 BigCommunity
+# This file is distributed under the same license as the big-shot package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: big-shot 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-17 13:04-0300\n"
+"PO-Revision-Date: 2024-01-01 00:00+0000\n"
+"Last-Translator: BigCommunity <dev@bigcommunity.org>\n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: extension.js:490 extension.js:503
+msgid "Screenshot taken"
+msgstr ""
+
+#: extension.js:545
+msgid "Screenshots"
+msgstr ""
+
+#: extension.js:555 extension.js:774
+#, javascript-format
+msgid "Screenshot from %s"
+msgstr ""
+
+#: extension.js:737
+msgid "Screenshot copied"
+msgstr ""
+
+#: extension.js:786
+msgid "Save Screenshot"
+msgstr ""
+
+#: extension.js:1442 extension.js:1448 extension.js:1462
+msgid "Recording complete"
+msgstr "Enregistrement terminé"
+
+#: extension.js:1443
+msgid "Paused segments merged successfully"
+msgstr "Segments en pause fusionnés avec succès"
+
+#: extension.js:1449
+msgid "Segment merge failed — individual files kept"
+msgstr "Échec de la fusion — fichiers individuels conservés"
+
+#: extension.js:1463
+msgid "ffmpeg not found — individual segment files kept"
+msgstr "ffmpeg introuvable — fichiers individuels conservés"
+
+#: parts/partaudio.js:96 parts/partaudio.js:153
+#, fuzzy
+msgid "Desktop"
+msgstr "Audio du Bureau"
+
+#: parts/partaudio.js:108 parts/partaudio.js:161
+msgid "Mic"
+msgstr ""
+
+#: parts/partaudio.js:155
+msgid "Record Desktop Audio"
+msgstr "Enregistrer l'Audio du Bureau"
+
+#: parts/partaudio.js:163
+msgid "Record Microphone"
+msgstr "Enregistrer le Microphone"
+
+#: parts/partdownsize.js:18
+#, fuzzy
+msgid "Recording resolution"
+msgstr "Résolution"
+
+#: parts/partframerate.js:18
+msgid "Frames per second"
+msgstr ""
+
+#: parts/partgradient.js:92
+msgid "Gradient Angle"
+msgstr "Angle du Dégradé"
+
+#: parts/partgradient.js:105
+msgid "Border Radius"
+msgstr "Rayon de Bordure"
+
+#: parts/parttoolbar.js:35
+msgid "Select / Move"
+msgstr ""
+
+#: parts/parttoolbar.js:36
+msgid "Pen"
+msgstr "Stylo"
+
+#: parts/parttoolbar.js:37
+msgid "Arrow"
+msgstr "Flèche"
+
+#: parts/parttoolbar.js:38
+msgid "Line"
+msgstr "Ligne"
+
+#: parts/parttoolbar.js:39
+msgid "Rectangle"
+msgstr "Rectangle"
+
+#: parts/parttoolbar.js:40
+msgid "Oval"
+msgstr "Ovale"
+
+#: parts/parttoolbar.js:41
+msgid "Text"
+msgstr "Texte"
+
+#: parts/parttoolbar.js:42
+msgid "Highlighter"
+msgstr "Surligneur"
+
+#: parts/parttoolbar.js:43
+msgid "Censor"
+msgstr "Censurer"
+
+#: parts/parttoolbar.js:44
+msgid "Blur"
+msgstr ""
+
+#: parts/parttoolbar.js:45
+msgid "Number"
+msgstr "Numéro"
+
+#: parts/parttoolbar.js:46
+msgid "Number with Arrow"
+msgstr ""
+
+#: parts/parttoolbar.js:47
+msgid "Number with Pointer"
+msgstr ""
+
+#: parts/parttoolbar.js:48
+msgid "Eraser"
+msgstr ""
+
+#: parts/parttoolbar.js:114 parts/parttoolbar.js:122
+msgid "Show screenshot panel"
+msgstr ""
+
+#: parts/parttoolbar.js:122
+msgid "Hide screenshot panel"
+msgstr ""
+
+#: parts/parttoolbar.js:267 parts/parttoolbar.js:270
+#, fuzzy
+msgid "Color"
+msgstr "Couleur de remplissage"
+
+#: parts/parttoolbar.js:282 parts/parttoolbar.js:285
+#, fuzzy
+msgid "Fill"
+msgstr "Sans Remplissage"
+
+#: parts/parttoolbar.js:295
+#, fuzzy
+msgid "Decrease Size"
+msgstr "Taille du pinceau"
+
+#: parts/parttoolbar.js:312
+msgid "Brush Size"
+msgstr "Taille du pinceau"
+
+#: parts/parttoolbar.js:336
+#, fuzzy
+msgid "Increase Size"
+msgstr "Taille du pinceau"
+
+#: parts/parttoolbar.js:355 parts/parttoolbar.js:359
+msgid "Font"
+msgstr ""
+
+#: parts/parttoolbar.js:382 parts/parttoolbar.js:402 parts/parttoolbar.js:964
+#: parts/parttoolbar.js:984
+msgid "Intensity"
+msgstr ""
+
+#: parts/parttoolbar.js:414 parts/parttoolbar.js:417
+msgid "Undo"
+msgstr "Annuler"
+
+#: parts/parttoolbar.js:426 parts/parttoolbar.js:429
+msgid "Redo"
+msgstr "Rétablir"
+
+#: parts/parttoolbar.js:441 parts/parttoolbar.js:444
+msgid "Copy to Clipboard"
+msgstr ""
+
+#: parts/parttoolbar.js:453 parts/parttoolbar.js:456
+msgid "Save As…"
+msgstr ""
+
+#: parts/parttoolbar.js:476 parts/parttoolbar.js:481
+msgid "Close"
+msgstr ""
+
+#: parts/parttoolbar.js:512 parts/parttoolbar.js:609
+msgid "Video Settings"
+msgstr "Paramètres vidéo"
+
+#: parts/parttoolbar.js:556
+msgid "Quality"
+msgstr ""
+
+#: parts/parttoolbar.js:562
+msgid "High"
+msgstr ""
+
+#: parts/parttoolbar.js:563
+msgid "Medium"
+msgstr ""
+
+#: parts/parttoolbar.js:564
+msgid "Low"
+msgstr ""
+
+#: parts/parttoolbar.js:576
+msgid "Recording quality (bitrate)"
+msgstr ""
+
+#: parts/parttoolbar.js:586
+msgid "Codec"
+msgstr ""
+
+#: parts/parttoolbar.js:603
+msgid "Edit"
+msgstr ""
+
+#: parts/parttoolbar.js:609
+msgid "Edit Screenshot"
+msgstr "Modifier la capture d'écran"
+
+#: parts/parttoolbar.js:828
+msgid "Custom"
+msgstr ""
+
+#: parts/parttoolbar.js:1067
+msgid "No Fill"
+msgstr "Sans Remplissage"
+
+#: parts/parttoolbar.js:1173
+msgid "Auto"
+msgstr ""
+
+#: parts/parttoolbar.js:1177
+msgid "Use best available codec"
+msgstr ""
+
+#: parts/parttoolbar.js:1193
+msgid "Video codec"
+msgstr ""
+
+#~ msgid "Text…"
+#~ msgstr "Texte…"
+
+#~ msgid "Annotation text"
+#~ msgstr "Texte d'annotation"
+
+#~ msgid "Confirm"
+#~ msgstr "Confirmer"
+
+#~ msgid "Background"
+#~ msgstr "Arrière-plan"
+
+#~ msgid "Crop"
+#~ msgstr "Rogner"
+
+#~ msgid "Padding"
+#~ msgstr "Marge"
+
+#~ msgid "Microphone"
+#~ msgstr "Microphone"
+
+#~ msgid "FPS"
+#~ msgstr "IPS"
+
+#~ msgid "Stroke Color"
+#~ msgstr "Couleur du trait"

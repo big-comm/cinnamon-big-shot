@@ -1,0 +1,6 @@
+*.mo
+*.zip
+locale/
+node_modules/
+.idea/
+.vscode/
