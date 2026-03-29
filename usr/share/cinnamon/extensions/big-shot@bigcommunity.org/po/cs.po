@@ -1,4 +1,4 @@
-# es translation for Big Shot
+# cs translation for Big Shot
 # Copyright (C) 2024 BigCommunity
 # This file is distributed under the same license as the big-shot package.
 #
@@ -9,201 +9,201 @@ msgstr ""
 "POT-Creation-Date: 2026-03-28 00:00-0300\n"
 "PO-Revision-Date: 2026-03-28 00:00+0000\n"
 "Last-Translator: BigCommunity <dev@bigcommunity.org>\n"
-"Language-Team: es\n"
-"Language: es\n"
+"Language-Team: cs\n"
+"Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid "Drawing canvas"
-msgstr "Lienzo de dibujo"
+msgstr "Kreslicí plátno"
 
 msgid "Text…"
-msgstr "Texto…"
+msgstr "Text…"
 
 msgid "Annotation text"
-msgstr "Texto de anotación"
+msgstr "Text poznámky"
 
 msgid "Confirm"
-msgstr "Confirmar"
+msgstr "Potvrdit"
 
 msgid "Screenshot taken"
-msgstr "Captura de pantalla tomada"
+msgstr "Snímek obrazovky pořízen"
 
 msgid "Screenshots"
-msgstr "Capturas de pantalla"
+msgstr "Snímky obrazovky"
 
 msgid "Screenshot from %s"
-msgstr "Captura de pantalla de %s"
+msgstr "Snímek obrazovky z %s"
 
 msgid "Screenshot copied"
-msgstr "Captura de pantalla copiada"
+msgstr "Snímek obrazovky zkopírován"
 
 msgid "Save Screenshot"
-msgstr "Guardar captura de pantalla"
+msgstr "Uložit snímek obrazovky"
 
 msgid "Desktop"
-msgstr "Escritorio"
+msgstr "Plocha"
 
 msgid "Mic"
-msgstr "Mic"
+msgstr "Mikrofon"
 
 msgid "Record Desktop Audio"
-msgstr "Grabar audio del escritorio"
+msgstr "Nahrávat zvuk z plochy"
 
 msgid "Record Microphone"
-msgstr "Grabar micrófono"
+msgstr "Nahrávat mikrofon"
 
 msgid "Recording resolution"
-msgstr "Resolución de grabación"
+msgstr "Rozlišení nahrávání"
 
 msgid "Frames per second"
-msgstr "Cuadros por segundo"
+msgstr "Snímky za sekundu"
 
 msgid "Gradient Angle"
-msgstr "Ángulo de degradado"
+msgstr "Úhel přechodu"
 
 msgid "Border Radius"
-msgstr "Radio de borde"
+msgstr "Poloměr okraje"
 
 msgid "Select / Move"
-msgstr "Seleccionar / Mover"
+msgstr "Vybrat / Přesunout"
 
 msgid "Pen"
-msgstr "Lápiz"
+msgstr "Pero"
 
 msgid "Arrow"
-msgstr "Flecha"
+msgstr "Šipka"
 
 msgid "Line"
-msgstr "Línea"
+msgstr "Čára"
 
 msgid "Rectangle"
-msgstr "Rectángulo"
+msgstr "Obdélník"
 
 msgid "Oval"
 msgstr "Oval"
 
 msgid "Text"
-msgstr "Texto"
+msgstr "Text"
 
 msgid "Highlighter"
-msgstr "Resaltador"
+msgstr "Zvýrazňovač"
 
 msgid "Censor"
-msgstr "Censurar"
+msgstr "Cenzurovat"
 
 msgid "Blur"
-msgstr "Desenfoque"
+msgstr "Rozostření"
 
 msgid "Number"
-msgstr "Número"
+msgstr "Číslo"
 
 msgid "Number with Arrow"
-msgstr "Número con flecha"
+msgstr "Číslo se šipkou"
 
 msgid "Number with Pointer"
-msgstr "Número con puntero"
+msgstr "Číslo s ukazatelem"
 
 msgid "Eraser"
-msgstr "Borrador"
+msgstr "Guma"
 
 msgid "Show screenshot panel"
-msgstr "Mostrar panel de capturas"
+msgstr "Zobrazit panel snímků obrazovky"
 
 msgid "Hide screenshot panel"
-msgstr "Ocultar panel de capturas"
+msgstr "Skrýt panel snímků obrazovky"
 
 msgid "Color"
-msgstr "Color"
+msgstr "Barva"
 
 msgid "Fill"
-msgstr "Rellenar"
+msgstr "Vyplnit"
 
 msgid "Decrease Size"
-msgstr "Disminuir tamaño"
+msgstr "Zmenšit velikost"
 
 msgid "Brush Size"
-msgstr "Tamaño del pincel"
+msgstr "Velikost štětce"
 
 msgid "Increase Size"
-msgstr "Aumentar tamaño"
+msgstr "Zvětšit velikost"
 
 msgid "Font"
-msgstr "Fuente"
+msgstr "Písmo"
 
 msgid "Intensity"
-msgstr "Intensidad"
+msgstr "Intenzita"
 
 msgid "Undo"
-msgstr "Deshacer"
+msgstr "Zpět"
 
 msgid "Redo"
-msgstr "Rehacer"
+msgstr "Znovu"
 
 msgid "Copy to Clipboard"
-msgstr "Copiar al portapapeles"
+msgstr "Kopírovat do schránky"
 
 msgid "Save As…"
-msgstr "Guardar como…"
+msgstr "Uložit jako…"
 
 msgid "Close"
-msgstr "Cerrar"
+msgstr "Zavřít"
 
 msgid "Video Settings"
-msgstr "Configuración de video"
+msgstr "Nastavení videa"
 
 msgid "Quality"
-msgstr "Calidad"
+msgstr "Kvalita"
 
 msgid "High"
-msgstr "Alta"
+msgstr "Vysoká"
 
 msgid "Medium"
-msgstr "Media"
+msgstr "Střední"
 
 msgid "Low"
-msgstr "Bajo"
+msgstr "Nízká"
 
 msgid "Recording quality (bitrate)"
-msgstr "Calidad de grabación (tasa de bits)"
+msgstr "Kvalita nahrávání (bitrate)"
 
 msgid "Codec"
-msgstr "Códec"
+msgstr "Kodek"
 
 msgid "Mask"
-msgstr "Máscara"
+msgstr "Maska"
 
 msgid "Size"
-msgstr "Tamaño"
+msgstr "Velikost"
 
 msgid "Edit"
-msgstr "Editar"
+msgstr "Upravit"
 
 msgid "Edit Screenshot"
-msgstr "Editar captura de pantalla"
+msgstr "Upravit screenshot"
 
 msgid "Custom"
-msgstr "Personalizado"
+msgstr "Vlastní"
 
 msgid "No Fill"
-msgstr "Sin relleno"
+msgstr "Bez výplně"
 
 msgid "Auto"
-msgstr "Automático"
+msgstr "Automaticky"
 
 msgid "Use best available codec"
-msgstr "Usar el códec disponible más adecuado"
+msgstr "Použijte nejlepší dostupný kodek"
 
 msgid "Video codec"
-msgstr "Códec de video"
+msgstr "Video kodek"
 
 msgid "Webcam"
-msgstr "Cámara web"
+msgstr "Webkamera"
 
 msgid "Webcam Overlay"
-msgstr "Superposición de cámara web"
+msgstr "Překryv webkamery"
 
 msgid "Camera"
-msgstr "Cámara"
+msgstr "Kamera"
 

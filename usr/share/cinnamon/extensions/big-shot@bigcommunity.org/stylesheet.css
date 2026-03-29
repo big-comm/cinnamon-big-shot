@@ -216,6 +216,27 @@
     font-variant-numeric: tabular-nums;
 }
 
+/* ===== Toggle Buttons (Video Settings, Pointer, etc.) ===== */
+.screenshot-ui-show-pointer-button {
+    border-radius: 6px;
+    padding: 3px 8px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 12px;
+    min-height: 24px;
+}
+
+.screenshot-ui-show-pointer-button:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.screenshot-ui-show-pointer-button:checked {
+    background-color: rgba(53, 132, 228, 0.5);
+    color: #ffffff;
+}
+
+.screenshot-ui-show-pointer-button:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+}
 /* ===== Gradient Picker ===== */
 .big-shot-gradient-picker {
     background-color: rgba(30, 30, 30, 0.92);

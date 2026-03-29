@@ -1,4 +1,4 @@
-# es translation for Big Shot
+# nl translation for Big Shot
 # Copyright (C) 2024 BigCommunity
 # This file is distributed under the same license as the big-shot package.
 #
@@ -9,201 +9,201 @@ msgstr ""
 "POT-Creation-Date: 2026-03-28 00:00-0300\n"
 "PO-Revision-Date: 2026-03-28 00:00+0000\n"
 "Last-Translator: BigCommunity <dev@bigcommunity.org>\n"
-"Language-Team: es\n"
-"Language: es\n"
+"Language-Team: nl\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid "Drawing canvas"
-msgstr "Lienzo de dibujo"
+msgstr "Tekent canvas"
 
 msgid "Text…"
-msgstr "Texto…"
+msgstr "Tekst…"
 
 msgid "Annotation text"
-msgstr "Texto de anotación"
+msgstr "Aantekeningtekst"
 
 msgid "Confirm"
-msgstr "Confirmar"
+msgstr "Bevestigen"
 
 msgid "Screenshot taken"
-msgstr "Captura de pantalla tomada"
+msgstr "Screenshot genomen"
 
 msgid "Screenshots"
-msgstr "Capturas de pantalla"
+msgstr "Schermafbeeldingen"
 
 msgid "Screenshot from %s"
-msgstr "Captura de pantalla de %s"
+msgstr "Screenshot van %s"
 
 msgid "Screenshot copied"
-msgstr "Captura de pantalla copiada"
+msgstr "Screenshot gekopieerd"
 
 msgid "Save Screenshot"
-msgstr "Guardar captura de pantalla"
+msgstr "Screenshot opslaan"
 
 msgid "Desktop"
-msgstr "Escritorio"
+msgstr "Bureaublad"
 
 msgid "Mic"
-msgstr "Mic"
+msgstr "Microfoon"
 
 msgid "Record Desktop Audio"
-msgstr "Grabar audio del escritorio"
+msgstr "Desktopgeluid opnemen"
 
 msgid "Record Microphone"
-msgstr "Grabar micrófono"
+msgstr "Opnemen Microfoon"
 
 msgid "Recording resolution"
-msgstr "Resolución de grabación"
+msgstr "Opname-resolutie"
 
 msgid "Frames per second"
-msgstr "Cuadros por segundo"
+msgstr "Frames per seconde"
 
 msgid "Gradient Angle"
-msgstr "Ángulo de degradado"
+msgstr "Verloophoek"
 
 msgid "Border Radius"
-msgstr "Radio de borde"
+msgstr "Randradius"
 
 msgid "Select / Move"
-msgstr "Seleccionar / Mover"
+msgstr "Selecteren / Verplaatsen"
 
 msgid "Pen"
-msgstr "Lápiz"
+msgstr "Pen"
 
 msgid "Arrow"
-msgstr "Flecha"
+msgstr "Pijl"
 
 msgid "Line"
-msgstr "Línea"
+msgstr "Lijn"
 
 msgid "Rectangle"
-msgstr "Rectángulo"
+msgstr "Rechthoek"
 
 msgid "Oval"
 msgstr "Oval"
 
 msgid "Text"
-msgstr "Texto"
+msgstr "Tekst"
 
 msgid "Highlighter"
-msgstr "Resaltador"
+msgstr "Markeerstift"
 
 msgid "Censor"
-msgstr "Censurar"
+msgstr "Censureren"
 
 msgid "Blur"
-msgstr "Desenfoque"
+msgstr "Vervagen"
 
 msgid "Number"
-msgstr "Número"
+msgstr "Nummer"
 
 msgid "Number with Arrow"
-msgstr "Número con flecha"
+msgstr "Nummer met Pijl"
 
 msgid "Number with Pointer"
-msgstr "Número con puntero"
+msgstr "Nummer met Pointer"
 
 msgid "Eraser"
-msgstr "Borrador"
+msgstr "Gum"
 
 msgid "Show screenshot panel"
-msgstr "Mostrar panel de capturas"
+msgstr "Screenshotpaneel tonen"
 
 msgid "Hide screenshot panel"
-msgstr "Ocultar panel de capturas"
+msgstr "Screenshotpaneel verbergen"
 
 msgid "Color"
-msgstr "Color"
+msgstr "Kleur"
 
 msgid "Fill"
-msgstr "Rellenar"
+msgstr "Vullen"
 
 msgid "Decrease Size"
-msgstr "Disminuir tamaño"
+msgstr "Grootte Verkleinen"
 
 msgid "Brush Size"
-msgstr "Tamaño del pincel"
+msgstr "Borstelgrootte"
 
 msgid "Increase Size"
-msgstr "Aumentar tamaño"
+msgstr "Vergroot grootte"
 
 msgid "Font"
-msgstr "Fuente"
+msgstr "Lettertype"
 
 msgid "Intensity"
-msgstr "Intensidad"
+msgstr "Intensiteit"
 
 msgid "Undo"
-msgstr "Deshacer"
+msgstr "Ongedaan maken"
 
 msgid "Redo"
-msgstr "Rehacer"
+msgstr "Opnieuw"
 
 msgid "Copy to Clipboard"
-msgstr "Copiar al portapapeles"
+msgstr "Kopiëren naar klembord"
 
 msgid "Save As…"
-msgstr "Guardar como…"
+msgstr "Opslaan als…"
 
 msgid "Close"
-msgstr "Cerrar"
+msgstr "Sluiten"
 
 msgid "Video Settings"
-msgstr "Configuración de video"
+msgstr "Videoinstellingen"
 
 msgid "Quality"
-msgstr "Calidad"
+msgstr "Kwaliteit"
 
 msgid "High"
-msgstr "Alta"
+msgstr "Hoog"
 
 msgid "Medium"
-msgstr "Media"
+msgstr "Gemiddeld"
 
 msgid "Low"
-msgstr "Bajo"
+msgstr "Laag"
 
 msgid "Recording quality (bitrate)"
-msgstr "Calidad de grabación (tasa de bits)"
+msgstr "Opnamekwaliteit (bitrate)"
 
 msgid "Codec"
-msgstr "Códec"
+msgstr "Codec"
 
 msgid "Mask"
-msgstr "Máscara"
+msgstr "Masker"
 
 msgid "Size"
-msgstr "Tamaño"
+msgstr "Grootte"
 
 msgid "Edit"
-msgstr "Editar"
+msgstr "Bewerken"
 
 msgid "Edit Screenshot"
-msgstr "Editar captura de pantalla"
+msgstr "Screenshot bewerken"
 
 msgid "Custom"
-msgstr "Personalizado"
+msgstr "Aangepast"
 
 msgid "No Fill"
-msgstr "Sin relleno"
+msgstr "Geen vulling"
 
 msgid "Auto"
-msgstr "Automático"
+msgstr "Automatisch"
 
 msgid "Use best available codec"
-msgstr "Usar el códec disponible más adecuado"
+msgstr "Gebruik de beste beschikbare codec"
 
 msgid "Video codec"
-msgstr "Códec de video"
+msgstr "Videocodec"
 
 msgid "Webcam"
-msgstr "Cámara web"
+msgstr "Webcam"
 
 msgid "Webcam Overlay"
-msgstr "Superposición de cámara web"
+msgstr "Webcam-overlay"
 
 msgid "Camera"
-msgstr "Cámara"
+msgstr "Camera"
 

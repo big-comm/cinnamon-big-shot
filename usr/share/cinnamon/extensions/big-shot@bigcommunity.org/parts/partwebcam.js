@@ -261,6 +261,9 @@ var PartWebcam = class PartWebcam extends PartUI {
     // =========================================================================
 
     startPreview() {
+        log('[Big Shot Webcam] startPreview called: enabled=' + this._enabled +
+            ' Gst=' + !!Gst + ' pipeline=' + !!this._pipeline +
+            ' isCastMode=' + this._isCastMode);
         if (!this._enabled || !Gst || this._pipeline || !this._isCastMode)
             return;
 
@@ -1000,6 +1003,7 @@ var PartWebcam = class PartWebcam extends PartUI {
     }
 
     _startPipeline() {
+        log('[Big Shot Webcam] _startPipeline called');
         if (!Gst || this._pipeline)
             return;
 
@@ -1046,6 +1050,8 @@ var PartWebcam = class PartWebcam extends PartUI {
             return;
         }
 
+        log('[Big Shot Webcam] Device started: ' + this._activeDevice);
+
         // Phase 1: Probe native resolution
         this._probing = true;
         this._probeStartTime = GLib.get_monotonic_time();
@@ -1072,8 +1078,10 @@ var PartWebcam = class PartWebcam extends PartUI {
 
     /** Read first frame to detect native webcam resolution, then start render pipeline. */
     _probeFrame(device) {
-        if (!this._sink)
+        if (!this._sink) {
+            log('[Big Shot Webcam] _probeFrame: no sink, aborting');
             return GLib.SOURCE_REMOVE;
+        }
 
         // Timeout: abort if no frame within 5 seconds
         const elapsed = (GLib.get_monotonic_time() - this._probeStartTime) / 1e6;
@@ -1084,9 +1092,17 @@ var PartWebcam = class PartWebcam extends PartUI {
             return GLib.SOURCE_REMOVE;
         }
 
-        const sample = this._sink.try_pull_sample(0);
+        let sample;
+        try {
+            sample = this._sink.try_pull_sample(0);
+        } catch (e) {
+            log('[Big Shot Webcam] try_pull_sample error: ' + e.message);
+            return GLib.SOURCE_CONTINUE;
+        }
         if (!sample)
             return GLib.SOURCE_CONTINUE;
+
+        log('[Big Shot Webcam] Probe got frame!');
 
         // Read native dimensions
         const caps = sample.get_caps();
@@ -1124,6 +1140,7 @@ var PartWebcam = class PartWebcam extends PartUI {
     }
 
     _startRenderPipeline(device, w, h, nativeW, nativeH) {
+        log('[Big Shot Webcam] _startRenderPipeline: device=' + device + ' w=' + w + ' h=' + h + ' native=' + nativeW + 'x' + nativeH);
         try {
             const srcElement = device === 'pipewire'
                 ? 'pipewiresrc !'
@@ -1187,6 +1204,17 @@ var PartWebcam = class PartWebcam extends PartUI {
             if (!sample)
                 return;
 
+            // Log first frame only
+            if (!this._firstFrameLogged) {
+                this._firstFrameLogged = true;
+                log('[Big Shot Webcam] First render frame received! container visible=' +
+                    (this._container ? this._container.visible : 'no container') +
+                    ' x=' + (this._container ? this._container.x : '?') +
+                    ' y=' + (this._container ? this._container.y : '?') +
+                    ' w=' + (this._container ? this._container.width : '?') +
+                    ' h=' + (this._container ? this._container.height : '?'));
+            }
+
             const fw = this._frameWidth;
             const fh = this._frameHeight;
 
@@ -1207,24 +1235,17 @@ var PartWebcam = class PartWebcam extends PartUI {
                 // Apply pixel-level mask
                 this._applyMaskToPixels(data, fw, fh);
 
-                if (!this._coglCtx) {
-                    const backend = Clutter.get_default_backend();
-                    this._coglCtx = backend.get_cogl_context();
-                }
-
-                const texture = Cogl.Texture2D.new_from_data(
-                    this._coglCtx,
-                    fw, fh,
+                // Use Clutter.Image (works in Cinnamon) instead of
+                // Cogl.Texture2D + TextureContent (GNOME Shell only)
+                let image = new Clutter.Image();
+                let ok = image.set_data(
+                    data,
                     Cogl.PixelFormat.RGBA_8888,
-                    fw * 4,
-                    data
+                    fw, fh,
+                    fw * 4
                 );
-
-                if (texture) {
-                    const content = Clutter.TextureContent.new_from_texture(
-                        texture, null
-                    );
-                    this._webcamActor.set_content(content);
+                if (ok) {
+                    this._webcamActor.set_content(image);
                 }
             } finally {
                 buffer.unmap(mapInfo);

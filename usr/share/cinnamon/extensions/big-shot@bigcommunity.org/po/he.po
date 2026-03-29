@@ -1,4 +1,4 @@
-# es translation for Big Shot
+# he translation for Big Shot
 # Copyright (C) 2024 BigCommunity
 # This file is distributed under the same license as the big-shot package.
 #
@@ -9,201 +9,201 @@ msgstr ""
 "POT-Creation-Date: 2026-03-28 00:00-0300\n"
 "PO-Revision-Date: 2026-03-28 00:00+0000\n"
 "Last-Translator: BigCommunity <dev@bigcommunity.org>\n"
-"Language-Team: es\n"
-"Language: es\n"
+"Language-Team: he\n"
+"Language: he\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid "Drawing canvas"
-msgstr "Lienzo de dibujo"
+msgstr "קנבס ציור"
 
 msgid "Text…"
-msgstr "Texto…"
+msgstr "טקסט…"
 
 msgid "Annotation text"
-msgstr "Texto de anotación"
+msgstr "טקסט הערה"
 
 msgid "Confirm"
-msgstr "Confirmar"
+msgstr "אשר"
 
 msgid "Screenshot taken"
-msgstr "Captura de pantalla tomada"
+msgstr "צילום מסך נלקח"
 
 msgid "Screenshots"
-msgstr "Capturas de pantalla"
+msgstr "צילומי מסך"
 
 msgid "Screenshot from %s"
-msgstr "Captura de pantalla de %s"
+msgstr "צילום מסך מ־%s"
 
 msgid "Screenshot copied"
-msgstr "Captura de pantalla copiada"
+msgstr "צילום מסך הועתק"
 
 msgid "Save Screenshot"
-msgstr "Guardar captura de pantalla"
+msgstr "שמור צילום מסך"
 
 msgid "Desktop"
-msgstr "Escritorio"
+msgstr "שולחן עבודה"
 
 msgid "Mic"
-msgstr "Mic"
+msgstr "מיקרופון"
 
 msgid "Record Desktop Audio"
-msgstr "Grabar audio del escritorio"
+msgstr "הקלט שמע שולחן עבודה"
 
 msgid "Record Microphone"
-msgstr "Grabar micrófono"
+msgstr "הקלט מיקרופון"
 
 msgid "Recording resolution"
-msgstr "Resolución de grabación"
+msgstr "רזולוציית הקלטה"
 
 msgid "Frames per second"
-msgstr "Cuadros por segundo"
+msgstr "פריימים לשנייה"
 
 msgid "Gradient Angle"
-msgstr "Ángulo de degradado"
+msgstr "זווית גרדיאנט"
 
 msgid "Border Radius"
-msgstr "Radio de borde"
+msgstr "רדיוס גבול"
 
 msgid "Select / Move"
-msgstr "Seleccionar / Mover"
+msgstr "בחר / העבר"
 
 msgid "Pen"
-msgstr "Lápiz"
+msgstr "עט"
 
 msgid "Arrow"
-msgstr "Flecha"
+msgstr "חץ"
 
 msgid "Line"
-msgstr "Línea"
+msgstr "שורה"
 
 msgid "Rectangle"
-msgstr "Rectángulo"
+msgstr "מלבן"
 
 msgid "Oval"
 msgstr "Oval"
 
 msgid "Text"
-msgstr "Texto"
+msgstr "טקסט"
 
 msgid "Highlighter"
-msgstr "Resaltador"
+msgstr "סמן"
 
 msgid "Censor"
-msgstr "Censurar"
+msgstr "צנזור"
 
 msgid "Blur"
-msgstr "Desenfoque"
+msgstr "טשטוש"
 
 msgid "Number"
-msgstr "Número"
+msgstr "מספר"
 
 msgid "Number with Arrow"
-msgstr "Número con flecha"
+msgstr "מספר עם חץ"
 
 msgid "Number with Pointer"
-msgstr "Número con puntero"
+msgstr "מספר עם מצביע"
 
 msgid "Eraser"
-msgstr "Borrador"
+msgstr "מחק"
 
 msgid "Show screenshot panel"
-msgstr "Mostrar panel de capturas"
+msgstr "הצג לוח צילומי מסך"
 
 msgid "Hide screenshot panel"
-msgstr "Ocultar panel de capturas"
+msgstr "הסתר לוח צילומי מסך"
 
 msgid "Color"
-msgstr "Color"
+msgstr "צבע"
 
 msgid "Fill"
-msgstr "Rellenar"
+msgstr "מלא"
 
 msgid "Decrease Size"
-msgstr "Disminuir tamaño"
+msgstr "הקטן גודל"
 
 msgid "Brush Size"
-msgstr "Tamaño del pincel"
+msgstr "גודל מברשת"
 
 msgid "Increase Size"
-msgstr "Aumentar tamaño"
+msgstr "הגדל גודל"
 
 msgid "Font"
-msgstr "Fuente"
+msgstr "גופן"
 
 msgid "Intensity"
-msgstr "Intensidad"
+msgstr "עוצמה"
 
 msgid "Undo"
-msgstr "Deshacer"
+msgstr "ביטול"
 
 msgid "Redo"
-msgstr "Rehacer"
+msgstr "בטל פעולה חוזרת"
 
 msgid "Copy to Clipboard"
-msgstr "Copiar al portapapeles"
+msgstr "העתק ללוח שנה"
 
 msgid "Save As…"
-msgstr "Guardar como…"
+msgstr "שמור בשם…"
 
 msgid "Close"
-msgstr "Cerrar"
+msgstr "סגור"
 
 msgid "Video Settings"
-msgstr "Configuración de video"
+msgstr "הגדרות וידאו"
 
 msgid "Quality"
-msgstr "Calidad"
+msgstr "איכות"
 
 msgid "High"
-msgstr "Alta"
+msgstr "גבוה"
 
 msgid "Medium"
-msgstr "Media"
+msgstr "בינוני"
 
 msgid "Low"
-msgstr "Bajo"
+msgstr "נמוך"
 
 msgid "Recording quality (bitrate)"
-msgstr "Calidad de grabación (tasa de bits)"
+msgstr "איכות ההקלטה (קצב ביטים)"
 
 msgid "Codec"
-msgstr "Códec"
+msgstr "קודק"
 
 msgid "Mask"
-msgstr "Máscara"
+msgstr "מסכה"
 
 msgid "Size"
-msgstr "Tamaño"
+msgstr "גודל"
 
 msgid "Edit"
-msgstr "Editar"
+msgstr "ערוך"
 
 msgid "Edit Screenshot"
-msgstr "Editar captura de pantalla"
+msgstr "ערוך צילום מסך"
 
 msgid "Custom"
-msgstr "Personalizado"
+msgstr "מותאם אישית"
 
 msgid "No Fill"
-msgstr "Sin relleno"
+msgstr "ללא מילוי"
 
 msgid "Auto"
-msgstr "Automático"
+msgstr "אוטומטי"
 
 msgid "Use best available codec"
-msgstr "Usar el códec disponible más adecuado"
+msgstr "השתמש בקודק הטוב ביותר הזמין"
 
 msgid "Video codec"
-msgstr "Códec de video"
+msgstr "קודקוד וידאו"
 
 msgid "Webcam"
-msgstr "Cámara web"
+msgstr "מצלמת רשת"
 
 msgid "Webcam Overlay"
-msgstr "Superposición de cámara web"
+msgstr "שכבת מצלמת רשת"
 
 msgid "Camera"
-msgstr "Cámara"
+msgstr "מצלמה"
 

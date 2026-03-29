@@ -1,4 +1,4 @@
-# es translation for Big Shot
+# no translation for Big Shot
 # Copyright (C) 2024 BigCommunity
 # This file is distributed under the same license as the big-shot package.
 #
@@ -9,201 +9,201 @@ msgstr ""
 "POT-Creation-Date: 2026-03-28 00:00-0300\n"
 "PO-Revision-Date: 2026-03-28 00:00+0000\n"
 "Last-Translator: BigCommunity <dev@bigcommunity.org>\n"
-"Language-Team: es\n"
-"Language: es\n"
+"Language-Team: no\n"
+"Language: no\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid "Drawing canvas"
-msgstr "Lienzo de dibujo"
+msgstr "Tegning lerret"
 
 msgid "Text…"
-msgstr "Texto…"
+msgstr "Tekst…"
 
 msgid "Annotation text"
-msgstr "Texto de anotación"
+msgstr "Merketekst"
 
 msgid "Confirm"
-msgstr "Confirmar"
+msgstr "Bekreft"
 
 msgid "Screenshot taken"
-msgstr "Captura de pantalla tomada"
+msgstr "Skjermbilde tatt"
 
 msgid "Screenshots"
-msgstr "Capturas de pantalla"
+msgstr "Skjermbilder"
 
 msgid "Screenshot from %s"
-msgstr "Captura de pantalla de %s"
+msgstr "Skjermbilde fra %s"
 
 msgid "Screenshot copied"
-msgstr "Captura de pantalla copiada"
+msgstr "Skjermbilde kopiert"
 
 msgid "Save Screenshot"
-msgstr "Guardar captura de pantalla"
+msgstr "Lagre skjermbilde"
 
 msgid "Desktop"
-msgstr "Escritorio"
+msgstr "Skrivebord"
 
 msgid "Mic"
-msgstr "Mic"
+msgstr "Mikrofon"
 
 msgid "Record Desktop Audio"
-msgstr "Grabar audio del escritorio"
+msgstr "Ta opp skrivebordslyd"
 
 msgid "Record Microphone"
-msgstr "Grabar micrófono"
+msgstr "Registrer mikrofon"
 
 msgid "Recording resolution"
-msgstr "Resolución de grabación"
+msgstr "Oppløsning for opptak"
 
 msgid "Frames per second"
-msgstr "Cuadros por segundo"
+msgstr "Bilder per sekund"
 
 msgid "Gradient Angle"
-msgstr "Ángulo de degradado"
+msgstr "Gradientvinkel"
 
 msgid "Border Radius"
-msgstr "Radio de borde"
+msgstr "Hjørneradius"
 
 msgid "Select / Move"
-msgstr "Seleccionar / Mover"
+msgstr "Velg / Flytt"
 
 msgid "Pen"
-msgstr "Lápiz"
+msgstr "Penne"
 
 msgid "Arrow"
-msgstr "Flecha"
+msgstr "Pil"
 
 msgid "Line"
-msgstr "Línea"
+msgstr "Linje"
 
 msgid "Rectangle"
-msgstr "Rectángulo"
+msgstr "Rektangel"
 
 msgid "Oval"
 msgstr "Oval"
 
 msgid "Text"
-msgstr "Texto"
+msgstr "Tekst"
 
 msgid "Highlighter"
-msgstr "Resaltador"
+msgstr "Marker"
 
 msgid "Censor"
-msgstr "Censurar"
+msgstr "Sensur"
 
 msgid "Blur"
-msgstr "Desenfoque"
+msgstr "Uskarphet"
 
 msgid "Number"
-msgstr "Número"
+msgstr "Nummer"
 
 msgid "Number with Arrow"
-msgstr "Número con flecha"
+msgstr "Tall med pil"
 
 msgid "Number with Pointer"
-msgstr "Número con puntero"
+msgstr "Nummer med peker"
 
 msgid "Eraser"
-msgstr "Borrador"
+msgstr "Viskelær"
 
 msgid "Show screenshot panel"
-msgstr "Mostrar panel de capturas"
+msgstr "Vis skjermbildepanel"
 
 msgid "Hide screenshot panel"
-msgstr "Ocultar panel de capturas"
+msgstr "Skjul skjermbildepanel"
 
 msgid "Color"
-msgstr "Color"
+msgstr "Farge"
 
 msgid "Fill"
-msgstr "Rellenar"
+msgstr "Fyll"
 
 msgid "Decrease Size"
-msgstr "Disminuir tamaño"
+msgstr "Reduser størrelse"
 
 msgid "Brush Size"
-msgstr "Tamaño del pincel"
+msgstr "Penselstørrelse"
 
 msgid "Increase Size"
-msgstr "Aumentar tamaño"
+msgstr "Øk størrelse"
 
 msgid "Font"
-msgstr "Fuente"
+msgstr "Skrift"
 
 msgid "Intensity"
-msgstr "Intensidad"
+msgstr "Intensitet"
 
 msgid "Undo"
-msgstr "Deshacer"
+msgstr "Angre"
 
 msgid "Redo"
-msgstr "Rehacer"
+msgstr "Gjør om"
 
 msgid "Copy to Clipboard"
-msgstr "Copiar al portapapeles"
+msgstr "Kopier til utklippstavle"
 
 msgid "Save As…"
-msgstr "Guardar como…"
+msgstr "Lagre som…"
 
 msgid "Close"
-msgstr "Cerrar"
+msgstr "Lukk"
 
 msgid "Video Settings"
-msgstr "Configuración de video"
+msgstr "Videoinnstillinger"
 
 msgid "Quality"
-msgstr "Calidad"
+msgstr "Kvalitet"
 
 msgid "High"
-msgstr "Alta"
+msgstr "Høy"
 
 msgid "Medium"
-msgstr "Media"
+msgstr "Middels"
 
 msgid "Low"
-msgstr "Bajo"
+msgstr "Lav"
 
 msgid "Recording quality (bitrate)"
-msgstr "Calidad de grabación (tasa de bits)"
+msgstr "Opptakskvalitet (bitrate)"
 
 msgid "Codec"
-msgstr "Códec"
+msgstr "Kodek"
 
 msgid "Mask"
-msgstr "Máscara"
+msgstr "Maske"
 
 msgid "Size"
-msgstr "Tamaño"
+msgstr "Størrelse"
 
 msgid "Edit"
-msgstr "Editar"
+msgstr "Rediger"
 
 msgid "Edit Screenshot"
-msgstr "Editar captura de pantalla"
+msgstr "Rediger skjermbilde"
 
 msgid "Custom"
-msgstr "Personalizado"
+msgstr "Egendefinert"
 
 msgid "No Fill"
-msgstr "Sin relleno"
+msgstr "Ingen fyll"
 
 msgid "Auto"
-msgstr "Automático"
+msgstr "Automatisk"
 
 msgid "Use best available codec"
-msgstr "Usar el códec disponible más adecuado"
+msgstr "Bruk beste tilgjengelige kodek"
 
 msgid "Video codec"
-msgstr "Códec de video"
+msgstr "Videokodek"
 
 msgid "Webcam"
-msgstr "Cámara web"
+msgstr "Webkamera"
 
 msgid "Webcam Overlay"
-msgstr "Superposición de cámara web"
+msgstr "Webcam-overlegg"
 
 msgid "Camera"
-msgstr "Cámara"
+msgstr "Kamera"
 

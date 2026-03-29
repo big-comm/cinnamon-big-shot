@@ -1,0 +1,209 @@
+# bg translation for Big Shot
+# Copyright (C) 2024 BigCommunity
+# This file is distributed under the same license as the big-shot package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: big-shot 1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/BigCommunity/cinnamon-big-shot/issues\n"
+"POT-Creation-Date: 2026-03-28 00:00-0300\n"
+"PO-Revision-Date: 2026-03-28 00:00+0000\n"
+"Last-Translator: BigCommunity <dev@bigcommunity.org>\n"
+"Language-Team: bg\n"
+"Language: bg\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Drawing canvas"
+msgstr "Рисувателна платформа"
+
+msgid "Text…"
+msgstr "Текст…"
+
+msgid "Annotation text"
+msgstr "Текст на анотацията"
+
+msgid "Confirm"
+msgstr "Потвърдете"
+
+msgid "Screenshot taken"
+msgstr "Екранна снимка направена"
+
+msgid "Screenshots"
+msgstr "Екранни снимки"
+
+msgid "Screenshot from %s"
+msgstr "Екранна снимка от %s"
+
+msgid "Screenshot copied"
+msgstr "Екранната снимка е копирана"
+
+msgid "Save Screenshot"
+msgstr "Запази екранната снимка"
+
+msgid "Desktop"
+msgstr "Десктоп"
+
+msgid "Mic"
+msgstr "Микрофон"
+
+msgid "Record Desktop Audio"
+msgstr "Запис на звука от работния плот"
+
+msgid "Record Microphone"
+msgstr "Запис на микрофон"
+
+msgid "Recording resolution"
+msgstr "Разделителна способност на записа"
+
+msgid "Frames per second"
+msgstr "Кадри в секунда"
+
+msgid "Gradient Angle"
+msgstr "Ъгъл на градиента"
+
+msgid "Border Radius"
+msgstr "Радиус на границата"
+
+msgid "Select / Move"
+msgstr "Избор / Преместване"
+
+msgid "Pen"
+msgstr "Писалка"
+
+msgid "Arrow"
+msgstr "Стрелка"
+
+msgid "Line"
+msgstr "Ред."
+
+msgid "Rectangle"
+msgstr "Правоъгълник"
+
+msgid "Oval"
+msgstr "Oval"
+
+msgid "Text"
+msgstr "Текст"
+
+msgid "Highlighter"
+msgstr "Маркер"
+
+msgid "Censor"
+msgstr "Цензуриране"
+
+msgid "Blur"
+msgstr "Замъгляване"
+
+msgid "Number"
+msgstr "Номер"
+
+msgid "Number with Arrow"
+msgstr "Число с стрелка"
+
+msgid "Number with Pointer"
+msgstr "Число с указател."
+
+msgid "Eraser"
+msgstr "Гумка"
+
+msgid "Show screenshot panel"
+msgstr "Покажи панела за екранни снимки"
+
+msgid "Hide screenshot panel"
+msgstr "Скрий панела за екранни снимки"
+
+msgid "Color"
+msgstr "Цвят"
+
+msgid "Fill"
+msgstr "Запълване"
+
+msgid "Decrease Size"
+msgstr "Намали размер"
+
+msgid "Brush Size"
+msgstr "Размер на четката"
+
+msgid "Increase Size"
+msgstr "Увеличи размер"
+
+msgid "Font"
+msgstr "Шрифт"
+
+msgid "Intensity"
+msgstr "Интензивност"
+
+msgid "Undo"
+msgstr "Отмяна"
+
+msgid "Redo"
+msgstr "Направи отново"
+
+msgid "Copy to Clipboard"
+msgstr "Копирай в клипборда"
+
+msgid "Save As…"
+msgstr "Запази като…"
+
+msgid "Close"
+msgstr "Затвори"
+
+msgid "Video Settings"
+msgstr "Настройки на видеото"
+
+msgid "Quality"
+msgstr "Качество"
+
+msgid "High"
+msgstr "Високо"
+
+msgid "Medium"
+msgstr "Средно"
+
+msgid "Low"
+msgstr "Нисък"
+
+msgid "Recording quality (bitrate)"
+msgstr "Качество на записа (битрейт)"
+
+msgid "Codec"
+msgstr "Кодек"
+
+msgid "Mask"
+msgstr "Маска"
+
+msgid "Size"
+msgstr "Размер"
+
+msgid "Edit"
+msgstr "Редактиране"
+
+msgid "Edit Screenshot"
+msgstr "Редактирай екранна снимка"
+
+msgid "Custom"
+msgstr "Персонализиран"
+
+msgid "No Fill"
+msgstr "Без запълване"
+
+msgid "Auto"
+msgstr "Авто"
+
+msgid "Use best available codec"
+msgstr "Използвайте най-добрия наличен кодек"
+
+msgid "Video codec"
+msgstr "Видео кодек"
+
+msgid "Webcam"
+msgstr "Уебкамера"
+
+msgid "Webcam Overlay"
+msgstr "Наслагване на уебкамера"
+
+msgid "Camera"
+msgstr "Камера"
+

@@ -1,4 +1,4 @@
-# es translation for Big Shot
+# tr translation for Big Shot
 # Copyright (C) 2024 BigCommunity
 # This file is distributed under the same license as the big-shot package.
 #
@@ -9,201 +9,201 @@ msgstr ""
 "POT-Creation-Date: 2026-03-28 00:00-0300\n"
 "PO-Revision-Date: 2026-03-28 00:00+0000\n"
 "Last-Translator: BigCommunity <dev@bigcommunity.org>\n"
-"Language-Team: es\n"
-"Language: es\n"
+"Language-Team: tr\n"
+"Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid "Drawing canvas"
-msgstr "Lienzo de dibujo"
+msgstr "Çizim tuvali"
 
 msgid "Text…"
-msgstr "Texto…"
+msgstr "Metin…"
 
 msgid "Annotation text"
-msgstr "Texto de anotación"
+msgstr "Açıklama metni"
 
 msgid "Confirm"
-msgstr "Confirmar"
+msgstr "Onayla"
 
 msgid "Screenshot taken"
-msgstr "Captura de pantalla tomada"
+msgstr "Ekran görüntüsü alındı"
 
 msgid "Screenshots"
-msgstr "Capturas de pantalla"
+msgstr "Ekran görüntüleri"
 
 msgid "Screenshot from %s"
-msgstr "Captura de pantalla de %s"
+msgstr "%s ekran görüntüsü"
 
 msgid "Screenshot copied"
-msgstr "Captura de pantalla copiada"
+msgstr "Ekran görüntüsü kopyalandı"
 
 msgid "Save Screenshot"
-msgstr "Guardar captura de pantalla"
+msgstr "Ekran Görüntüsünü Kaydet"
 
 msgid "Desktop"
-msgstr "Escritorio"
+msgstr "Masaüstü"
 
 msgid "Mic"
-msgstr "Mic"
+msgstr "Mikrofon"
 
 msgid "Record Desktop Audio"
-msgstr "Grabar audio del escritorio"
+msgstr "Masaüstü Sesini Kaydet"
 
 msgid "Record Microphone"
-msgstr "Grabar micrófono"
+msgstr "Mikrofonu Kaydet"
 
 msgid "Recording resolution"
-msgstr "Resolución de grabación"
+msgstr "Kayıt çözünürlüğü"
 
 msgid "Frames per second"
-msgstr "Cuadros por segundo"
+msgstr "Kare/saniye"
 
 msgid "Gradient Angle"
-msgstr "Ángulo de degradado"
+msgstr "Gradyan Açısı"
 
 msgid "Border Radius"
-msgstr "Radio de borde"
+msgstr "Kenar Yarıçapı"
 
 msgid "Select / Move"
-msgstr "Seleccionar / Mover"
+msgstr "Seç / Taşı"
 
 msgid "Pen"
-msgstr "Lápiz"
+msgstr "Kalem"
 
 msgid "Arrow"
-msgstr "Flecha"
+msgstr "Okçular"
 
 msgid "Line"
-msgstr "Línea"
+msgstr "Satır"
 
 msgid "Rectangle"
-msgstr "Rectángulo"
+msgstr "Dikdörtgen"
 
 msgid "Oval"
 msgstr "Oval"
 
 msgid "Text"
-msgstr "Texto"
+msgstr "Metin"
 
 msgid "Highlighter"
-msgstr "Resaltador"
+msgstr "Vurgulayıcı"
 
 msgid "Censor"
-msgstr "Censurar"
+msgstr "Sansürle"
 
 msgid "Blur"
-msgstr "Desenfoque"
+msgstr "Bulanıklaştırma"
 
 msgid "Number"
-msgstr "Número"
+msgstr "Numara"
 
 msgid "Number with Arrow"
-msgstr "Número con flecha"
+msgstr "Ok ile Sayı"
 
 msgid "Number with Pointer"
-msgstr "Número con puntero"
+msgstr "Pointer ile Sayı"
 
 msgid "Eraser"
-msgstr "Borrador"
+msgstr "Silgi"
 
 msgid "Show screenshot panel"
-msgstr "Mostrar panel de capturas"
+msgstr "Ekran görüntüsü panelini göster"
 
 msgid "Hide screenshot panel"
-msgstr "Ocultar panel de capturas"
+msgstr "Ekran görüntüsü panelini gizle"
 
 msgid "Color"
-msgstr "Color"
+msgstr "Renk"
 
 msgid "Fill"
-msgstr "Rellenar"
+msgstr "Doldur"
 
 msgid "Decrease Size"
-msgstr "Disminuir tamaño"
+msgstr "Boyut Azalt"
 
 msgid "Brush Size"
-msgstr "Tamaño del pincel"
+msgstr "Fırça Boyutu"
 
 msgid "Increase Size"
-msgstr "Aumentar tamaño"
+msgstr "Boyutu Artır"
 
 msgid "Font"
-msgstr "Fuente"
+msgstr "Yazı Tipi"
 
 msgid "Intensity"
-msgstr "Intensidad"
+msgstr "Yoğunluk"
 
 msgid "Undo"
-msgstr "Deshacer"
+msgstr "Geri Al"
 
 msgid "Redo"
-msgstr "Rehacer"
+msgstr "Yinele"
 
 msgid "Copy to Clipboard"
-msgstr "Copiar al portapapeles"
+msgstr "Panoza Kopyala"
 
 msgid "Save As…"
-msgstr "Guardar como…"
+msgstr "Farklı Kaydet…"
 
 msgid "Close"
-msgstr "Cerrar"
+msgstr "Kapat"
 
 msgid "Video Settings"
-msgstr "Configuración de video"
+msgstr "Video Ayarları"
 
 msgid "Quality"
-msgstr "Calidad"
+msgstr "Kalite"
 
 msgid "High"
-msgstr "Alta"
+msgstr "Yüksek"
 
 msgid "Medium"
-msgstr "Media"
+msgstr "Orta"
 
 msgid "Low"
-msgstr "Bajo"
+msgstr "Düşük"
 
 msgid "Recording quality (bitrate)"
-msgstr "Calidad de grabación (tasa de bits)"
+msgstr "Kayıt kalitesi (bit hızı)"
 
 msgid "Codec"
-msgstr "Códec"
+msgstr "Kodek"
 
 msgid "Mask"
-msgstr "Máscara"
+msgstr "Maske"
 
 msgid "Size"
-msgstr "Tamaño"
+msgstr "Boyut"
 
 msgid "Edit"
-msgstr "Editar"
+msgstr "Düzenle"
 
 msgid "Edit Screenshot"
-msgstr "Editar captura de pantalla"
+msgstr "Ekran Görüntüsünü Düzenle"
 
 msgid "Custom"
-msgstr "Personalizado"
+msgstr "Özel"
 
 msgid "No Fill"
-msgstr "Sin relleno"
+msgstr "Doldurma Yok"
 
 msgid "Auto"
-msgstr "Automático"
+msgstr "Otomatik"
 
 msgid "Use best available codec"
-msgstr "Usar el códec disponible más adecuado"
+msgstr "En iyi mevcut kodeği kullanın"
 
 msgid "Video codec"
-msgstr "Códec de video"
+msgstr "Video kodek"
 
 msgid "Webcam"
-msgstr "Cámara web"
+msgstr "Webcam"
 
 msgid "Webcam Overlay"
-msgstr "Superposición de cámara web"
+msgstr "Webcam Üstü"
 
 msgid "Camera"
-msgstr "Cámara"
+msgstr "Kamera"
 

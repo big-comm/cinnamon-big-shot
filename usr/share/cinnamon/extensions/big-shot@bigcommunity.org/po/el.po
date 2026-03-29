@@ -1,0 +1,209 @@
+# el translation for Big Shot
+# Copyright (C) 2024 BigCommunity
+# This file is distributed under the same license as the big-shot package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: big-shot 1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/BigCommunity/cinnamon-big-shot/issues\n"
+"POT-Creation-Date: 2026-03-28 00:00-0300\n"
+"PO-Revision-Date: 2026-03-28 00:00+0000\n"
+"Last-Translator: BigCommunity <dev@bigcommunity.org>\n"
+"Language-Team: el\n"
+"Language: el\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Drawing canvas"
+msgstr "Καμβάς σχεδίασης"
+
+msgid "Text…"
+msgstr "Κείμενο…"
+
+msgid "Annotation text"
+msgstr "Κείμενο σχολιασμού"
+
+msgid "Confirm"
+msgstr "Επιβεβαίωση"
+
+msgid "Screenshot taken"
+msgstr "Η λήψη οθόνης ολοκληρώθηκε"
+
+msgid "Screenshots"
+msgstr "Λήψεις οθόνης"
+
+msgid "Screenshot from %s"
+msgstr "Λήψη οθόνης από %s"
+
+msgid "Screenshot copied"
+msgstr "Η λήψη οθόνης αντιγράφηκε"
+
+msgid "Save Screenshot"
+msgstr "Αποθήκευση λήψης οθόνης"
+
+msgid "Desktop"
+msgstr "Desktop"
+
+msgid "Mic"
+msgstr "Μικρόφωνο"
+
+msgid "Record Desktop Audio"
+msgstr "Καταγραφή ήχου επιφάνειας εργασίας"
+
+msgid "Record Microphone"
+msgstr "Καταγραφή Μικροφώνου"
+
+msgid "Recording resolution"
+msgstr "Ανάλυση εγγραφής"
+
+msgid "Frames per second"
+msgstr "Καρέ ανά δευτερόλεπτο"
+
+msgid "Gradient Angle"
+msgstr "Γωνία κλίσης"
+
+msgid "Border Radius"
+msgstr "Ακτίνα Περιγράμματος"
+
+msgid "Select / Move"
+msgstr "Επιλογή / Μετακίνηση"
+
+msgid "Pen"
+msgstr "Στυλό"
+
+msgid "Arrow"
+msgstr "Βέλος"
+
+msgid "Line"
+msgstr "Γραμμή"
+
+msgid "Rectangle"
+msgstr "Ορθογώνιο"
+
+msgid "Oval"
+msgstr "Oval"
+
+msgid "Text"
+msgstr "Κείμενο"
+
+msgid "Highlighter"
+msgstr "Υπογραμμιστής"
+
+msgid "Censor"
+msgstr "Λογοκρισία"
+
+msgid "Blur"
+msgstr "Θόλωμα"
+
+msgid "Number"
+msgstr "Αριθμός"
+
+msgid "Number with Arrow"
+msgstr "Αριθμός με Βέλος"
+
+msgid "Number with Pointer"
+msgstr "Αριθμός με Δείκτη"
+
+msgid "Eraser"
+msgstr "Γόμα"
+
+msgid "Show screenshot panel"
+msgstr "Εμφάνιση πίνακα λήψεων οθόνης"
+
+msgid "Hide screenshot panel"
+msgstr "Απόκρυψη πίνακα λήψεων οθόνης"
+
+msgid "Color"
+msgstr "Χρώμα"
+
+msgid "Fill"
+msgstr "Γέμισμα"
+
+msgid "Decrease Size"
+msgstr "Μείωση Μεγέθους"
+
+msgid "Brush Size"
+msgstr "Μέγεθος Πινέλου"
+
+msgid "Increase Size"
+msgstr "Αύξηση Μεγέθους"
+
+msgid "Font"
+msgstr "Γραμματοσειρά"
+
+msgid "Intensity"
+msgstr "Ένταση"
+
+msgid "Undo"
+msgstr "Αναίρεση"
+
+msgid "Redo"
+msgstr "Επανάληψη"
+
+msgid "Copy to Clipboard"
+msgstr "Αντιγραφή στο Πρόχειρο"
+
+msgid "Save As…"
+msgstr "Αποθήκευση ως…"
+
+msgid "Close"
+msgstr "Κλείσιμο"
+
+msgid "Video Settings"
+msgstr "Ρυθμίσεις Βίντεο"
+
+msgid "Quality"
+msgstr "Ποιότητα"
+
+msgid "High"
+msgstr "Υψηλή"
+
+msgid "Medium"
+msgstr "Μεσαία"
+
+msgid "Low"
+msgstr "Χαμηλό"
+
+msgid "Recording quality (bitrate)"
+msgstr "Ποιότητα εγγραφής (bitrate)"
+
+msgid "Codec"
+msgstr "Κωδικοποιητής"
+
+msgid "Mask"
+msgstr "Μάσκα"
+
+msgid "Size"
+msgstr "Μέγεθος"
+
+msgid "Edit"
+msgstr "Επεξεργασία"
+
+msgid "Edit Screenshot"
+msgstr "Επεξεργασία στιγμιότυπου"
+
+msgid "Custom"
+msgstr "Προσαρμοσμένο"
+
+msgid "No Fill"
+msgstr "Χωρίς γέμισμα"
+
+msgid "Auto"
+msgstr "Αυτόματο"
+
+msgid "Use best available codec"
+msgstr "Χρησιμοποιήστε τον καλύτερο διαθέσιμο κωδικοποιητή"
+
+msgid "Video codec"
+msgstr "Κωδικοποιητής βίντεο"
+
+msgid "Webcam"
+msgstr "Κάμερα web"
+
+msgid "Webcam Overlay"
+msgstr "Επικάλυψη κάμερας"
+
+msgid "Camera"
+msgstr "Κάμερα"
+

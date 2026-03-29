@@ -10,7 +10,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-var APP_VERSION = '26.5.0';
+var APP_VERSION = '26.5.1';
 
 const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
@@ -233,6 +233,11 @@ var BigShotExtension = class BigShotExtension {
         // Handle screencast requests from UI
         this._screenshotUI.connect('screencast-requested', () => {
             this._startScreencast();
+        });
+
+        // Reset parts state when UI is closed (ESC, capture done, etc.)
+        this._screenshotUI.connect('closed', () => {
+            this._onUIClosed();
         });
 
         // Provide screenshot pixbuf to annotation overlay when ready
@@ -862,6 +867,30 @@ var BigShotExtension = class BigShotExtension {
 
         if (this._availableConfigs.length === 0) {
             log('[Big Shot] No compatible GStreamer pipeline found!');
+        }
+    }
+
+    /**
+     * Called when the screenshot UI closes (ESC, capture done, etc.).
+     * Resets transient part state so the next open starts fresh.
+     */
+    _onUIClosed() {
+        log('[Big Shot] _onUIClosed called, recordingState=' + this._recordingState);
+        // Don't reset if a recording is in progress
+        if (this._recordingState !== 'idle')
+            return;
+
+        // Stop and reset webcam
+        if (this._webcam) {
+            this._webcam.stopPreview();
+            this._webcam.enabled = false;
+            if (this._webcam._webcamButton)
+                this._webcam._webcamButton.checked = false;
+        }
+
+        // Close video settings panel if open
+        if (this._toolbar && this._toolbar._editButton) {
+            this._toolbar._editButton.checked = false;
         }
     }
 

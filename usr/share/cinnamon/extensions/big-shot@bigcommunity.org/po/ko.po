@@ -1,4 +1,4 @@
-# es translation for Big Shot
+# ko translation for Big Shot
 # Copyright (C) 2024 BigCommunity
 # This file is distributed under the same license as the big-shot package.
 #
@@ -9,201 +9,201 @@ msgstr ""
 "POT-Creation-Date: 2026-03-28 00:00-0300\n"
 "PO-Revision-Date: 2026-03-28 00:00+0000\n"
 "Last-Translator: BigCommunity <dev@bigcommunity.org>\n"
-"Language-Team: es\n"
-"Language: es\n"
+"Language-Team: ko\n"
+"Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid "Drawing canvas"
-msgstr "Lienzo de dibujo"
+msgstr "드로잉 캔버스"
 
 msgid "Text…"
-msgstr "Texto…"
+msgstr "텍스트…"
 
 msgid "Annotation text"
-msgstr "Texto de anotación"
+msgstr "주석 텍스트"
 
 msgid "Confirm"
-msgstr "Confirmar"
+msgstr "확인"
 
 msgid "Screenshot taken"
-msgstr "Captura de pantalla tomada"
+msgstr "스크린샷이 찍혔습니다"
 
 msgid "Screenshots"
-msgstr "Capturas de pantalla"
+msgstr "스크린샷들"
 
 msgid "Screenshot from %s"
-msgstr "Captura de pantalla de %s"
+msgstr "%s의 스크린샷"
 
 msgid "Screenshot copied"
-msgstr "Captura de pantalla copiada"
+msgstr "스크린샷이 복사되었습니다"
 
 msgid "Save Screenshot"
-msgstr "Guardar captura de pantalla"
+msgstr "스크린샷 저장"
 
 msgid "Desktop"
-msgstr "Escritorio"
+msgstr "바탕화면"
 
 msgid "Mic"
-msgstr "Mic"
+msgstr "마이크"
 
 msgid "Record Desktop Audio"
-msgstr "Grabar audio del escritorio"
+msgstr "데스크탑 오디오 녹음"
 
 msgid "Record Microphone"
-msgstr "Grabar micrófono"
+msgstr "마이크 녹음"
 
 msgid "Recording resolution"
-msgstr "Resolución de grabación"
+msgstr "녹화 해상도"
 
 msgid "Frames per second"
-msgstr "Cuadros por segundo"
+msgstr "초당 프레임"
 
 msgid "Gradient Angle"
-msgstr "Ángulo de degradado"
+msgstr "그라디언트 각도"
 
 msgid "Border Radius"
-msgstr "Radio de borde"
+msgstr "테두리 반경"
 
 msgid "Select / Move"
-msgstr "Seleccionar / Mover"
+msgstr "선택 / 이동"
 
 msgid "Pen"
-msgstr "Lápiz"
+msgstr "펜"
 
 msgid "Arrow"
-msgstr "Flecha"
+msgstr "화살표"
 
 msgid "Line"
-msgstr "Línea"
+msgstr "라인"
 
 msgid "Rectangle"
-msgstr "Rectángulo"
+msgstr "사각형"
 
 msgid "Oval"
 msgstr "Oval"
 
 msgid "Text"
-msgstr "Texto"
+msgstr "텍스트"
 
 msgid "Highlighter"
-msgstr "Resaltador"
+msgstr "형광펜"
 
 msgid "Censor"
-msgstr "Censurar"
+msgstr "검열"
 
 msgid "Blur"
-msgstr "Desenfoque"
+msgstr "블러"
 
 msgid "Number"
-msgstr "Número"
+msgstr "숫자"
 
 msgid "Number with Arrow"
-msgstr "Número con flecha"
+msgstr "화살표가 있는 숫자"
 
 msgid "Number with Pointer"
-msgstr "Número con puntero"
+msgstr "포인터가 있는 숫자"
 
 msgid "Eraser"
-msgstr "Borrador"
+msgstr "지우개"
 
 msgid "Show screenshot panel"
-msgstr "Mostrar panel de capturas"
+msgstr "스크린샷 패널 표시"
 
 msgid "Hide screenshot panel"
-msgstr "Ocultar panel de capturas"
+msgstr "스크린샷 패널 숨기기"
 
 msgid "Color"
-msgstr "Color"
+msgstr "색상"
 
 msgid "Fill"
-msgstr "Rellenar"
+msgstr "채우기"
 
 msgid "Decrease Size"
-msgstr "Disminuir tamaño"
+msgstr "크기 줄이기"
 
 msgid "Brush Size"
-msgstr "Tamaño del pincel"
+msgstr "브러시 크기"
 
 msgid "Increase Size"
-msgstr "Aumentar tamaño"
+msgstr "크기 늘리기"
 
 msgid "Font"
-msgstr "Fuente"
+msgstr "글꼴"
 
 msgid "Intensity"
-msgstr "Intensidad"
+msgstr "강도"
 
 msgid "Undo"
-msgstr "Deshacer"
+msgstr "실행 취소"
 
 msgid "Redo"
-msgstr "Rehacer"
+msgstr "다시 실행"
 
 msgid "Copy to Clipboard"
-msgstr "Copiar al portapapeles"
+msgstr "클립보드에 복사"
 
 msgid "Save As…"
-msgstr "Guardar como…"
+msgstr "다른 이름으로 저장…"
 
 msgid "Close"
-msgstr "Cerrar"
+msgstr "닫기"
 
 msgid "Video Settings"
-msgstr "Configuración de video"
+msgstr "비디오 설정"
 
 msgid "Quality"
-msgstr "Calidad"
+msgstr "품질"
 
 msgid "High"
-msgstr "Alta"
+msgstr "높음"
 
 msgid "Medium"
-msgstr "Media"
+msgstr "중간"
 
 msgid "Low"
-msgstr "Bajo"
+msgstr "낮음"
 
 msgid "Recording quality (bitrate)"
-msgstr "Calidad de grabación (tasa de bits)"
+msgstr "녹화 품질 (비트레이트)"
 
 msgid "Codec"
-msgstr "Códec"
+msgstr "코덱"
 
 msgid "Mask"
-msgstr "Máscara"
+msgstr "마스크"
 
 msgid "Size"
-msgstr "Tamaño"
+msgstr "크기"
 
 msgid "Edit"
-msgstr "Editar"
+msgstr "편집"
 
 msgid "Edit Screenshot"
-msgstr "Editar captura de pantalla"
+msgstr "스크린샷 편집"
 
 msgid "Custom"
-msgstr "Personalizado"
+msgstr "사용자 정의"
 
 msgid "No Fill"
-msgstr "Sin relleno"
+msgstr "채우기 없음"
 
 msgid "Auto"
-msgstr "Automático"
+msgstr "자동"
 
 msgid "Use best available codec"
-msgstr "Usar el códec disponible más adecuado"
+msgstr "최고의 사용 가능한 코덱 사용"
 
 msgid "Video codec"
-msgstr "Códec de video"
+msgstr "비디오 코덱"
 
 msgid "Webcam"
-msgstr "Cámara web"
+msgstr "웹캠"
 
 msgid "Webcam Overlay"
-msgstr "Superposición de cámara web"
+msgstr "웹캠 오버레이"
 
 msgid "Camera"
-msgstr "Cámara"
+msgstr "카메라"
 

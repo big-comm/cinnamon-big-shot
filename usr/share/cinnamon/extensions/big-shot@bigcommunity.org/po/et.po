@@ -1,4 +1,4 @@
-# es translation for Big Shot
+# et translation for Big Shot
 # Copyright (C) 2024 BigCommunity
 # This file is distributed under the same license as the big-shot package.
 #
@@ -9,201 +9,201 @@ msgstr ""
 "POT-Creation-Date: 2026-03-28 00:00-0300\n"
 "PO-Revision-Date: 2026-03-28 00:00+0000\n"
 "Last-Translator: BigCommunity <dev@bigcommunity.org>\n"
-"Language-Team: es\n"
-"Language: es\n"
+"Language-Team: et\n"
+"Language: et\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid "Drawing canvas"
-msgstr "Lienzo de dibujo"
+msgstr "Joonistuslina"
 
 msgid "Text…"
-msgstr "Texto…"
+msgstr "Tekst…"
 
 msgid "Annotation text"
-msgstr "Texto de anotación"
+msgstr "Märkustekst"
 
 msgid "Confirm"
-msgstr "Confirmar"
+msgstr "Kinnita"
 
 msgid "Screenshot taken"
-msgstr "Captura de pantalla tomada"
+msgstr "Ekraanipilt tehtud"
 
 msgid "Screenshots"
-msgstr "Capturas de pantalla"
+msgstr "Ekraanipildid"
 
 msgid "Screenshot from %s"
-msgstr "Captura de pantalla de %s"
+msgstr "Ekraanipilt %s"
 
 msgid "Screenshot copied"
-msgstr "Captura de pantalla copiada"
+msgstr "Ekraanipilt kopeeritud"
 
 msgid "Save Screenshot"
-msgstr "Guardar captura de pantalla"
+msgstr "Salvesta ekraanipilt"
 
 msgid "Desktop"
-msgstr "Escritorio"
+msgstr "Töölaua"
 
 msgid "Mic"
-msgstr "Mic"
+msgstr "Mikrofon"
 
 msgid "Record Desktop Audio"
-msgstr "Grabar audio del escritorio"
+msgstr "Salvesta töölaua heli"
 
 msgid "Record Microphone"
-msgstr "Grabar micrófono"
+msgstr "Salvesta mikrofon"
 
 msgid "Recording resolution"
-msgstr "Resolución de grabación"
+msgstr "Salvestuse eraldusvõime"
 
 msgid "Frames per second"
-msgstr "Cuadros por segundo"
+msgstr "Kaadreid sekundis"
 
 msgid "Gradient Angle"
-msgstr "Ángulo de degradado"
+msgstr "Gradendi nurk"
 
 msgid "Border Radius"
-msgstr "Radio de borde"
+msgstr "Serva raadius"
 
 msgid "Select / Move"
-msgstr "Seleccionar / Mover"
+msgstr "Vali / Liiguta"
 
 msgid "Pen"
-msgstr "Lápiz"
+msgstr "Pliiats"
 
 msgid "Arrow"
-msgstr "Flecha"
+msgstr "Noole"
 
 msgid "Line"
-msgstr "Línea"
+msgstr "Rida"
 
 msgid "Rectangle"
-msgstr "Rectángulo"
+msgstr "Ristkülik"
 
 msgid "Oval"
 msgstr "Oval"
 
 msgid "Text"
-msgstr "Texto"
+msgstr "Tekst"
 
 msgid "Highlighter"
-msgstr "Resaltador"
+msgstr "Markija"
 
 msgid "Censor"
-msgstr "Censurar"
+msgstr "Tsenseeri"
 
 msgid "Blur"
-msgstr "Desenfoque"
+msgstr "Hägu"
 
 msgid "Number"
-msgstr "Número"
+msgstr "Number"
 
 msgid "Number with Arrow"
-msgstr "Número con flecha"
+msgstr "Arvuga noolega"
 
 msgid "Number with Pointer"
-msgstr "Número con puntero"
+msgstr "Number koos näidikuga"
 
 msgid "Eraser"
-msgstr "Borrador"
+msgstr "Kustutaja"
 
 msgid "Show screenshot panel"
-msgstr "Mostrar panel de capturas"
+msgstr "Näita ekraanipiltide paneeli"
 
 msgid "Hide screenshot panel"
-msgstr "Ocultar panel de capturas"
+msgstr "Peida ekraanipiltide paneel"
 
 msgid "Color"
-msgstr "Color"
+msgstr "Värv"
 
 msgid "Fill"
-msgstr "Rellenar"
+msgstr "Täida"
 
 msgid "Decrease Size"
-msgstr "Disminuir tamaño"
+msgstr "Vähenda suurust"
 
 msgid "Brush Size"
-msgstr "Tamaño del pincel"
+msgstr "Harja suurus"
 
 msgid "Increase Size"
-msgstr "Aumentar tamaño"
+msgstr "Suurenda suurust"
 
 msgid "Font"
-msgstr "Fuente"
+msgstr "Font"
 
 msgid "Intensity"
-msgstr "Intensidad"
+msgstr "Intensiivsus"
 
 msgid "Undo"
-msgstr "Deshacer"
+msgstr "Tagasi võtta"
 
 msgid "Redo"
-msgstr "Rehacer"
+msgstr "Tee uuesti"
 
 msgid "Copy to Clipboard"
-msgstr "Copiar al portapapeles"
+msgstr "Kopeeri lõikelauale"
 
 msgid "Save As…"
-msgstr "Guardar como…"
+msgstr "Salvesta nimega…"
 
 msgid "Close"
-msgstr "Cerrar"
+msgstr "Sulge"
 
 msgid "Video Settings"
-msgstr "Configuración de video"
+msgstr "Video seaded"
 
 msgid "Quality"
-msgstr "Calidad"
+msgstr "Kvaliteet"
 
 msgid "High"
-msgstr "Alta"
+msgstr "Kõrge"
 
 msgid "Medium"
-msgstr "Media"
+msgstr "Keskmine"
 
 msgid "Low"
-msgstr "Bajo"
+msgstr "Madal"
 
 msgid "Recording quality (bitrate)"
-msgstr "Calidad de grabación (tasa de bits)"
+msgstr "Salvestuse kvaliteet (bitikiirus)"
 
 msgid "Codec"
-msgstr "Códec"
+msgstr "Koodek"
 
 msgid "Mask"
-msgstr "Máscara"
+msgstr "Mask"
 
 msgid "Size"
-msgstr "Tamaño"
+msgstr "Suurus"
 
 msgid "Edit"
-msgstr "Editar"
+msgstr "Redigeeri"
 
 msgid "Edit Screenshot"
-msgstr "Editar captura de pantalla"
+msgstr "Muuda ekraanipilti"
 
 msgid "Custom"
-msgstr "Personalizado"
+msgstr "Kohandatud"
 
 msgid "No Fill"
-msgstr "Sin relleno"
+msgstr "Täitmist pole"
 
 msgid "Auto"
-msgstr "Automático"
+msgstr "Automaatne"
 
 msgid "Use best available codec"
-msgstr "Usar el códec disponible más adecuado"
+msgstr "Kasutage parimat saadaval olevat koodekit"
 
 msgid "Video codec"
-msgstr "Códec de video"
+msgstr "Videokoodek"
 
 msgid "Webcam"
-msgstr "Cámara web"
+msgstr "Veebikaamera"
 
 msgid "Webcam Overlay"
-msgstr "Superposición de cámara web"
+msgstr "Veebikaamera ülekatte"
 
 msgid "Camera"
-msgstr "Cámara"
+msgstr "Kaamera"
 

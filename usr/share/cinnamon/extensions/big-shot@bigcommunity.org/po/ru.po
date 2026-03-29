@@ -1,0 +1,209 @@
+# ru translation for Big Shot
+# Copyright (C) 2024 BigCommunity
+# This file is distributed under the same license as the big-shot package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: big-shot 1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/BigCommunity/cinnamon-big-shot/issues\n"
+"POT-Creation-Date: 2026-03-28 00:00-0300\n"
+"PO-Revision-Date: 2026-03-28 00:00+0000\n"
+"Last-Translator: BigCommunity <dev@bigcommunity.org>\n"
+"Language-Team: ru\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Drawing canvas"
+msgstr "Рисовальная панель"
+
+msgid "Text…"
+msgstr "Текст…"
+
+msgid "Annotation text"
+msgstr "Текст аннотации"
+
+msgid "Confirm"
+msgstr "Подтвердить"
+
+msgid "Screenshot taken"
+msgstr "Скриншот сделан"
+
+msgid "Screenshots"
+msgstr "Скриншоты"
+
+msgid "Screenshot from %s"
+msgstr "Скриншот с %s"
+
+msgid "Screenshot copied"
+msgstr "Скриншот скопирован"
+
+msgid "Save Screenshot"
+msgstr "Сохранить скриншот"
+
+msgid "Desktop"
+msgstr "Десктоп"
+
+msgid "Mic"
+msgstr "Микрофон"
+
+msgid "Record Desktop Audio"
+msgstr "Записывать звук с рабочего стола"
+
+msgid "Record Microphone"
+msgstr "Запись микрофона"
+
+msgid "Recording resolution"
+msgstr "Разрешение записи"
+
+msgid "Frames per second"
+msgstr "Кадры в секунду"
+
+msgid "Gradient Angle"
+msgstr "Угол градиента"
+
+msgid "Border Radius"
+msgstr "Радиус границы"
+
+msgid "Select / Move"
+msgstr "Выбрать / Переместить"
+
+msgid "Pen"
+msgstr "Ручка"
+
+msgid "Arrow"
+msgstr "Стрелка"
+
+msgid "Line"
+msgstr "Линия"
+
+msgid "Rectangle"
+msgstr "Прямоугольник"
+
+msgid "Oval"
+msgstr "Oval"
+
+msgid "Text"
+msgstr "Текст"
+
+msgid "Highlighter"
+msgstr "Маркер"
+
+msgid "Censor"
+msgstr "Цензура"
+
+msgid "Blur"
+msgstr "Размытие"
+
+msgid "Number"
+msgstr "Номер"
+
+msgid "Number with Arrow"
+msgstr "Число со стрелкой"
+
+msgid "Number with Pointer"
+msgstr "Число с указателем"
+
+msgid "Eraser"
+msgstr "Стиратель"
+
+msgid "Show screenshot panel"
+msgstr "Показать панель скриншотов"
+
+msgid "Hide screenshot panel"
+msgstr "Скрыть панель скриншотов"
+
+msgid "Color"
+msgstr "Цвет"
+
+msgid "Fill"
+msgstr "Заполнить"
+
+msgid "Decrease Size"
+msgstr "Уменьшить размер"
+
+msgid "Brush Size"
+msgstr "Размер кисти"
+
+msgid "Increase Size"
+msgstr "Увеличить размер"
+
+msgid "Font"
+msgstr "Шрифт"
+
+msgid "Intensity"
+msgstr "Интенсивность"
+
+msgid "Undo"
+msgstr "Отменить"
+
+msgid "Redo"
+msgstr "Повторить"
+
+msgid "Copy to Clipboard"
+msgstr "Скопировать в буфер обмена"
+
+msgid "Save As…"
+msgstr "Сохранить как…"
+
+msgid "Close"
+msgstr "Закрыть"
+
+msgid "Video Settings"
+msgstr "Настройки видео"
+
+msgid "Quality"
+msgstr "Качество"
+
+msgid "High"
+msgstr "Высокое"
+
+msgid "Medium"
+msgstr "Среднее"
+
+msgid "Low"
+msgstr "Низкий"
+
+msgid "Recording quality (bitrate)"
+msgstr "Качество записи (битрейт)"
+
+msgid "Codec"
+msgstr "Кодек"
+
+msgid "Mask"
+msgstr "Маска"
+
+msgid "Size"
+msgstr "Размер"
+
+msgid "Edit"
+msgstr "Редактировать"
+
+msgid "Edit Screenshot"
+msgstr "Редактировать скриншот"
+
+msgid "Custom"
+msgstr "Пользовательский"
+
+msgid "No Fill"
+msgstr "Без заливки"
+
+msgid "Auto"
+msgstr "Авто"
+
+msgid "Use best available codec"
+msgstr "Использовать лучший доступный кодек"
+
+msgid "Video codec"
+msgstr "Видеокодек"
+
+msgid "Webcam"
+msgstr "Вебкамера"
+
+msgid "Webcam Overlay"
+msgstr "Наложение с веб-камеры"
+
+msgid "Camera"
+msgstr "Камера"
+

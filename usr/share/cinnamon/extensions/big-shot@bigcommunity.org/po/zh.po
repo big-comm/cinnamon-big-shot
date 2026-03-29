@@ -1,4 +1,4 @@
-# es translation for Big Shot
+# zh translation for Big Shot
 # Copyright (C) 2024 BigCommunity
 # This file is distributed under the same license as the big-shot package.
 #
@@ -9,201 +9,201 @@ msgstr ""
 "POT-Creation-Date: 2026-03-28 00:00-0300\n"
 "PO-Revision-Date: 2026-03-28 00:00+0000\n"
 "Last-Translator: BigCommunity <dev@bigcommunity.org>\n"
-"Language-Team: es\n"
-"Language: es\n"
+"Language-Team: zh\n"
+"Language: zh\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid "Drawing canvas"
-msgstr "Lienzo de dibujo"
+msgstr "绘图画布"
 
 msgid "Text…"
-msgstr "Texto…"
+msgstr "文本…"
 
 msgid "Annotation text"
-msgstr "Texto de anotación"
+msgstr "注释文本"
 
 msgid "Confirm"
-msgstr "Confirmar"
+msgstr "确认"
 
 msgid "Screenshot taken"
-msgstr "Captura de pantalla tomada"
+msgstr "截图已保存"
 
 msgid "Screenshots"
-msgstr "Capturas de pantalla"
+msgstr "截图"
 
 msgid "Screenshot from %s"
-msgstr "Captura de pantalla de %s"
+msgstr "来自 %s 的截图"
 
 msgid "Screenshot copied"
-msgstr "Captura de pantalla copiada"
+msgstr "截图已复制"
 
 msgid "Save Screenshot"
-msgstr "Guardar captura de pantalla"
+msgstr "保存截图"
 
 msgid "Desktop"
-msgstr "Escritorio"
+msgstr "桌面"
 
 msgid "Mic"
-msgstr "Mic"
+msgstr "麦克风"
 
 msgid "Record Desktop Audio"
-msgstr "Grabar audio del escritorio"
+msgstr "录制桌面音频"
 
 msgid "Record Microphone"
-msgstr "Grabar micrófono"
+msgstr "录制麦克风"
 
 msgid "Recording resolution"
-msgstr "Resolución de grabación"
+msgstr "录制分辨率"
 
 msgid "Frames per second"
-msgstr "Cuadros por segundo"
+msgstr "每秒帧数"
 
 msgid "Gradient Angle"
-msgstr "Ángulo de degradado"
+msgstr "渐变角度"
 
 msgid "Border Radius"
-msgstr "Radio de borde"
+msgstr "边框半径"
 
 msgid "Select / Move"
-msgstr "Seleccionar / Mover"
+msgstr "选择 / 移动"
 
 msgid "Pen"
-msgstr "Lápiz"
+msgstr "笔"
 
 msgid "Arrow"
-msgstr "Flecha"
+msgstr "箭头"
 
 msgid "Line"
-msgstr "Línea"
+msgstr "行"
 
 msgid "Rectangle"
-msgstr "Rectángulo"
+msgstr "矩形"
 
 msgid "Oval"
 msgstr "Oval"
 
 msgid "Text"
-msgstr "Texto"
+msgstr "文本"
 
 msgid "Highlighter"
-msgstr "Resaltador"
+msgstr "高亮工具"
 
 msgid "Censor"
-msgstr "Censurar"
+msgstr "马赛克"
 
 msgid "Blur"
-msgstr "Desenfoque"
+msgstr "模糊"
 
 msgid "Number"
-msgstr "Número"
+msgstr "数字"
 
 msgid "Number with Arrow"
-msgstr "Número con flecha"
+msgstr "带箭头的数字"
 
 msgid "Number with Pointer"
-msgstr "Número con puntero"
+msgstr "带指针的数字"
 
 msgid "Eraser"
-msgstr "Borrador"
+msgstr "橡皮擦"
 
 msgid "Show screenshot panel"
-msgstr "Mostrar panel de capturas"
+msgstr "显示截图面板"
 
 msgid "Hide screenshot panel"
-msgstr "Ocultar panel de capturas"
+msgstr "隐藏截图面板"
 
 msgid "Color"
-msgstr "Color"
+msgstr "颜色"
 
 msgid "Fill"
-msgstr "Rellenar"
+msgstr "填充"
 
 msgid "Decrease Size"
-msgstr "Disminuir tamaño"
+msgstr "减小尺寸"
 
 msgid "Brush Size"
-msgstr "Tamaño del pincel"
+msgstr "画笔大小"
 
 msgid "Increase Size"
-msgstr "Aumentar tamaño"
+msgstr "增大尺寸"
 
 msgid "Font"
-msgstr "Fuente"
+msgstr "字体"
 
 msgid "Intensity"
-msgstr "Intensidad"
+msgstr "强度"
 
 msgid "Undo"
-msgstr "Deshacer"
+msgstr "撤销"
 
 msgid "Redo"
-msgstr "Rehacer"
+msgstr "重做"
 
 msgid "Copy to Clipboard"
-msgstr "Copiar al portapapeles"
+msgstr "复制到剪贴板"
 
 msgid "Save As…"
-msgstr "Guardar como…"
+msgstr "另存为…"
 
 msgid "Close"
-msgstr "Cerrar"
+msgstr "关闭"
 
 msgid "Video Settings"
-msgstr "Configuración de video"
+msgstr "视频设置"
 
 msgid "Quality"
-msgstr "Calidad"
+msgstr "质量"
 
 msgid "High"
-msgstr "Alta"
+msgstr "高"
 
 msgid "Medium"
-msgstr "Media"
+msgstr "中"
 
 msgid "Low"
-msgstr "Bajo"
+msgstr "低"
 
 msgid "Recording quality (bitrate)"
-msgstr "Calidad de grabación (tasa de bits)"
+msgstr "录制质量（比特率）"
 
 msgid "Codec"
-msgstr "Códec"
+msgstr "编解码器"
 
 msgid "Mask"
-msgstr "Máscara"
+msgstr "遮罩"
 
 msgid "Size"
-msgstr "Tamaño"
+msgstr "大小"
 
 msgid "Edit"
-msgstr "Editar"
+msgstr "编辑"
 
 msgid "Edit Screenshot"
-msgstr "Editar captura de pantalla"
+msgstr "编辑截图"
 
 msgid "Custom"
-msgstr "Personalizado"
+msgstr "自定义"
 
 msgid "No Fill"
-msgstr "Sin relleno"
+msgstr "无填充"
 
 msgid "Auto"
-msgstr "Automático"
+msgstr "自动"
 
 msgid "Use best available codec"
-msgstr "Usar el códec disponible más adecuado"
+msgstr "使用最佳可用编解码器"
 
 msgid "Video codec"
-msgstr "Códec de video"
+msgstr "视频编码器"
 
 msgid "Webcam"
-msgstr "Cámara web"
+msgstr "网络摄像头"
 
 msgid "Webcam Overlay"
-msgstr "Superposición de cámara web"
+msgstr "网络摄像头叠加"
 
 msgid "Camera"
-msgstr "Cámara"
+msgstr "相机"
 

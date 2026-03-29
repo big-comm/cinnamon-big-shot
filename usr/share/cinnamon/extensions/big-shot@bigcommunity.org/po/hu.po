@@ -1,4 +1,4 @@
-# es translation for Big Shot
+# hu translation for Big Shot
 # Copyright (C) 2024 BigCommunity
 # This file is distributed under the same license as the big-shot package.
 #
@@ -9,201 +9,201 @@ msgstr ""
 "POT-Creation-Date: 2026-03-28 00:00-0300\n"
 "PO-Revision-Date: 2026-03-28 00:00+0000\n"
 "Last-Translator: BigCommunity <dev@bigcommunity.org>\n"
-"Language-Team: es\n"
-"Language: es\n"
+"Language-Team: hu\n"
+"Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid "Drawing canvas"
-msgstr "Lienzo de dibujo"
+msgstr "Rajzoló vászon"
 
 msgid "Text…"
-msgstr "Texto…"
+msgstr "Szöveg…"
 
 msgid "Annotation text"
-msgstr "Texto de anotación"
+msgstr "Megjegyzés szövege"
 
 msgid "Confirm"
-msgstr "Confirmar"
+msgstr "Megerősít"
 
 msgid "Screenshot taken"
-msgstr "Captura de pantalla tomada"
+msgstr "Képernyőkép készítve"
 
 msgid "Screenshots"
-msgstr "Capturas de pantalla"
+msgstr "Képernyőképek"
 
 msgid "Screenshot from %s"
-msgstr "Captura de pantalla de %s"
+msgstr "Képernyőkép innen: %s"
 
 msgid "Screenshot copied"
-msgstr "Captura de pantalla copiada"
+msgstr "Képernyőkép másolva"
 
 msgid "Save Screenshot"
-msgstr "Guardar captura de pantalla"
+msgstr "Képernyőkép mentése"
 
 msgid "Desktop"
-msgstr "Escritorio"
+msgstr "Asztal"
 
 msgid "Mic"
-msgstr "Mic"
+msgstr "Mikrofon"
 
 msgid "Record Desktop Audio"
-msgstr "Grabar audio del escritorio"
+msgstr "Asztali hang rögzítése"
 
 msgid "Record Microphone"
-msgstr "Grabar micrófono"
+msgstr "Mikrofon rögzítése"
 
 msgid "Recording resolution"
-msgstr "Resolución de grabación"
+msgstr "Felvételi felbontás"
 
 msgid "Frames per second"
-msgstr "Cuadros por segundo"
+msgstr "Képkocka másodpercenként"
 
 msgid "Gradient Angle"
-msgstr "Ángulo de degradado"
+msgstr "Áttűnés szöge"
 
 msgid "Border Radius"
-msgstr "Radio de borde"
+msgstr "Sarok sugár"
 
 msgid "Select / Move"
-msgstr "Seleccionar / Mover"
+msgstr "Kiválasztás / Mozgatás"
 
 msgid "Pen"
-msgstr "Lápiz"
+msgstr "Toll"
 
 msgid "Arrow"
-msgstr "Flecha"
+msgstr "Nyíl"
 
 msgid "Line"
-msgstr "Línea"
+msgstr "Sor"
 
 msgid "Rectangle"
-msgstr "Rectángulo"
+msgstr "Téglalap"
 
 msgid "Oval"
 msgstr "Oval"
 
 msgid "Text"
-msgstr "Texto"
+msgstr "Szöveg"
 
 msgid "Highlighter"
-msgstr "Resaltador"
+msgstr "Kiemelő"
 
 msgid "Censor"
-msgstr "Censurar"
+msgstr "Cenzúra"
 
 msgid "Blur"
-msgstr "Desenfoque"
+msgstr "Elmosódás"
 
 msgid "Number"
-msgstr "Número"
+msgstr "Szám"
 
 msgid "Number with Arrow"
-msgstr "Número con flecha"
+msgstr "Szám nyíllal"
 
 msgid "Number with Pointer"
-msgstr "Número con puntero"
+msgstr "Mutatóval rendelkező szám"
 
 msgid "Eraser"
-msgstr "Borrador"
+msgstr "Radír"
 
 msgid "Show screenshot panel"
-msgstr "Mostrar panel de capturas"
+msgstr "Képernyőkép panel megjelenítése"
 
 msgid "Hide screenshot panel"
-msgstr "Ocultar panel de capturas"
+msgstr "Képernyőkép panel elrejtése"
 
 msgid "Color"
-msgstr "Color"
+msgstr "Szín"
 
 msgid "Fill"
-msgstr "Rellenar"
+msgstr "Kitöltés"
 
 msgid "Decrease Size"
-msgstr "Disminuir tamaño"
+msgstr "Méret csökkentése"
 
 msgid "Brush Size"
-msgstr "Tamaño del pincel"
+msgstr "Ecsetméret"
 
 msgid "Increase Size"
-msgstr "Aumentar tamaño"
+msgstr "Méret növelése"
 
 msgid "Font"
-msgstr "Fuente"
+msgstr "Betűtípus"
 
 msgid "Intensity"
-msgstr "Intensidad"
+msgstr "Intenzitás"
 
 msgid "Undo"
-msgstr "Deshacer"
+msgstr "Visszavonás"
 
 msgid "Redo"
-msgstr "Rehacer"
+msgstr "Újra"
 
 msgid "Copy to Clipboard"
-msgstr "Copiar al portapapeles"
+msgstr "Másolás a vágólapra"
 
 msgid "Save As…"
-msgstr "Guardar como…"
+msgstr "Mentés másként…"
 
 msgid "Close"
-msgstr "Cerrar"
+msgstr "Bezárás"
 
 msgid "Video Settings"
-msgstr "Configuración de video"
+msgstr "Videóbeállítások"
 
 msgid "Quality"
-msgstr "Calidad"
+msgstr "Minőség"
 
 msgid "High"
-msgstr "Alta"
+msgstr "Magas"
 
 msgid "Medium"
-msgstr "Media"
+msgstr "Közepes"
 
 msgid "Low"
-msgstr "Bajo"
+msgstr "Alacsony"
 
 msgid "Recording quality (bitrate)"
-msgstr "Calidad de grabación (tasa de bits)"
+msgstr "Felvételi minőség (bitráta)"
 
 msgid "Codec"
-msgstr "Códec"
+msgstr "Kodek"
 
 msgid "Mask"
-msgstr "Máscara"
+msgstr "Maszk"
 
 msgid "Size"
-msgstr "Tamaño"
+msgstr "Méret"
 
 msgid "Edit"
-msgstr "Editar"
+msgstr "Szerkesztés"
 
 msgid "Edit Screenshot"
-msgstr "Editar captura de pantalla"
+msgstr "Képernyőkép szerkesztése"
 
 msgid "Custom"
-msgstr "Personalizado"
+msgstr "Egyedi"
 
 msgid "No Fill"
-msgstr "Sin relleno"
+msgstr "Kitöltés nélkül"
 
 msgid "Auto"
-msgstr "Automático"
+msgstr "Automatikus"
 
 msgid "Use best available codec"
-msgstr "Usar el códec disponible más adecuado"
+msgstr "Használja a legjobb elérhető kodeket"
 
 msgid "Video codec"
-msgstr "Códec de video"
+msgstr "Videó kodek"
 
 msgid "Webcam"
-msgstr "Cámara web"
+msgstr "Webkamera"
 
 msgid "Webcam Overlay"
-msgstr "Superposición de cámara web"
+msgstr "Webkamera átfedés"
 
 msgid "Camera"
-msgstr "Cámara"
+msgstr "Kamera"
 
