@@ -10,7 +10,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-var APP_VERSION = '26.5.1';
+var APP_VERSION = '26.5.2';
 
 const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
@@ -970,6 +970,11 @@ var BigShotExtension = class BigShotExtension {
             this._recordingContext = { config: config };
 
             if (this._indicator) this._indicator.onRecordingStarted();
+
+            // Reparent webcam to chrome before closing UI,
+            // so it stays visible during recording
+            if (this._webcam && this._webcam.enabled)
+                this._webcam.reparentForRecording();
 
             this._screenshotUI.close();
             this._screenshotUI.screencastInProgress = true;
