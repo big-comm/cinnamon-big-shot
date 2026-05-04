@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Big Shot Auto-Enable
+Comment=Enable Big Shot extension on first Cinnamon login
+Exec=/usr/share/cinnamon/extensions/big-shot@bigcommunity.org/auto-enable.sh
+OnlyShowIn=X-Cinnamon;
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

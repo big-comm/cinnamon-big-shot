@@ -10,7 +10,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-var APP_VERSION = '26.5.3';
+var APP_VERSION = '26.5.4';
 
 const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
