@@ -42,6 +42,15 @@ msgstr "Captură de ecran copiată"
 msgid "Save Screenshot"
 msgstr "Salvează captura de ecran"
 
+msgid "Recording complete"
+msgstr "Înregistrare finalizată"
+
+msgid "Click to open the BigShot folder"
+msgstr "Faceți clic pentru a deschide dosarul BigShot"
+
+msgid "Click to open the Screenshots folder"
+msgstr "Faceți clic pentru a deschide dosarul Capturi de ecran"
+
 msgid "Desktop"
 msgstr "Desktop"
 
@@ -95,6 +104,12 @@ msgstr "Cenzură"
 
 msgid "Blur"
 msgstr "Estompare"
+
+msgid "Invert Colors"
+msgstr "Inversează culorile"
+
+msgid "Magnify / Zoom"
+msgstr "Mărire / Zoom"
 
 msgid "Number"
 msgstr "Număr"
@@ -206,4 +221,3 @@ msgstr "Suprapunere webcam"
 
 msgid "Camera"
 msgstr "Cameră"
-

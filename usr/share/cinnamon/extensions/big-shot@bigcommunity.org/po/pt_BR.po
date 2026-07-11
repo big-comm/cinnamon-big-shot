@@ -42,6 +42,15 @@ msgstr "Captura de tela copiada"
 msgid "Save Screenshot"
 msgstr "Salvar captura de tela"
 
+msgid "Recording complete"
+msgstr "Gravação concluída"
+
+msgid "Click to open the BigShot folder"
+msgstr "Clique para abrir a pasta BigShot"
+
+msgid "Click to open the Screenshots folder"
+msgstr "Clique para abrir a pasta Capturas de tela"
+
 msgid "Desktop"
 msgstr "Desktop"
 
@@ -95,6 +104,12 @@ msgstr "Censurar"
 
 msgid "Blur"
 msgstr "Desfocar"
+
+msgid "Invert Colors"
+msgstr "Inverter cores"
+
+msgid "Magnify / Zoom"
+msgstr "Ampliar / Zoom"
 
 msgid "Number"
 msgstr "Número"
@@ -221,4 +236,3 @@ msgstr "Suave"
 
 msgid "Spot"
 msgstr "Ponto"
-

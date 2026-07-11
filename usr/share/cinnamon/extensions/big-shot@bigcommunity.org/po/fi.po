@@ -42,6 +42,15 @@ msgstr "Kuvakaappaus kopioitu"
 msgid "Save Screenshot"
 msgstr "Tallenna kuvakaappaus"
 
+msgid "Recording complete"
+msgstr "Tallennus valmis"
+
+msgid "Click to open the BigShot folder"
+msgstr "Napsauta avataksesi BigShot-kansion"
+
+msgid "Click to open the Screenshots folder"
+msgstr "Napsauta avataksesi Kuvakaappaukset-kansion"
+
 msgid "Desktop"
 msgstr "Työpöytä"
 
@@ -95,6 +104,12 @@ msgstr "Sensuuri"
 
 msgid "Blur"
 msgstr "Sume"
+
+msgid "Invert Colors"
+msgstr "Käännä värit"
+
+msgid "Magnify / Zoom"
+msgstr "Suurenna / Zoomaa"
 
 msgid "Number"
 msgstr "Numero"
@@ -206,4 +221,3 @@ msgstr "Verkkokameran peittokuva"
 
 msgid "Camera"
 msgstr "Kamera"
-

@@ -53,6 +53,7 @@ const BAR_BOTTOM_MARGIN = 40;
  *   .screencastInProgress — getter/setter for screencast state
  *   .open(mode)         — activate the UI (0=screenshot, 1=screencast)
  *   .close()            — deactivate the UI
+ *   .includeCursor      — whether the pointer is included
  *   .getSelectedGeometry() — returns [x, y, w, h]
  *   .getScreenshotPixbuf() — returns the captured GdkPixbuf
  *
@@ -123,6 +124,10 @@ var ScreenshotUI = class ScreenshotUI {
 
     get pointerButton() {
         return this._pointerBtn;
+    }
+
+    get includeCursor() {
+        return this._includeCursor;
     }
 
     get editArea() {

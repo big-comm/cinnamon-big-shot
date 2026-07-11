@@ -58,7 +58,11 @@ var PartAnnotation = class PartAnnotation extends PartUI {
         if (this._overlay) return;
 
         // In Cinnamon, use editArea from our screenshotUI
-        this._overlay = new DrawingOverlay(this._ui.editArea, this._toolbar);
+        this._overlay = new DrawingOverlay(
+            this._ui.editArea,
+            this._toolbar,
+            this._ui.actor
+        );
 
         // Size the overlay to the full monitor
         let monitor = global.display.get_current_monitor();

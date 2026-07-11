@@ -42,6 +42,15 @@ msgstr "Skjermbilde kopiert"
 msgid "Save Screenshot"
 msgstr "Lagre skjermbilde"
 
+msgid "Recording complete"
+msgstr "Opptak fullført"
+
+msgid "Click to open the BigShot folder"
+msgstr "Klikk for å åpne BigShot-mappen"
+
+msgid "Click to open the Screenshots folder"
+msgstr "Klikk for å åpne Skjermbilder-mappen"
+
 msgid "Desktop"
 msgstr "Skrivebord"
 
@@ -95,6 +104,12 @@ msgstr "Sensur"
 
 msgid "Blur"
 msgstr "Uskarphet"
+
+msgid "Invert Colors"
+msgstr "Inverter farger"
+
+msgid "Magnify / Zoom"
+msgstr "Forstørr / Zoom"
 
 msgid "Number"
 msgstr "Nummer"
@@ -206,4 +221,3 @@ msgstr "Webcam-overlegg"
 
 msgid "Camera"
 msgstr "Kamera"
-

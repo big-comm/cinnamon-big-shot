@@ -42,6 +42,15 @@ msgstr "Скриншот скопирован"
 msgid "Save Screenshot"
 msgstr "Сохранить скриншот"
 
+msgid "Recording complete"
+msgstr "Запись завершена"
+
+msgid "Click to open the BigShot folder"
+msgstr "Нажмите, чтобы открыть папку BigShot"
+
+msgid "Click to open the Screenshots folder"
+msgstr "Нажмите, чтобы открыть папку «Скриншоты»"
+
 msgid "Desktop"
 msgstr "Десктоп"
 
@@ -95,6 +104,12 @@ msgstr "Цензура"
 
 msgid "Blur"
 msgstr "Размытие"
+
+msgid "Invert Colors"
+msgstr "Инвертировать цвета"
+
+msgid "Magnify / Zoom"
+msgstr "Увеличить / Масштаб"
 
 msgid "Number"
 msgstr "Номер"
@@ -206,4 +221,3 @@ msgstr "Наложение с веб-камеры"
 
 msgid "Camera"
 msgstr "Камера"
-

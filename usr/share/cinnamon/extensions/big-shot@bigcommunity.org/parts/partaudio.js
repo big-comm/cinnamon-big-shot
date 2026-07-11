@@ -242,9 +242,11 @@ var PartAudio = class PartAudio extends PartUI {
                     desktopChannels = channelMap.get_num_channels();
             }
             desktopSource = [
-                'pulsesrc device=' + this._desktopDevice + ' provide-clock=false',
-                'capsfilter caps=audio/x-raw,channels=' + desktopChannels,
+                'pulsesrc device=' + this._desktopDevice + ' provide-clock=false do-timestamp=true',
+                'queue',
                 'audioconvert',
+                'audioresample',
+                'capsfilter caps=audio/x-raw,rate=48000,channels=' + desktopChannels,
                 'queue',
             ].join(' ! ');
         }
@@ -269,9 +271,11 @@ var PartAudio = class PartAudio extends PartUI {
                 }
             }
             micSource = [
-                'pulsesrc device=' + micDeviceName + ' provide-clock=false',
-                'capsfilter caps=audio/x-raw,channels=' + micChannels,
+                'pulsesrc device=' + micDeviceName + ' provide-clock=false do-timestamp=true',
+                'queue',
                 'audioconvert',
+                'audioresample',
+                'capsfilter caps=audio/x-raw,rate=48000,channels=' + micChannels,
                 'queue',
             ].join(' ! ');
         }
@@ -280,7 +284,9 @@ var PartAudio = class PartAudio extends PartUI {
         if (desktopSource && micSource) {
             return desktopSource + ' ! audiomixer name=am latency=100000000 ' +
                    micSource + ' ! am. ' +
-                   'am. ! capsfilter caps=audio/x-raw,channels=' + desktopChannels + ' ! audioconvert ! queue';
+                   'am. ! audioconvert ! audioresample ! ' +
+                   'capsfilter caps=audio/x-raw,rate=48000,channels=' +
+                   desktopChannels + ' ! queue';
         }
 
         return desktopSource || micSource;

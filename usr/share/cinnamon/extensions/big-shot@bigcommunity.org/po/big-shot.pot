@@ -57,6 +57,18 @@ msgstr ""
 msgid "Save Screenshot"
 msgstr ""
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js
+msgid "Recording complete"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js
+msgid "Click to open the BigShot folder"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js
+msgid "Click to open the Screenshots folder"
+msgstr ""
+
 #: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/partaudio.js:96
 #: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/partaudio.js:153
 msgid "Desktop"
@@ -129,6 +141,14 @@ msgstr ""
 
 #: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:44
 msgid "Blur"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:53
+msgid "Invert Colors"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js
+msgid "Magnify / Zoom"
 msgstr ""
 
 #: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:45

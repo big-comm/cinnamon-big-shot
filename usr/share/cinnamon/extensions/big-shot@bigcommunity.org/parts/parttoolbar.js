@@ -28,6 +28,20 @@ let _ = function(str) { return str; };
 
 // Cached font list (loaded once, shared across instances)
 let _cachedFontNames = null;
+const SWATCH_SIZE_STYLE =
+    'width: 16px; height: 16px; min-width: 16px; min-height: 16px; ';
+
+function _filledSwatchStyle(color) {
+    return 'background: ' + color + '; border-radius: 50%; ' +
+        SWATCH_SIZE_STYLE +
+        'border: 2px solid rgba(255,255,255,0.3);';
+}
+
+function _emptySwatchStyle() {
+    return 'background: transparent; ' +
+        'border: 2px dashed rgba(255,255,255,0.5); ' +
+        'border-radius: 50%; ' + SWATCH_SIZE_STYLE;
+}
 
 function _getFontNames() {
     if (!_cachedFontNames) {
@@ -49,6 +63,8 @@ const SCREENSHOT_TOOLS = [
     { id: 'highlight', icon: 'big-shot-highlight-symbolic', label: function() { return _('Highlighter'); } },
     { id: 'censor', icon: 'big-shot-censor-symbolic', label: function() { return _('Censor'); } },
     { id: 'blur', icon: 'big-shot-blur-symbolic', label: function() { return _('Blur'); } },
+    { id: 'invert', icon: 'big-shot-invert-symbolic', label: function() { return _('Invert Colors'); } },
+    { id: 'zoom', icon: 'big-shot-zoom', label: function() { return _('Magnify / Zoom'); } },
     { id: 'number', icon: 'big-shot-number-symbolic', label: function() { return _('Number'); } },
     { id: 'number-arrow', icon: 'big-shot-number-arrow-symbolic', label: function() { return _('Number with Arrow'); } },
     { id: 'number-pointer', icon: 'big-shot-number-pointer-symbolic', label: function() { return _('Number with Pointer'); } },
@@ -267,7 +283,7 @@ var PartToolbar = class PartToolbar extends PartUI {
 
         // Color swatch
         this._colorSwatch = new St.Widget({
-            style: 'background: ' + this._currentColorHex + '; border-radius: 50%; min-width: 16px; min-height: 16px; border: 2px solid rgba(255,255,255,0.3);',
+            style: _filledSwatchStyle(this._currentColorHex),
         });
         this._colorButton = new St.Button({
             style_class: 'big-shot-edit-tool-btn',
@@ -282,7 +298,7 @@ var PartToolbar = class PartToolbar extends PartUI {
 
         // Fill swatch
         this._fillSwatch = new St.Widget({
-            style: 'background: transparent; border: 2px dashed rgba(255,255,255,0.5); border-radius: 50%; min-width: 16px; min-height: 16px;',
+            style: _emptySwatchStyle(),
         });
         this._fillButton = new St.Button({
             style_class: 'big-shot-edit-tool-btn',
@@ -1263,19 +1279,13 @@ var PartToolbar = class PartToolbar extends PartUI {
     _applyColor(target, color) {
         if (target === 'stroke') {
             this._currentColorHex = color;
-            this._colorSwatch.set_style(
-                'background: ' + color + '; border-radius: 50%; min-width: 24px; min-height: 24px; border: 2px solid rgba(255,255,255,0.3);'
-            );
+            this._colorSwatch.set_style(_filledSwatchStyle(color));
         } else {
             this._fillColorHex = color;
             if (color) {
-                this._fillSwatch.set_style(
-                    'background: ' + color + '; border-radius: 50%; min-width: 24px; min-height: 24px; border: 2px solid rgba(255,255,255,0.3);'
-                );
+                this._fillSwatch.set_style(_filledSwatchStyle(color));
             } else {
-                this._fillSwatch.set_style(
-                    'background: transparent; border: 2px dashed rgba(255,255,255,0.5); border-radius: 50%; min-width: 24px; min-height: 24px;'
-                );
+                this._fillSwatch.set_style(_emptySwatchStyle());
             }
         }
     }
@@ -1468,8 +1478,16 @@ var PartToolbar = class PartToolbar extends PartUI {
     }
 
     _populateVideoCodecs() {
-        // Trigger lazy pipeline detection
-        this._ext._detectPipelines();
+        this._ext._detectPipelines().then(() => {
+            if (!this._destroyed)
+                this._refreshVideoCodecs();
+        }).catch(e => {
+            log('[Big Shot] Codec list unavailable: ' + e.message);
+        });
+        this._refreshVideoCodecs();
+    }
+
+    _refreshVideoCodecs() {
         const configs = this._ext._availableConfigs;
         if (!configs) return;
 

@@ -42,6 +42,15 @@ msgstr "Képernyőkép másolva"
 msgid "Save Screenshot"
 msgstr "Képernyőkép mentése"
 
+msgid "Recording complete"
+msgstr "A felvétel elkészült"
+
+msgid "Click to open the BigShot folder"
+msgstr "Kattintson a BigShot mappa megnyitásához"
+
+msgid "Click to open the Screenshots folder"
+msgstr "Kattintson a Képernyőképek mappa megnyitásához"
+
 msgid "Desktop"
 msgstr "Asztal"
 
@@ -95,6 +104,12 @@ msgstr "Cenzúra"
 
 msgid "Blur"
 msgstr "Elmosódás"
+
+msgid "Invert Colors"
+msgstr "Színek invertálása"
+
+msgid "Magnify / Zoom"
+msgstr "Nagyítás / Zoom"
 
 msgid "Number"
 msgstr "Szám"
@@ -206,4 +221,3 @@ msgstr "Webkamera átfedés"
 
 msgid "Camera"
 msgstr "Kamera"
-
