@@ -16,6 +16,7 @@ const Clutter = imports.gi.Clutter;
 const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
 const PangoCairo = imports.gi.PangoCairo;
+const Main = imports.ui.main;
 
 const PartBase = imports.parts.partbase;
 const PartUI = PartBase.PartUI;
@@ -78,7 +79,10 @@ var PartToolbar = class PartToolbar extends PartUI {
 
         this._activeTool = null;
         this._toolButtons = new Map();
+        this._toolChangedCallbacks = [];
         this._editMode = false;
+        this._recordingToolbarAttached = false;
+        this._recordingDoneCallback = null;
         this._currentColorHex = '#ed333b';
         this._fillColorHex = null;
         this._currentFont = 'Sans';
@@ -93,6 +97,28 @@ var PartToolbar = class PartToolbar extends PartUI {
     _getIcon(iconName) {
         const iconsDir = Gio.File.new_for_path(this._ext.path + '/data/icons');
         return new Gio.FileIcon({ file: iconsDir.get_child(iconName + '.svg') });
+    }
+
+    _stageToLocal(x, y) {
+        if (this._recordingToolbarAttached)
+            return [x, y];
+        const monitor = this._ui.monitorGeometry;
+        return [x - monitor.x, y - monitor.y];
+    }
+
+    _connectDragEventActor(actor) {
+        if (this._dragEventActor && this._dragMotionId) {
+            try {
+                this._dragEventActor.disconnect(this._dragMotionId);
+            } catch (e) {
+                // Actor may already be destroyed during shutdown.
+            }
+        }
+        this._dragEventActor = actor;
+        this._dragMotionId = actor.connect(
+            'captured-event',
+            this._dragEventHandler
+        );
     }
 
     _buildToolbar() {
@@ -169,7 +195,7 @@ var PartToolbar = class PartToolbar extends PartUI {
 
         // Motion and release: listen on the global stage so drag works
         // even if cursor leaves the container
-        this._dragMotionId = this._ui.actor.connect('captured-event', (_actor, event) => {
+        this._dragEventHandler = (_actor, event) => {
             const type = event.type();
 
             // Ctrl+Scroll anywhere adjusts brush size or intensity while editing
@@ -220,8 +246,10 @@ var PartToolbar = class PartToolbar extends PartUI {
                     if (Math.abs(dx) < 4 && Math.abs(dy) < 4)
                         return Clutter.EVENT_PROPAGATE;
                     this._editContainer.set_position(
-                        mx + this._dragOffsetX,
-                        my + this._dragOffsetY,
+                        ...this._stageToLocal(
+                            mx + this._dragOffsetX,
+                            my + this._dragOffsetY
+                        )
                     );
                 } else if (this._videoDragging) {
                     const dx = mx - this._videoDragStartX;
@@ -229,8 +257,10 @@ var PartToolbar = class PartToolbar extends PartUI {
                     if (Math.abs(dx) < 4 && Math.abs(dy) < 4)
                         return Clutter.EVENT_PROPAGATE;
                     this._videoContainer.set_position(
-                        mx + this._videoDragOffsetX,
-                        my + this._videoDragOffsetY,
+                        ...this._stageToLocal(
+                            mx + this._videoDragOffsetX,
+                            my + this._videoDragOffsetY
+                        )
                     );
                 }
                 return Clutter.EVENT_STOP;
@@ -240,7 +270,8 @@ var PartToolbar = class PartToolbar extends PartUI {
                 return Clutter.EVENT_STOP;
             }
             return Clutter.EVENT_PROPAGATE;
-        });
+        };
+        this._connectDragEventActor(this._ui.actor);
 
         // 90% opacity by default, fully opaque on hover
         this._editContainer.opacity = 230;
@@ -501,7 +532,14 @@ var PartToolbar = class PartToolbar extends PartUI {
             accessible_name: _('Close'),
             visible: false,
         });
-        this._toolbarCloseBtn.connect('clicked', () => this._ui.close());
+        this._toolbarCloseBtn.connect('clicked', () => {
+            if (this._recordingToolbarAttached &&
+                this._recordingDoneCallback) {
+                this._recordingDoneCallback();
+            } else {
+                this._ui.close();
+            }
+        });
         this._toolbarCloseBtn.connect('enter-event', () =>
             this._showTooltip(this._toolbarCloseBtn, _('Close')));
         this._toolbarCloseBtn.connect('leave-event', () => this._hideTooltip());
@@ -795,9 +833,13 @@ var PartToolbar = class PartToolbar extends PartUI {
             const pw = panel.width;
             const cw = this._editContainer.get_preferred_width(-1)[1] || 600;
             const ch = this._editContainer.get_preferred_height(-1)[1] || 40;
-            this._editContainer.set_position(
+            const local = this._stageToLocal(
                 px + (pw - cw) / 2,
-                py - ch - 12,
+                py - ch - 12
+            );
+            this._editContainer.set_position(
+                local[0],
+                local[1]
             );
         }
 
@@ -814,9 +856,137 @@ var PartToolbar = class PartToolbar extends PartUI {
 
     /** Remove edit tools from the native panel. */
     _detachEditFromPanel() {
+        if (this._recordingToolbarAttached)
+            return;
         const parent = this._editContainer.get_parent();
         if (parent) parent.remove_child(this._editContainer);
         this._setNativePanelVisible(true);
+    }
+
+    attachEditForRecording(onDone, effectsEnabled) {
+        if (!this._editContainer || this._recordingToolbarAttached)
+            return;
+        const parent = this._editContainer.get_parent();
+        if (parent)
+            parent.remove_child(this._editContainer);
+
+        this._recordingToolbarAttached = true;
+        this._recordingDoneCallback = onDone;
+        this._recordingEffectsEnabled = !!effectsEnabled;
+        this._editMode = true;
+        this._setRecordingToolbarMode(
+            true,
+            this._recordingEffectsEnabled
+        );
+        this._connectDragEventActor(global.stage);
+        Main.layoutManager.addChrome(this._editContainer, {
+            affectsInputRegion: true,
+            affectsStruts: false,
+            visibleInFullscreen: true,
+        });
+        this._positionRecordingToolbar();
+    }
+
+    detachEditForRecording() {
+        if (!this._recordingToolbarAttached)
+            return;
+        this._closeColorPopup();
+        this._closeSizePopup();
+        this._closeFontPopup();
+        this._closeIntensityPopup();
+        this._hideTooltip();
+        try {
+            Main.layoutManager.removeChrome(this._editContainer);
+        } catch (e) {
+            // Actor may already be detached during shutdown.
+        }
+        this._recordingToolbarAttached = false;
+        this._recordingDoneCallback = null;
+        this._recordingEffectsEnabled = false;
+        this._editMode = false;
+        this._setRecordingToolbarMode(false, false);
+        this._connectDragEventActor(this._ui.actor);
+    }
+
+    _setRecordingToolbarMode(active, effectsEnabled) {
+        if (this._copyButton)
+            this._copyButton.visible = !active;
+        if (this._saveAsButton)
+            this._saveAsButton.visible = !active;
+        if (this._panelToggleBtn)
+            this._panelToggleBtn.visible = !active;
+        if (this._toolbarCloseSep)
+            this._toolbarCloseSep.visible = active;
+        if (this._toolbarCloseBtn)
+            this._toolbarCloseBtn.visible = active;
+
+        const unavailable = ['censor', 'blur', 'invert', 'zoom'];
+        for (let i = 0; i < unavailable.length; i++) {
+            const button = this._toolButtons.get(unavailable[i]);
+            if (button) {
+                button.reactive = !active || effectsEnabled;
+                button.opacity = active && !effectsEnabled ? 80 : 255;
+            }
+        }
+    }
+
+    _positionRecordingToolbar() {
+        const rect = this._ui.monitorGeometry;
+        this._editContainer.queue_relayout();
+        GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+            if (!this._recordingToolbarAttached)
+                return GLib.SOURCE_REMOVE;
+            const width = this._editContainer.get_preferred_width(-1)[1] || 620;
+            const height = this._editContainer.get_preferred_height(-1)[1] || 40;
+            this._editContainer.set_position(
+                rect.x + Math.max(12, (rect.width - width) / 2),
+                rect.y + rect.height - height - 64
+            );
+            this._editContainer.show();
+            this._editContainer.opacity = 230;
+            this.raiseRecordingToolbar();
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+
+    raiseRecordingToolbar() {
+        if (!this._recordingToolbarAttached)
+            return;
+        const parent = this._editContainer.get_parent();
+        if (parent) {
+            try {
+                parent.set_child_above_sibling(this._editContainer, null);
+            } catch (e) {
+                // Parent may be changing while Cinnamon updates chrome.
+            }
+        }
+    }
+
+    _addFloatingActor(actor) {
+        if (this._recordingToolbarAttached) {
+            Main.layoutManager.addChrome(actor, {
+                affectsInputRegion: true,
+                affectsStruts: false,
+                visibleInFullscreen: true,
+            });
+            actor._bigShotRecordingChrome = true;
+        } else {
+            this._ui.actor.add_child(actor);
+        }
+    }
+
+    _destroyFloatingActor(actor) {
+        if (!actor)
+            return;
+        if (actor._bigShotRecordingChrome) {
+            try {
+                Main.layoutManager.removeChrome(actor);
+            } catch (e) {
+                // Actor may already be detached.
+            }
+            actor._bigShotRecordingChrome = false;
+        }
+        actor.destroy();
     }
 
     /** Toggle native panel visibility (eye button). */
@@ -848,20 +1018,19 @@ var PartToolbar = class PartToolbar extends PartUI {
         this._populateVideoCodecs();
         this._ui.actor.add_child(this._videoContainer);
 
-        // Center above the native panel on the primary monitor
+        // Center above the native panel on the active monitor.
         const panel = this._ui.panel;
-        const monitor = global.display.get_primary_monitor();
-        const monRect = global.display.get_monitor_geometry(monitor);
+        const monRect = this._ui.monitorGeometry;
         const cw = this._videoContainer.get_preferred_width(-1)[1] || 300;
         const ch = this._videoContainer.get_preferred_height(-1)[1] || 80;
 
-        let cy = monRect.y + monRect.height - ch - 24; // near bottom
+        let cy = monRect.height - ch - 24;
         if (panel && panel.visible) {
             const [, py] = panel.get_transformed_position();
-            cy = py - ch - 12;
+            cy = py - monRect.y - ch - 12;
         }
         this._videoContainer.set_position(
-            monRect.x + (monRect.width - cw) / 2,
+            (monRect.width - cw) / 2,
             cy,
         );
 
@@ -883,18 +1052,17 @@ var PartToolbar = class PartToolbar extends PartUI {
         GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
             if (!this._videoContainer.get_parent()) return GLib.SOURCE_REMOVE;
             const panel = this._ui.panel;
-            const monitor = global.display.get_primary_monitor();
-            const monRect = global.display.get_monitor_geometry(monitor);
+            const monRect = this._ui.monitorGeometry;
             const cw = this._videoContainer.get_preferred_width(-1)[1] || 300;
             const ch = this._videoContainer.get_preferred_height(-1)[1] || 80;
 
-            let cy = monRect.y + monRect.height - ch - 24;
+            let cy = monRect.height - ch - 24;
             if (panel && panel.visible) {
                 const [, py] = panel.get_transformed_position();
-                cy = py - ch - 12;
+                cy = py - monRect.y - ch - 12;
             }
             this._videoContainer.set_position(
-                monRect.x + (monRect.width - cw) / 2,
+                (monRect.width - cw) / 2,
                 cy,
             );
             return GLib.SOURCE_REMOVE;
@@ -919,11 +1087,12 @@ var PartToolbar = class PartToolbar extends PartUI {
     }
 
     _onToolChanged(toolId) {
-        if (this._toolChangedCallback) this._toolChangedCallback(toolId);
+        for (let i = 0; i < this._toolChangedCallbacks.length; i++)
+            this._toolChangedCallbacks[i](toolId);
     }
 
     onToolChanged(callback) {
-        this._toolChangedCallback = callback;
+        this._toolChangedCallbacks.push(callback);
     }
 
     selectTool(toolId) {
@@ -1007,14 +1176,18 @@ var PartToolbar = class PartToolbar extends PartUI {
         this._sizePopup.add_child(customRow);
 
         // Position above the size button
-        this._ui.actor.add_child(this._sizePopup);
+        this._addFloatingActor(this._sizePopup);
         const [bx, by] = this._sizeButton.get_transformed_position();
-        this._sizePopup.set_position(bx, by - this._sizePopup.height - 8);
+        const sizeLocal = this._stageToLocal(
+            bx,
+            by - this._sizePopup.height - 8
+        );
+        this._sizePopup.set_position(sizeLocal[0], sizeLocal[1]);
     }
 
     _closeSizePopup() {
         if (this._sizePopup) {
-            this._sizePopup.destroy();
+            this._destroyFloatingActor(this._sizePopup);
             this._sizePopup = null;
         }
     }
@@ -1067,17 +1240,16 @@ var PartToolbar = class PartToolbar extends PartUI {
         scrollView.set_child(listBox);
         this._fontPopup.add_child(scrollView);
 
-        this._ui.actor.add_child(this._fontPopup);
+        this._addFloatingActor(this._fontPopup);
 
         GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
             if (!this._fontPopup) return GLib.SOURCE_REMOVE;
             const [bx, by] = this._fontButton.get_transformed_position();
-            const monitor = global.display.get_current_monitor();
-            const geo = global.display.get_monitor_geometry(monitor);
-            let cpx = bx;
-            let cpy = by - this._fontPopup.height - 8;
-            cpx = Math.max(geo.x, Math.min(cpx, geo.x + geo.width - this._fontPopup.width));
-            cpy = Math.max(geo.y, cpy);
+            const geo = this._ui.monitorGeometry;
+            let cpx = bx - geo.x;
+            let cpy = by - geo.y - this._fontPopup.height - 8;
+            cpx = Math.max(0, Math.min(cpx, geo.width - this._fontPopup.width));
+            cpy = Math.max(0, cpy);
             this._fontPopup.set_position(cpx, cpy);
             return GLib.SOURCE_REMOVE;
         });
@@ -1103,7 +1275,7 @@ var PartToolbar = class PartToolbar extends PartUI {
             this._fontPopupClickId = null;
         }
         if (this._fontPopup) {
-            this._fontPopup.destroy();
+            this._destroyFloatingActor(this._fontPopup);
             this._fontPopup = null;
         }
     }
@@ -1166,17 +1338,16 @@ var PartToolbar = class PartToolbar extends PartUI {
         }
         this._intensityPopup.add_child(row);
 
-        this._ui.actor.add_child(this._intensityPopup);
+        this._addFloatingActor(this._intensityPopup);
 
         GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
             if (!this._intensityPopup) return GLib.SOURCE_REMOVE;
             const [bx, by] = this._intensityButton.get_transformed_position();
-            const monitor = global.display.get_current_monitor();
-            const geo = global.display.get_monitor_geometry(monitor);
-            let cpx = bx;
-            let cpy = by - this._intensityPopup.height - 8;
-            cpx = Math.max(geo.x, Math.min(cpx, geo.x + geo.width - this._intensityPopup.width));
-            cpy = Math.max(geo.y, cpy);
+            const geo = this._ui.monitorGeometry;
+            let cpx = bx - geo.x;
+            let cpy = by - geo.y - this._intensityPopup.height - 8;
+            cpx = Math.max(0, Math.min(cpx, geo.width - this._intensityPopup.width));
+            cpy = Math.max(0, cpy);
             this._intensityPopup.set_position(cpx, cpy);
             return GLib.SOURCE_REMOVE;
         });
@@ -1202,7 +1373,7 @@ var PartToolbar = class PartToolbar extends PartUI {
             this._intensityPopupClickId = null;
         }
         if (this._intensityPopup) {
-            this._intensityPopup.destroy();
+            this._destroyFloatingActor(this._intensityPopup);
             this._intensityPopup = null;
         }
     }
@@ -1250,17 +1421,16 @@ var PartToolbar = class PartToolbar extends PartUI {
         }
 
         const anchor = target === 'fill' ? this._fillButton : this._colorButton;
-        this._ui.actor.add_child(this._colorPopup);
+        this._addFloatingActor(this._colorPopup);
 
         GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
             if (!this._colorPopup) return GLib.SOURCE_REMOVE;
             const [bx, by] = anchor.get_transformed_position();
-            const monitor = global.display.get_current_monitor();
-            const geo = global.display.get_monitor_geometry(monitor);
-            let cpx = bx - 40;
-            let cpy = by - this._colorPopup.height - 8;
-            cpx = Math.max(geo.x, Math.min(cpx, geo.x + geo.width - this._colorPopup.width));
-            cpy = Math.max(geo.y, cpy);
+            const geo = this._ui.monitorGeometry;
+            let cpx = bx - geo.x - 40;
+            let cpy = by - geo.y - this._colorPopup.height - 8;
+            cpx = Math.max(0, Math.min(cpx, geo.width - this._colorPopup.width));
+            cpy = Math.max(0, cpy);
             this._colorPopup.set_position(cpx, cpy);
             return GLib.SOURCE_REMOVE;
         });
@@ -1300,7 +1470,7 @@ var PartToolbar = class PartToolbar extends PartUI {
             this._colorPopupClickId = null;
         }
         if (this._colorPopup) {
-            this._colorPopup.destroy();
+            this._destroyFloatingActor(this._colorPopup);
             this._colorPopup = null;
         }
     }
@@ -1568,15 +1738,20 @@ var PartToolbar = class PartToolbar extends PartUI {
             style: 'color: #ffffff; font-size: 11px; background: rgba(0,0,0,0.7); padding: 4px 10px; border-radius: 8px;',
         });
         if (this._editContainer.get_parent()) {
-            this._ui.actor.add_child(this._inlineMsg);
+            this._addFloatingActor(this._inlineMsg);
             const [cx, cy] = this._editContainer.get_transformed_position();
             const cw = this._editContainer.width;
             GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
                 if (!this._inlineMsg) return GLib.SOURCE_REMOVE;
                 const mw = this._inlineMsg.width;
-                this._inlineMsg.set_position(
+                const local = this._stageToLocal(
                     cx + (cw - mw) / 2,
-                    cy - this._inlineMsg.height - 6);
+                    cy - this._inlineMsg.height - 6
+                );
+                this._inlineMsg.set_position(
+                    local[0],
+                    local[1]
+                );
                 return GLib.SOURCE_REMOVE;
             });
         }
@@ -1593,29 +1768,36 @@ var PartToolbar = class PartToolbar extends PartUI {
             this._inlineMsgTimer = 0;
         }
         if (this._inlineMsg) {
-            this._inlineMsg.destroy();
+            this._destroyFloatingActor(this._inlineMsg);
             this._inlineMsg = null;
         }
     }
 
     _showTooltip(button, text) {
         this._hideTooltip();
+        if (this._recordingToolbarAttached)
+            return;
         this._tooltip = new St.Label({
             text: text,
             style_class: 'big-shot-tooltip',
             style: 'background: rgba(0,0,0,0.85); color: #ffffff; padding: 4px 8px; border-radius: 4px; font-size: 11px;',
         });
-        this._ui.actor.add_child(this._tooltip);
-        this._ui.actor.set_child_above_sibling(this._tooltip, null);
+        this._addFloatingActor(this._tooltip);
+        if (!this._recordingToolbarAttached)
+            this._ui.actor.set_child_above_sibling(this._tooltip, null);
 
         GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
             if (!this._tooltip) return GLib.SOURCE_REMOVE;
             const [bx, by] = button.get_transformed_position();
             const bw = button.width;
             const tw = this._tooltip.width;
-            this._tooltip.set_position(
+            const local = this._stageToLocal(
                 bx + (bw - tw) / 2,
                 by - this._tooltip.height - 4
+            );
+            this._tooltip.set_position(
+                local[0],
+                local[1]
             );
             return GLib.SOURCE_REMOVE;
         });
@@ -1623,7 +1805,7 @@ var PartToolbar = class PartToolbar extends PartUI {
 
     _hideTooltip() {
         if (this._tooltip) {
-            this._tooltip.destroy();
+            this._destroyFloatingActor(this._tooltip);
             this._tooltip = null;
         }
     }
@@ -1659,10 +1841,12 @@ var PartToolbar = class PartToolbar extends PartUI {
     }
 
     destroy() {
+        this.detachEditForRecording();
         if (this._dragMotionId) {
-            this._ui.actor.disconnect(this._dragMotionId);
+            this._dragEventActor.disconnect(this._dragMotionId);
             this._dragMotionId = 0;
         }
+        this._dragEventActor = null;
         this._detachEditFromPanel();
         this._detachVideoFromPanel();
         this._closeColorPopup();

@@ -10,7 +10,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-var APP_VERSION = '26.6.0';
+var APP_VERSION = '26.7.0';
 
 const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
@@ -322,6 +322,30 @@ function normalizeCaptureGeometry(geometry, screenWidth, screenHeight) {
     };
 }
 
+function getVirtualScreenGeometry() {
+    let count = global.display.get_n_monitors();
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    for (let i = 0; i < count; i++) {
+        let rect = global.display.get_monitor_geometry(i);
+        minX = Math.min(minX, rect.x);
+        minY = Math.min(minY, rect.y);
+        maxX = Math.max(maxX, rect.x + rect.width);
+        maxY = Math.max(maxY, rect.y + rect.height);
+    }
+    if (!Number.isFinite(minX))
+        return { x: 0, y: 0, width: global.screen_width,
+            height: global.screen_height };
+    return {
+        x: minX,
+        y: minY,
+        width: maxX - minX,
+        height: maxY - minY,
+    };
+}
+
 function buildRecordingRegionRects(geometry, screenWidth, screenHeight, borderSize) {
     let masks = [];
     let borders = [];
@@ -493,7 +517,10 @@ var BigShotExtension = class BigShotExtension {
         // Provide screenshot pixbuf to annotation overlay when ready
         this._screenshotUI.connect('screenshot-ready', (ui, pixbuf) => {
             if (this._annotation && this._annotation._overlay) {
-                this._annotation._overlay.setCachedPixbuf(pixbuf, 1);
+                this._annotation._overlay.setCachedPixbuf(
+                    pixbuf,
+                    this._screenshotUI.captureScale
+                );
             }
         });
 
@@ -522,11 +549,15 @@ var BigShotExtension = class BigShotExtension {
 
             let offsetX = Math.max(0, geom[0]);
             let offsetY = Math.max(0, geom[1]);
+            let bufScale = ext._screenshotUI.captureScale;
 
             let toWidget = function(ax, ay) {
-                return [(ax - offsetX), (ay - offsetY)];
+                return [
+                    (ax - offsetX) * bufScale,
+                    (ay - offsetY) * bufScale,
+                ];
             };
-            let drawScale = 1.0;
+            let drawScale = bufScale;
 
             // Apply pixel-manipulating effects (blur, censor, etc.)
             let workPixbuf = croppedPixbuf;
@@ -558,7 +589,7 @@ var BigShotExtension = class BigShotExtension {
                     workPixbuf.get_height(),
                     offsetX,
                     offsetY,
-                    1
+                    bufScale
                 );
                 let surface;
                 let cr;
@@ -991,6 +1022,8 @@ var BigShotExtension = class BigShotExtension {
             finalPath: finalPath,
             pipelineBase: String(manifest.pipeline || ''),
             captureGeometry: manifest.captureGeometry || null,
+            displayGeometry: manifest.displayGeometry || null,
+            screenGeometry: manifest.screenGeometry || null,
             requestedGeometry: manifest.requestedGeometry || null,
             includeCursor: !!manifest.includeCursor,
             framerate: framerate,
@@ -1244,6 +1277,8 @@ var BigShotExtension = class BigShotExtension {
         // Import parts modules
         let PartToolbarMod = imports.parts.parttoolbar;
         let PartAnnotationMod = imports.parts.partannotation;
+        let PartMagnifierMod = imports.parts.partmagnifier;
+        let PartVideoAnnotationMod = imports.parts.partvideoannotation;
         let PartAudioMod = imports.parts.partaudio;
         let PartFramerateMod = imports.parts.partframerate;
         let PartDownsizeMod = imports.parts.partdownsize;
@@ -1258,6 +1293,8 @@ var BigShotExtension = class BigShotExtension {
         if (PartDownsizeMod.PartDownsize.setGettext) PartDownsizeMod.PartDownsize.setGettext(_);
         if (PartIndicatorMod.PartIndicator.setGettext) PartIndicatorMod.PartIndicator.setGettext(_);
         if (PartWebcamMod.PartWebcam.setGettext) PartWebcamMod.PartWebcam.setGettext(_);
+        if (PartVideoAnnotationMod.PartVideoAnnotation.setGettext)
+            PartVideoAnnotationMod.PartVideoAnnotation.setGettext(_);
 
         // Toolbar
         this._toolbar = new PartToolbarMod.PartToolbar(ui, ext);
@@ -1266,6 +1303,14 @@ var BigShotExtension = class BigShotExtension {
         // Annotation
         this._annotation = new PartAnnotationMod.PartAnnotation(ui, ext);
         this._parts.push(this._annotation);
+
+        this._videoAnnotation = new
+            PartVideoAnnotationMod.PartVideoAnnotation(ui, ext);
+        this._parts.push(this._videoAnnotation);
+
+        // Shift-activated precision lens for area selection.
+        this._magnifier = new PartMagnifierMod.PartMagnifier(ui, ext);
+        this._parts.push(this._magnifier);
 
         // Wire toolbar tool changes
         this._toolbar.onToolChanged(function(toolId) {
@@ -1405,12 +1450,14 @@ var BigShotExtension = class BigShotExtension {
         if (!pixbuf) return null;
 
         let geom = this._screenshotUI.getSelectedGeometry();
+        let pixelGeom = this._screenshotUI.getSelectedPixelGeometry();
+        let bufScale = this._screenshotUI.captureScale;
 
         // Crop to selection if needed
-        let x = Math.max(0, geom[0]);
-        let y = Math.max(0, geom[1]);
-        let w = Math.min(geom[2], pixbuf.get_width() - x);
-        let h = Math.min(geom[3], pixbuf.get_height() - y);
+        let x = pixelGeom[0];
+        let y = pixelGeom[1];
+        let w = pixelGeom[2];
+        let h = pixelGeom[3];
 
         if (w <= 0 || h <= 0) return null;
 
@@ -1426,17 +1473,20 @@ var BigShotExtension = class BigShotExtension {
         }
 
         // Composite annotations onto the screenshot via Cairo
-        let offsetX = x;
-        let offsetY = y;
+        let offsetX = geom[0];
+        let offsetY = geom[1];
         let tmpDir = GLib.get_tmp_dir();
         let tmpBase = GLib.build_filenamev([tmpDir, 'bigshot-base-' + Date.now() + '.png']);
         let tmpAnnotated = GLib.build_filenamev([tmpDir, 'bigshot-ann-' + Date.now() + '.png']);
 
         try {
             let toWidget = function(ax, ay) {
-                return [(ax - offsetX), (ay - offsetY)];
+                return [
+                    (ax - offsetX) * bufScale,
+                    (ay - offsetY) * bufScale,
+                ];
             };
-            let drawScale = 1.0;
+            let drawScale = bufScale;
 
             // Apply pixel-manipulating effects
             let workPixbuf = cropPixbuf;
@@ -1460,7 +1510,7 @@ var BigShotExtension = class BigShotExtension {
                 workPixbuf.get_height(),
                 offsetX,
                 offsetY,
-                1
+                bufScale
             );
             let surface;
             let cr;
@@ -1756,13 +1806,36 @@ var BigShotExtension = class BigShotExtension {
         let downsize = (this._downsize && this._downsize.value) ? this._downsize.value : 1.0;
         let quality = (this._toolbar && this._toolbar.videoQuality) ? this._toolbar.videoQuality : 'high';
         let isWayland = GLib.getenv('WAYLAND_DISPLAY') !== null;
-        let requestedGeometry = this._screenshotUI.getSelectedGeometry();
+        let requestedGeometry =
+            this._screenshotUI.getSelectedScreenGeometry();
         let captureGeometry = null;
+        let displayGeometry = null;
+        let screenGeometry = getVirtualScreenGeometry();
         if (!isWayland) {
+            displayGeometry = normalizeCaptureGeometry(
+                [
+                    requestedGeometry[0] - screenGeometry.x,
+                    requestedGeometry[1] - screenGeometry.y,
+                    requestedGeometry[2],
+                    requestedGeometry[3],
+                ],
+                screenGeometry.width,
+                screenGeometry.height
+            );
+            if (!displayGeometry) {
+                log('[Big Shot] Invalid screencast display geometry');
+                return;
+            }
+            let captureScale = global.ui_scale || 1;
             captureGeometry = normalizeCaptureGeometry(
-                requestedGeometry,
-                global.screen_width,
-                global.screen_height
+                [
+                    displayGeometry.x * captureScale,
+                    displayGeometry.y * captureScale,
+                    displayGeometry.width * captureScale,
+                    displayGeometry.height * captureScale,
+                ],
+                screenGeometry.width * captureScale,
+                screenGeometry.height * captureScale
             );
             if (!captureGeometry) {
                 log('[Big Shot] Invalid screencast capture geometry');
@@ -1865,6 +1938,8 @@ var BigShotExtension = class BigShotExtension {
             finalPath: reservedFinalPath,
             pipelineBase: pipelineBase,
             captureGeometry: captureGeometry,
+            displayGeometry: displayGeometry,
+            screenGeometry: screenGeometry,
             requestedGeometry: requestedGeometry,
             includeCursor: includeCursor,
             framerate: framerate,
@@ -1920,6 +1995,8 @@ var BigShotExtension = class BigShotExtension {
         this._writeRecordingManifest(session);
         if (this._indicator)
             this._indicator.onRecordingStarted();
+        if (this._videoAnnotation)
+            this._videoAnnotation.onRecordingStarted();
 
         // Keep the webcam actor alive while the capture UI closes. The same
         // actor and frozen pipeline settings are retained across all segments.
@@ -1935,10 +2012,12 @@ var BigShotExtension = class BigShotExtension {
         } catch (e) {
             log('[Big Shot] Recording UI transition failed: ' + e.message);
         }
-        this._showRecordingRegionMask(captureGeometry);
+        this._showRecordingRegionMask(displayGeometry, screenGeometry);
     }
 
     _quickStop() {
+        if (this._videoAnnotation)
+            this._videoAnnotation.finishEditForStop();
         let session = this._recordingSession;
         if (!session || this._recordingState === 'idle' ||
             this._recordingState === 'finalizing')
@@ -1989,6 +2068,8 @@ var BigShotExtension = class BigShotExtension {
             finalPath: session.finalPath,
             pipeline: session.pipelineBase,
             captureGeometry: session.captureGeometry,
+            displayGeometry: session.displayGeometry,
+            screenGeometry: session.screenGeometry,
             requestedGeometry: session.requestedGeometry,
             includeCursor: session.includeCursor,
             framerate: session.framerate,
@@ -2588,6 +2669,8 @@ var BigShotExtension = class BigShotExtension {
         }
         getRecordingOwnerRegistry().delete(session.id);
 
+        if (this._videoAnnotation)
+            this._videoAnnotation.onRecordingStopped();
         if (!this._disabled && this._indicator)
             this._indicator.onRecordingStopped();
         if (this._disabled || session.notifyOnComplete === false)
@@ -2604,13 +2687,14 @@ var BigShotExtension = class BigShotExtension {
         }
     }
 
-    _showRecordingRegionMask(captureGeometry) {
+    _showRecordingRegionMask(captureGeometry, screenGeometry) {
         this._destroyRecordingRegionMask();
         if (!captureGeometry)
             return;
 
-        let screenWidth = global.screen_width;
-        let screenHeight = global.screen_height;
+        screenGeometry = screenGeometry || getVirtualScreenGeometry();
+        let screenWidth = screenGeometry.width;
+        let screenHeight = screenGeometry.height;
         let rects = buildRecordingRegionRects(
             captureGeometry,
             screenWidth,
@@ -2626,7 +2710,7 @@ var BigShotExtension = class BigShotExtension {
             can_focus: false,
             layout_manager: new Clutter.FixedLayout(),
         });
-        mask.set_position(0, 0);
+        mask.set_position(screenGeometry.x, screenGeometry.y);
         mask.set_size(screenWidth, screenHeight);
 
         let addActor = function(rect, style, name) {
@@ -2753,8 +2837,11 @@ var BigShotExtension = class BigShotExtension {
 
     togglePauseRecording() {
         if (this._recordingState === 'recording') {
-            this.pauseRecording();
+            if (this.pauseRecording() && this._videoAnnotation)
+                this._videoAnnotation.enterPausedEditFromPause();
         } else if (this._recordingState === 'paused') {
+            if (this._videoAnnotation)
+                this._videoAnnotation.finishEditForResume();
             this.resumeRecording();
         }
     }
@@ -2781,8 +2868,7 @@ var BigShotExtension = class BigShotExtension {
                 sourceWidth = captureGeometry.width;
                 sourceHeight = captureGeometry.height;
             } else {
-                let monitor = global.display.get_current_monitor();
-                let geo = global.display.get_monitor_geometry(monitor);
+                let geo = this._screenshotUI.monitorGeometry;
                 sourceWidth = geo.width;
                 sourceHeight = geo.height;
             }

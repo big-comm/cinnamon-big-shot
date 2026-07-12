@@ -13,6 +13,7 @@ const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
 const GObject = imports.gi.GObject;
 const Pango = imports.gi.Pango;
+const Main = imports.ui.main;
 
 const Actions = imports.drawing.actions;
 const DrawingMode = Actions.DrawingMode;
@@ -80,10 +81,15 @@ class MultilineEntry extends St.Entry {
 });
 
 var DrawingOverlay = class DrawingOverlay {
-    constructor(parentActor, toolbar, keyActor) {
+    constructor(parentActor, toolbar, keyActor, options) {
         this._ui = parentActor;
         this._keyActor = keyActor || parentActor;
         this._toolbar = toolbar;
+        this._modalTextEntry = !!(options && options.modalTextEntry);
+        this._onCancel = options && options.onCancel
+            ? options.onCancel
+            : null;
+        this._textModalActive = false;
         this._actions = [];
         this._undoStack = [];
         this._redoStack = [];
@@ -231,8 +237,17 @@ var DrawingOverlay = class DrawingOverlay {
     }
 
     _toImageCoords(x, y) {
-        // Convert widget coordinates to image coordinates
-        // For now, 1:1 mapping (will be adjusted when crop/zoom is implemented)
+        // Clutter events use stage coordinates; actions use overlay-local
+        // logical coordinates on both screenshot and recording hosts.
+        if (this._actor) {
+            try {
+                const point = this._actor.transform_stage_point(x, y);
+                if (point[0])
+                    return [point[1], point[2]];
+            } catch (e) {
+                // Fall back to 1:1 for detached test actors.
+            }
+        }
         return [x, y];
     }
 
@@ -831,8 +846,12 @@ var DrawingOverlay = class DrawingOverlay {
             return Clutter.EVENT_STOP;
         }
 
-        // Escape → deselect current selection
+        // Escape → close the host editor or deselect current selection
         if (key === Clutter.KEY_Escape) {
+            if (this._onCancel) {
+                this._onCancel();
+                return Clutter.EVENT_STOP;
+            }
             if (this._selectedAction) {
                 this._selectedAction = null;
                 this._actor.queue_repaint();
@@ -1017,6 +1036,9 @@ var DrawingOverlay = class DrawingOverlay {
 
         this._ui.add_child(this._textPopover);
         this._textPopover.set_position(Math.max(0, wx - 100), Math.max(0, wy - 44));
+        if (this._modalTextEntry) {
+            this._textModalActive = !!Main.pushModal(this._textPopover);
+        }
         textActor.connect('text-changed', () => {
             if (this._textEntry)
                 this._textEntry.queue_relayout();
@@ -1176,6 +1198,14 @@ var DrawingOverlay = class DrawingOverlay {
         if (this._textLayoutIdleId) {
             GLib.source_remove(this._textLayoutIdleId);
             this._textLayoutIdleId = 0;
+        }
+        if (this._textModalActive && this._textPopover) {
+            try {
+                Main.popModal(this._textPopover);
+            } catch (e) {
+                // Modal may already be released during recording shutdown.
+            }
+            this._textModalActive = false;
         }
         if (this._textPopover) {
             this._textPopover.destroy();
@@ -1497,6 +1527,12 @@ var DrawingOverlay = class DrawingOverlay {
         this._cachedPixbuf = null;
         this._cachedBufScale = null;
         this._actor.queue_repaint();
+    }
+
+    clearSelection() {
+        this._selectedAction = null;
+        if (this._actor)
+            this._actor.queue_repaint();
     }
 
     destroy() {
