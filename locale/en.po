@@ -87,6 +87,12 @@ msgstr "Gradient Angle"
 msgid "Border Radius"
 msgstr "Border Radius"
 
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Eraser"
+msgstr "Eraser"
+
 msgid "Frames per second"
 msgstr "Frames per second"
 
@@ -134,9 +140,6 @@ msgstr "Number with Arrow"
 
 msgid "Number with Pointer"
 msgstr "Number with Pointer"
-
-msgid "Eraser"
-msgstr "Eraser"
 
 msgid "Show screenshot panel"
 msgstr "Show screenshot panel"
@@ -209,9 +212,6 @@ msgstr "Mask"
 
 msgid "Size"
 msgstr "Size"
-
-msgid "Edit"
-msgstr "Edit"
 
 msgid "Edit Screenshot"
 msgstr "Edit Screenshot"
