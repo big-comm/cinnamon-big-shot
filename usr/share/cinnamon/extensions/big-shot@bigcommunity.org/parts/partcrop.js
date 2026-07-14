@@ -11,9 +11,11 @@
 
 const St = imports.gi.St;
 const Clutter = imports.gi.Clutter;
+const Cairo = imports.gi.cairo;
 
 const PartBase = imports.parts.partbase;
 const PartUI = PartBase.PartUI;
+const Gradients = imports.data.gradients;
 
 const PADDING_VALUES = [0, 16, 32, 48, 64];
 const HANDLE_SIZE = 10;
@@ -48,6 +50,14 @@ var PartCrop = class PartCrop extends PartUI {
     }
 
     _buildUI() {
+        this._presentationOverlay = new St.DrawingArea({
+            visible: false,
+            reactive: false,
+        });
+        this._presentationOverlay.connect('repaint', area => {
+            this._paintPresentation(area);
+        });
+
         this._overlay = new St.Widget({
             style_class: 'big-shot-crop-overlay',
             style: 'border: 2px dashed rgba(255,255,255,0.8);',
@@ -93,6 +103,7 @@ var PartCrop = class PartCrop extends PartUI {
         });
 
         if (this._ui && this._ui.actor) {
+            this._ui.actor.add_child(this._presentationOverlay);
             this._ui.actor.add_child(this._overlay);
             this._handles.forEach((handle) => {
                 this._ui.actor.add_child(handle);
@@ -137,13 +148,21 @@ var PartCrop = class PartCrop extends PartUI {
         this._paddingLabel.visible = false;
         this._handles.forEach((h) => { h.visible = false; });
         this._dragging = null;
+        this._updatePresentationPreview();
     }
 
     cyclePadding() {
         let idx = PADDING_VALUES.indexOf(this._padding);
-        this._padding = PADDING_VALUES[(idx + 1) % PADDING_VALUES.length];
+        this.setPadding(PADDING_VALUES[(idx + 1) % PADDING_VALUES.length]);
+    }
+
+    setPadding(value) {
+        if (PADDING_VALUES.indexOf(value) < 0)
+            return;
+        this._padding = value;
         this._paddingLabel.text = this._padding + 'px';
-        this._paddingLabel.visible = this._padding > 0;
+        this._paddingLabel.visible = this._isActive && this._padding > 0;
+        this._updatePresentationPreview();
     }
 
     get padding() {
@@ -163,6 +182,7 @@ var PartCrop = class PartCrop extends PartUI {
         this._cropRect = null;
         this._padding = 0;
         this._paddingLabel.text = '0px';
+        this._presentationOverlay.visible = false;
     }
 
     _onHandlePress(def, event) {
@@ -301,6 +321,90 @@ var PartCrop = class PartCrop extends PartUI {
             rect.x + rect.width - 38,
             rect.y + rect.height + 8
         );
+        this._paddingLabel.visible = this._padding > 0;
+        this._updatePresentationPreview();
+    }
+
+    refreshPresentationPreview() {
+        this._updatePresentationPreview();
+    }
+
+    _updatePresentationPreview() {
+        if (!this._presentationOverlay || !this._cropRect)
+            return;
+        let gradient = this._ext._gradient
+            ? this._ext._gradient.selectedGradient
+            : null;
+        let radius = this._ext._gradient
+            ? this._ext._gradient.borderRadius
+            : 0;
+        let visible = this._padding > 0 || !!gradient || radius > 0;
+        this._presentationOverlay.visible = visible;
+        if (!visible)
+            return;
+
+        let pad = this._padding;
+        this._presentationOverlay.set_position(
+            this._cropRect.x - pad,
+            this._cropRect.y - pad
+        );
+        this._presentationOverlay.set_size(
+            this._cropRect.width + pad * 2,
+            this._cropRect.height + pad * 2
+        );
+        this._presentationOverlay.queue_repaint();
+    }
+
+    _paintPresentation(area) {
+        if (!this._cropRect)
+            return;
+        let cr = area.get_context();
+        let size = area.get_surface_size();
+        let width = size[0];
+        let height = size[1];
+        let gradient = this._ext._gradient
+            ? this._ext._gradient.selectedGradient
+            : null;
+        let radius = this._ext._gradient
+            ? this._ext._gradient.borderRadius
+            : 0;
+
+        if (gradient) {
+            Gradients.paintGradient(cr, gradient, 0, 0, width, height);
+        } else {
+            let block = 8;
+            for (let y = 0; y < height; y += block) {
+                for (let x = 0; x < width; x += block) {
+                    let light = ((x / block + y / block) % 2) === 0;
+                    let value = light ? 0.55 : 0.30;
+                    cr.setSourceRGBA(value, value, value, 0.85);
+                    cr.rectangle(x, y, block, block);
+                    cr.fill();
+                }
+            }
+        }
+
+        let pad = this._padding;
+        let imageWidth = this._cropRect.width;
+        let imageHeight = this._cropRect.height;
+        let r = Math.min(radius, imageWidth / 2, imageHeight / 2);
+        cr.setOperator(Cairo.Operator.CLEAR);
+        if (r > 0) {
+            cr.newSubPath();
+            cr.arc(pad + imageWidth - r, pad + r, r,
+                -Math.PI / 2, 0);
+            cr.arc(pad + imageWidth - r, pad + imageHeight - r, r,
+                0, Math.PI / 2);
+            cr.arc(pad + r, pad + imageHeight - r, r,
+                Math.PI / 2, Math.PI);
+            cr.arc(pad + r, pad + r, r,
+                Math.PI, Math.PI * 1.5);
+            cr.closePath();
+        } else {
+            cr.rectangle(pad, pad, imageWidth, imageHeight);
+        }
+        cr.fill();
+        cr.setOperator(Cairo.Operator.OVER);
     }
 
     _onModeChanged(isCast) {
@@ -310,6 +414,8 @@ var PartCrop = class PartCrop extends PartUI {
     }
 
     destroy() {
+        if (this._presentationOverlay)
+            this._presentationOverlay.destroy();
         if (this._overlay) this._overlay.destroy();
         if (this._paddingLabel) this._paddingLabel.destroy();
         this._handles.forEach((h) => { h.destroy(); });

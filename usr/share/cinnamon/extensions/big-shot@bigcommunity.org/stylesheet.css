@@ -244,6 +244,42 @@
     spacing: 4px;
 }
 
+.big-shot-gradient-control {
+    min-width: 42px;
+    padding: 3px 8px;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 7px;
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+}
+
+.big-shot-gradient-control:hover,
+.big-shot-gradient-control:focus {
+    border-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.22);
+}
+
+.big-shot-gradient-control:active {
+    background-color: rgba(53, 132, 228, 0.65);
+}
+
+.big-shot-gradient-swatch {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.big-shot-gradient-swatch:hover,
+.big-shot-gradient-swatch:focus {
+    border-color: rgba(255, 255, 255, 0.9);
+}
+
+.big-shot-gradient-swatch:checked {
+    border: 2px solid #ffffff;
+}
+
 /* ===== Crop Overlay ===== */
 .big-shot-crop-overlay {
     border: 2px dashed rgba(255, 255, 255, 0.8);
