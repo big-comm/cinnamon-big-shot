@@ -168,6 +168,15 @@ msgstr "Font"
 msgid "Intensity"
 msgstr "Intensity"
 
+msgid "Crop"
+msgstr "Crop"
+
+msgid "Padding"
+msgstr "Padding"
+
+msgid "Gradient"
+msgstr "Gradient"
+
 msgid "Undo"
 msgstr "Undo"
 
