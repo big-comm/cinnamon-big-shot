@@ -10,12 +10,13 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-var APP_VERSION = '26.7.0';
+var APP_VERSION = '26.8.0';
 
 const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
 const St = imports.gi.St;
 const Clutter = imports.gi.Clutter;
+const Cinnamon = imports.gi.Cinnamon;
 const GdkPixbuf = imports.gi.GdkPixbuf;
 const Cairo = imports.gi.cairo;
 const Meta = imports.gi.Meta;
@@ -139,6 +140,20 @@ function waitAsync(proc) {
     });
 }
 
+function waitForStageRedraw(milliseconds) {
+    return new Promise(resolve => {
+        global.stage.queue_redraw();
+        GLib.timeout_add(
+            GLib.PRIORITY_DEFAULT,
+            milliseconds,
+            () => {
+                resolve();
+                return GLib.SOURCE_REMOVE;
+            }
+        );
+    });
+}
+
 async function detectGpuVendors() {
     try {
         let proc = Gio.Subprocess.new(
@@ -251,6 +266,7 @@ const MUXERS = {
 const RECORDING_SEGMENT_FOLDER = '.segments';
 const RECORDING_MANIFEST_NAME = 'session.json';
 const RECORDING_RECOVERY_CLAIM_NAME = 'recovery.claim';
+const RECORDING_RESERVATION_SUFFIX = '.bigshot-reserve';
 const SEGMENT_STOP_TIMEOUT_MS = 8000;
 const MEDIA_PROBE_TIMEOUT_MS = 15000;
 const SEGMENT_MERGE_TIMEOUT_MS = 120000;
@@ -418,6 +434,88 @@ function makeUniqueFilePath(path) {
     throw new Error('Could not allocate a unique recording path');
 }
 
+function reserveRecordingOutput(path, sessionId) {
+    let dot = path.lastIndexOf('.');
+    let stem = dot > 0 ? path.substring(0, dot) : path;
+    let ext = dot > 0 ? path.substring(dot) : '';
+    for (let i = 1; i < 1000; i++) {
+        let candidate = i === 1 ? path : stem + ' (' + i + ')' + ext;
+        let finalFile = Gio.File.new_for_path(candidate);
+        if (finalFile.query_exists(null))
+            continue;
+
+        let reservationPath = candidate + RECORDING_RESERVATION_SUFFIX;
+        let reservationFile = Gio.File.new_for_path(reservationPath);
+        let token = buildRecordingSessionId();
+        try {
+            let stream = reservationFile.create(Gio.FileCreateFlags.NONE, null);
+            stream.write_bytes(GLib.Bytes.new(ByteArray.fromString(JSON.stringify({
+                version: 1,
+                sessionId: sessionId,
+                token: token,
+                finalPath: candidate,
+            }) + '\n')), null);
+            stream.close(null);
+            if (finalFile.query_exists(null)) {
+                reservationFile.delete(null);
+                continue;
+            }
+            return {
+                finalPath: candidate,
+                path: reservationPath,
+                token: token,
+            };
+        } catch (e) {
+            if (e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.EXISTS))
+                continue;
+            throw e;
+        }
+    }
+    throw new Error('Could not reserve a unique recording path');
+}
+
+function getCurrentBootId() {
+    try {
+        let loaded = GLib.file_get_contents('/proc/sys/kernel/random/boot_id');
+        return loaded[0] ? ByteArray.toString(loaded[1]).trim() : null;
+    } catch (_e) {
+        return null;
+    }
+}
+
+function readProcessIdentity(pid, segmentPath) {
+    pid = Number(pid);
+    if (!Number.isInteger(pid) || pid < 1)
+        return null;
+    try {
+        let procRoot = '/proc/' + pid;
+        let statLoaded = GLib.file_get_contents(procRoot + '/stat');
+        let stat = ByteArray.toString(statLoaded[1]);
+        let commandEnd = stat.lastIndexOf(')');
+        if (commandEnd < 0)
+            return null;
+        let fields = stat.substring(commandEnd + 2).trim().split(/\s+/);
+        let startTime = fields[19];
+        let executable = GLib.file_read_link(procRoot + '/exe');
+        let cmdlineLoaded = GLib.file_get_contents(procRoot + '/cmdline');
+        let cmdline = ByteArray.toString(cmdlineLoaded[1])
+            .split('\0')
+            .filter(value => value.length > 0);
+        return {
+            bootId: getCurrentBootId(),
+            pid: pid,
+            startTime: startTime,
+            executable: executable,
+            segmentPath: segmentPath,
+            commandContainsSegment: cmdline.some(arg =>
+                arg === segmentPath || arg.endsWith('=' + segmentPath)
+            ),
+        };
+    } catch (_e) {
+        return null;
+    }
+}
+
 function deletePathIfExists(path) {
     if (!path) return;
     try {
@@ -468,6 +566,7 @@ var BigShotExtension = class BigShotExtension {
         this._recordingRegionMask = null;
         this._disabled = false;
         this._recoveryRunning = false;
+        this._recordingScreenshotPending = false;
 
         this._screenshotUI = null;
     }
@@ -545,7 +644,36 @@ var BigShotExtension = class BigShotExtension {
         this._screenshotUI._annotationCompositor = function(croppedPixbuf, geom) {
             let overlay = ext._annotation ? ext._annotation._overlay : null;
             let actions = overlay ? overlay._actions : [];
-            if (!actions || actions.length === 0) return null;
+            let originalGeom = geom;
+            let presentationCrop = ext._getPresentationCrop(geom);
+            if (presentationCrop) {
+                let scale = ext._screenshotUI.captureScale;
+                let relX = Math.max(0, Math.round(
+                    (presentationCrop[0] - originalGeom[0]) * scale
+                ));
+                let relY = Math.max(0, Math.round(
+                    (presentationCrop[1] - originalGeom[1]) * scale
+                ));
+                let relW = Math.min(
+                    Math.round(presentationCrop[2] * scale),
+                    croppedPixbuf.get_width() - relX
+                );
+                let relH = Math.min(
+                    Math.round(presentationCrop[3] * scale),
+                    croppedPixbuf.get_height() - relY
+                );
+                if (relW > 0 && relH > 0) {
+                    croppedPixbuf = croppedPixbuf.new_subpixbuf(
+                        relX, relY, relW, relH
+                    );
+                    geom = presentationCrop;
+                }
+            }
+            if (!actions || actions.length === 0) {
+                return ext._hasPresentation()
+                    ? ext._applyPresentation(croppedPixbuf)
+                    : null;
+            }
 
             let offsetX = Math.max(0, geom[0]);
             let offsetY = Math.max(0, geom[1]);
@@ -635,7 +763,9 @@ var BigShotExtension = class BigShotExtension {
                 surface.writeToPNG(tmpOut);
                 surface.finish();
 
-                return GdkPixbuf.Pixbuf.new_from_file(tmpOut);
+                return ext._applyPresentation(
+                    GdkPixbuf.Pixbuf.new_from_file(tmpOut)
+                );
             } catch (e) {
                 log('[Big Shot] Annotation compositing error: ' + e.message);
                 return null;
@@ -824,15 +954,23 @@ var BigShotExtension = class BigShotExtension {
             log('[Big Shot] Recovery skipped for active session ' + item.id);
             return null;
         }
-        if (manifest.currentSegment) {
-            log('[Big Shot] Recovery requires manual review for unsettled session ' +
-                item.path);
-            return null;
-        }
-
         let ageSeconds = Math.floor(Date.now() / 1000) - item.modified;
         let stableState = manifest.state === 'recovery-required' ||
             manifest.state === 'paused';
+        if (manifest.currentSegment) {
+            let writer = manifest.currentSegment.writer;
+            if (!writer || Number(manifest.version) < 3) {
+                log('[Big Shot] Recovery requires manual review for legacy ' +
+                    'unsettled session ' + item.path);
+                return null;
+            }
+            if (this._recordingWriterIsActive(writer)) {
+                log('[Big Shot] Recovery skipped for active writer in session ' +
+                    item.id);
+                return null;
+            }
+            stableState = ageSeconds >= 2;
+        }
         if (manifest.state === 'finalizing' &&
             (Number(manifest.version) || 1) === 1 && ageSeconds >= 300) {
             try {
@@ -905,6 +1043,21 @@ var BigShotExtension = class BigShotExtension {
 
         owners.add(item.id);
         return { path: claimPath, token: claimToken };
+    }
+
+    _recordingWriterIsActive(writer) {
+        if (!writer || !writer.bootId || !writer.startTime ||
+            !writer.executable || !writer.segmentPath)
+            return false;
+        if (writer.bootId !== getCurrentBootId())
+            return false;
+        let current = readProcessIdentity(writer.pid, writer.segmentPath);
+        return !!(current && current.bootId === writer.bootId &&
+            current.startTime === String(writer.startTime) &&
+            current.executable === writer.executable &&
+            current.segmentPath === writer.segmentPath &&
+            current.commandContainsSegment &&
+            GLib.path_get_basename(current.executable) === 'gst-launch-1.0');
     }
 
     _releaseRecordingRecovery(id, claim) {
@@ -980,7 +1133,7 @@ var BigShotExtension = class BigShotExtension {
 
     _buildRecoverySession(item, manifest, recordingDir, claim) {
         let version = Number(manifest.version) || 1;
-        if (version !== 1 && version !== 2)
+        if (version !== 1 && version !== 2 && version !== 3)
             throw new Error('Unsupported recording recovery manifest version');
         if (String(manifest.id || '') !== item.id)
             throw new Error('Recording recovery manifest id does not match its folder');
@@ -1015,6 +1168,7 @@ var BigShotExtension = class BigShotExtension {
 
         return {
             id: item.id,
+            manifestVersion: version,
             ext: ext,
             recordingDir: recordingDir,
             sessionDir: item.path,
@@ -1045,11 +1199,54 @@ var BigShotExtension = class BigShotExtension {
                 finalPath: finalPath,
                 expectedDuration: Number(rawPublication.expectedDuration) || 0,
                 expectedSignature: rawPublication.expectedSignature || null,
+                reservationPath: rawPublication.reservationPath || null,
+                reservationToken: rawPublication.reservationToken || null,
             },
             recoveryClaimPath: claim.path,
             recoveryClaimToken: claim.token,
             recovering: true,
         };
+    }
+
+    _validateRecordingReservation(session, required) {
+        let publication = session && session.publication;
+        let reservationPath = publication && publication.reservationPath;
+        let reservationToken = publication && publication.reservationToken;
+        if (!reservationPath || !reservationToken) {
+            if (required)
+                throw new Error('Recording output reservation is missing');
+            return false;
+        }
+        if (reservationPath !==
+            session.finalPath + RECORDING_RESERVATION_SUFFIX)
+            throw new Error('Recording output reservation path changed');
+        let file = Gio.File.new_for_path(reservationPath);
+        let info = file.query_info(
+            'standard::type,standard::is-symlink',
+            Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS,
+            null
+        );
+        if (info.get_file_type() !== Gio.FileType.REGULAR ||
+            info.get_is_symlink())
+            throw new Error('Recording output reservation is not a regular file');
+        let stored = readJsonFile(reservationPath);
+        if (stored.sessionId !== session.id ||
+            stored.token !== reservationToken ||
+            stored.finalPath !== session.finalPath)
+            throw new Error('Recording output reservation ownership changed');
+        return true;
+    }
+
+    _releaseRecordingReservation(session) {
+        let publication = session && session.publication;
+        if (!publication || !publication.reservationPath)
+            return;
+        try {
+            if (this._validateRecordingReservation(session, false))
+                deletePathIfExists(publication.reservationPath);
+        } catch (e) {
+            log('[Big Shot] Recording output reservation kept: ' + e.message);
+        }
     }
 
     async _recoverRecordingSession(item, recordingDir) {
@@ -1074,6 +1271,10 @@ var BigShotExtension = class BigShotExtension {
                 recordingDir,
                 claim
             );
+            this._validateRecordingReservation(
+                session,
+                Number(manifest.version) >= 3
+            );
             log('[Big Shot] Recovering recording session ' + item.id);
 
             let validation = null;
@@ -1091,7 +1292,25 @@ var BigShotExtension = class BigShotExtension {
 
             let finalFile = Gio.File.new_for_path(session.finalPath);
             if (finalFile.query_exists(null)) {
-                throw new Error('Recovery output path already exists; ownership is ambiguous');
+                if (!validation)
+                    throw new Error('Published recording cannot be validated');
+                let publishedProbe = await this._probeRecordingFile(
+                    session.finalPath,
+                    session
+                );
+                if (!this._recordingOutputMatches(
+                    publishedProbe,
+                    validation,
+                    session
+                )) {
+                    throw new Error('Existing recovery output does not match ' +
+                        'the reserved recording');
+                }
+                session.publication.phase = 'published';
+                session.status = 'published';
+                this._writeRecordingManifest(session);
+                this._releaseRecordingReservation(session);
+                session.cleanupPending = !this._cleanupRecordingSession(session);
             } else {
                 if (!validation)
                     throw new Error('No recording segments are available for recovery');
@@ -1279,6 +1498,8 @@ var BigShotExtension = class BigShotExtension {
         let PartAnnotationMod = imports.parts.partannotation;
         let PartMagnifierMod = imports.parts.partmagnifier;
         let PartVideoAnnotationMod = imports.parts.partvideoannotation;
+        let PartCropMod = imports.parts.partcrop;
+        let PartGradientMod = imports.parts.partgradient;
         let PartAudioMod = imports.parts.partaudio;
         let PartFramerateMod = imports.parts.partframerate;
         let PartDownsizeMod = imports.parts.partdownsize;
@@ -1295,6 +1516,8 @@ var BigShotExtension = class BigShotExtension {
         if (PartWebcamMod.PartWebcam.setGettext) PartWebcamMod.PartWebcam.setGettext(_);
         if (PartVideoAnnotationMod.PartVideoAnnotation.setGettext)
             PartVideoAnnotationMod.PartVideoAnnotation.setGettext(_);
+        if (PartGradientMod.PartGradient.setGettext)
+            PartGradientMod.PartGradient.setGettext(_);
 
         // Toolbar
         this._toolbar = new PartToolbarMod.PartToolbar(ui, ext);
@@ -1312,8 +1535,19 @@ var BigShotExtension = class BigShotExtension {
         this._magnifier = new PartMagnifierMod.PartMagnifier(ui, ext);
         this._parts.push(this._magnifier);
 
+        this._crop = new PartCropMod.PartCrop(ui, ext);
+        this._parts.push(this._crop);
+
+        this._gradient = new PartGradientMod.PartGradient(ui, ext);
+        this._parts.push(this._gradient);
+        this._gradientPainter = imports.data.gradients.paintGradient;
+
         // Wire toolbar tool changes
         this._toolbar.onToolChanged(function(toolId) {
+            if (toolId !== null && ext._crop && ext._crop.isActive) {
+                ext._crop.deactivate();
+                ext._toolbar.setCropActive(false);
+            }
             let overlay = ext._annotation ? ext._annotation._overlay : null;
             if (overlay) {
                 overlay.setReactive(toolId !== null);
@@ -1404,6 +1638,40 @@ var BigShotExtension = class BigShotExtension {
 
     _handleAction(action) {
         try {
+            if (action === 'crop') {
+                let active = this._crop && this._crop.isActive;
+                if (active) {
+                    this._crop.deactivate();
+                } else if (this._crop) {
+                    let geom = this._screenshotUI.getSelectedGeometry();
+                    this._toolbar.selectTool(null);
+                    this._crop.activate(
+                        geom[0], geom[1], geom[2], geom[3]
+                    );
+                }
+                this._toolbar.setCropActive(!active);
+                return;
+            }
+            if (action === 'padding') {
+                if (this._crop && !this._crop.cropRect) {
+                    let geom = this._screenshotUI.getSelectedGeometry();
+                    this._crop.activate(
+                        geom[0], geom[1], geom[2], geom[3]
+                    );
+                    this._crop.deactivate();
+                }
+                if (this._crop)
+                    this._crop.cyclePadding();
+                return;
+            }
+            if (action === 'gradient') {
+                let visible = this._gradient && this._gradient.visible;
+                if (this._gradient)
+                    this._gradient.setVisible(!visible);
+                this._toolbar.setGradientActive(!visible);
+                return;
+            }
+
             let result = this._captureAnnotatedBytes();
             if (!result) {
                 log('[Big Shot] Failed to capture screenshot');
@@ -1453,6 +1721,17 @@ var BigShotExtension = class BigShotExtension {
         let pixelGeom = this._screenshotUI.getSelectedPixelGeometry();
         let bufScale = this._screenshotUI.captureScale;
 
+        let presentationCrop = this._getPresentationCrop(geom);
+        if (presentationCrop) {
+            geom = presentationCrop;
+            pixelGeom = [
+                Math.round(geom[0] * bufScale),
+                Math.round(geom[1] * bufScale),
+                Math.round(geom[2] * bufScale),
+                Math.round(geom[3] * bufScale),
+            ];
+        }
+
         // Crop to selection if needed
         let x = pixelGeom[0];
         let y = pixelGeom[1];
@@ -1467,9 +1746,10 @@ var BigShotExtension = class BigShotExtension {
         }
 
         if (!actions || actions.length === 0) {
-            let buf = cropPixbuf.save_to_bufferv('png', [], []);
+            let outputPixbuf = this._applyPresentation(cropPixbuf);
+            let buf = outputPixbuf.save_to_bufferv('png', [], []);
             if (!buf[0]) return null;
-            return { bytes: GLib.Bytes.new(buf[1]), pixbuf: cropPixbuf };
+            return { bytes: GLib.Bytes.new(buf[1]), pixbuf: outputPixbuf };
         }
 
         // Composite annotations onto the screenshot via Cairo
@@ -1556,13 +1836,110 @@ var BigShotExtension = class BigShotExtension {
             surface.writeToPNG(tmpAnnotated);
             surface.finish();
 
-            let annotPixbuf = GdkPixbuf.Pixbuf.new_from_file(tmpAnnotated);
+            let annotPixbuf = this._applyPresentation(
+                GdkPixbuf.Pixbuf.new_from_file(tmpAnnotated)
+            );
             let buf = annotPixbuf.save_to_bufferv('png', [], []);
             if (!buf[0]) return null;
             return { bytes: GLib.Bytes.new(buf[1]), pixbuf: annotPixbuf };
         } finally {
             try { Gio.File.new_for_path(tmpBase).delete(null); } catch (e) { /* */ }
             try { Gio.File.new_for_path(tmpAnnotated).delete(null); } catch (e) { /* */ }
+        }
+    }
+
+    _getPresentationCrop(selectionGeometry) {
+        let rect = this._crop ? this._crop.cropRect : null;
+        if (!rect)
+            return null;
+        let x1 = Math.max(selectionGeometry[0], rect.x);
+        let y1 = Math.max(selectionGeometry[1], rect.y);
+        let x2 = Math.min(
+            selectionGeometry[0] + selectionGeometry[2],
+            rect.x + rect.width
+        );
+        let y2 = Math.min(
+            selectionGeometry[1] + selectionGeometry[3],
+            rect.y + rect.height
+        );
+        if (x2 <= x1 || y2 <= y1)
+            return null;
+        return [x1, y1, x2 - x1, y2 - y1];
+    }
+
+    _hasPresentation() {
+        return !!(
+            (this._crop && this._crop.cropRect) ||
+            (this._crop && this._crop.padding > 0) ||
+            (this._gradient && this._gradient.selectedGradient) ||
+            (this._gradient && this._gradient.borderRadius > 0)
+        );
+    }
+
+    _applyPresentation(pixbuf) {
+        let scale = this._screenshotUI.captureScale || 1;
+        let padding = this._crop
+            ? Math.max(0, Math.round(this._crop.padding * scale))
+            : 0;
+        let gradient = this._gradient
+            ? this._gradient.selectedGradient
+            : null;
+        let radius = this._gradient
+            ? Math.max(0, Math.round(this._gradient.borderRadius * scale))
+            : 0;
+        if (padding === 0 && !gradient && radius === 0)
+            return pixbuf;
+
+        let tmpBase = GLib.build_filenamev([
+            GLib.get_tmp_dir(),
+            'bigshot-presentation-base-' + Date.now() + '.png',
+        ]);
+        let tmpOut = GLib.build_filenamev([
+            GLib.get_tmp_dir(),
+            'bigshot-presentation-out-' + Date.now() + '.png',
+        ]);
+        try {
+            pixbuf.savev(tmpBase, 'png', [], []);
+            let image = Cairo.ImageSurface.createFromPNG(tmpBase);
+            let width = pixbuf.get_width() + padding * 2;
+            let height = pixbuf.get_height() + padding * 2;
+            let surface = new Cairo.ImageSurface(
+                Cairo.Format.ARGB32,
+                width,
+                height
+            );
+            let cr = new Cairo.Context(surface);
+            cr.setOperator(Cairo.Operator.CLEAR);
+            cr.paint();
+            cr.setOperator(Cairo.Operator.OVER);
+            if (gradient && this._gradientPainter)
+                this._gradientPainter(cr, gradient, 0, 0, width, height);
+
+            cr.save();
+            if (radius > 0) {
+                let x = padding;
+                let y = padding;
+                let w = pixbuf.get_width();
+                let h = pixbuf.get_height();
+                let r = Math.min(radius, w / 2, h / 2);
+                cr.newSubPath();
+                cr.arc(x + w - r, y + r, r, -Math.PI / 2, 0);
+                cr.arc(x + w - r, y + h - r, r, 0, Math.PI / 2);
+                cr.arc(x + r, y + h - r, r, Math.PI / 2, Math.PI);
+                cr.arc(x + r, y + r, r, Math.PI, Math.PI * 1.5);
+                cr.closePath();
+                cr.clip();
+            }
+            cr.setSourceSurface(image, padding, padding);
+            cr.paint();
+            cr.restore();
+            surface.writeToPNG(tmpOut);
+            surface.finish();
+            image.finish();
+            return GdkPixbuf.Pixbuf.new_from_file(tmpOut);
+        } finally {
+            deletePathIfExists(tmpBase);
+            deletePathIfExists(tmpOut);
         }
     }
 
@@ -1756,6 +2133,15 @@ var BigShotExtension = class BigShotExtension {
         if (this._recordingState !== 'idle')
             return;
 
+        if (this._crop)
+            this._crop.reset();
+        if (this._gradient)
+            this._gradient.reset();
+        if (this._toolbar) {
+            this._toolbar.setCropActive(false);
+            this._toolbar.setGradientActive(false);
+        }
+
         // Stop and reset webcam
         if (this._webcam) {
             this._webcam.stopPreview();
@@ -1808,24 +2194,27 @@ var BigShotExtension = class BigShotExtension {
         let isWayland = GLib.getenv('WAYLAND_DISPLAY') !== null;
         let requestedGeometry =
             this._screenshotUI.getSelectedScreenGeometry();
+        let includeCursor = this._screenshotUI.includeCursor;
         let captureGeometry = null;
         let displayGeometry = null;
+        let portal = null;
+        let portalCrop = null;
         let screenGeometry = getVirtualScreenGeometry();
+        displayGeometry = normalizeCaptureGeometry(
+            [
+                requestedGeometry[0] - screenGeometry.x,
+                requestedGeometry[1] - screenGeometry.y,
+                requestedGeometry[2],
+                requestedGeometry[3],
+            ],
+            screenGeometry.width,
+            screenGeometry.height
+        );
+        if (!displayGeometry) {
+            log('[Big Shot] Invalid screencast display geometry');
+            return;
+        }
         if (!isWayland) {
-            displayGeometry = normalizeCaptureGeometry(
-                [
-                    requestedGeometry[0] - screenGeometry.x,
-                    requestedGeometry[1] - screenGeometry.y,
-                    requestedGeometry[2],
-                    requestedGeometry[3],
-                ],
-                screenGeometry.width,
-                screenGeometry.height
-            );
-            if (!displayGeometry) {
-                log('[Big Shot] Invalid screencast display geometry');
-                return;
-            }
             let captureScale = global.ui_scale || 1;
             captureGeometry = normalizeCaptureGeometry(
                 [
@@ -1841,9 +2230,67 @@ var BigShotExtension = class BigShotExtension {
                 log('[Big Shot] Invalid screencast capture geometry');
                 return;
             }
+        } else {
+            try {
+                let Portal = imports.portal;
+                portal = new Portal.ScreenCastPortal();
+                let selectionMode = this._screenshotUI._selectionMode;
+                let sourceTypes = selectionMode === 1 ? 2 : 1;
+                let stream = await portal.start(sourceTypes, includeCursor);
+                if (startGeneration !== this._screencastStartGeneration ||
+                    this._recordingState !== 'idle') {
+                    portal.close();
+                    return;
+                }
+                let streamSize = stream.size;
+                let streamPosition = stream.position;
+                if (streamSize && streamSize.length === 2) {
+                    captureGeometry = {
+                        x: 0,
+                        y: 0,
+                        width: Number(streamSize[0]),
+                        height: Number(streamSize[1]),
+                    };
+                } else {
+                    captureGeometry = {
+                        x: 0,
+                        y: 0,
+                        width: requestedGeometry[2],
+                        height: requestedGeometry[3],
+                    };
+                }
+                if (selectionMode === 2 && streamPosition && streamSize) {
+                    let left = Math.max(0, Math.round(
+                        requestedGeometry[0] - Number(streamPosition[0])
+                    ));
+                    let top = Math.max(0, Math.round(
+                        requestedGeometry[1] - Number(streamPosition[1])
+                    ));
+                    let width = Math.min(
+                        Math.round(requestedGeometry[2]),
+                        captureGeometry.width - left
+                    );
+                    let height = Math.min(
+                        Math.round(requestedGeometry[3]),
+                        captureGeometry.height - top
+                    );
+                    if (width <= 0 || height <= 0)
+                        throw new Error('Selected area is outside the portal stream');
+                    portalCrop = {
+                        left: left,
+                        top: top,
+                        right: captureGeometry.width - left - width,
+                        bottom: captureGeometry.height - top - height,
+                    };
+                    captureGeometry = { x: 0, y: 0, width: width, height: height };
+                }
+            } catch (e) {
+                if (portal)
+                    portal.close();
+                log('[Big Shot] ScreenCast portal failed: ' + e.message);
+                return;
+            }
         }
-        let includeCursor = this._screenshotUI.includeCursor;
-
         // Get output file path
         let time = GLib.DateTime.new_now_local();
         let dir = GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_VIDEOS);
@@ -1881,12 +2328,22 @@ var BigShotExtension = class BigShotExtension {
         // On X11: ximagesrc, on Wayland: pipewiresrc
         let srcElement;
         if (isWayland) {
-            srcElement = 'pipewiresrc ! videoconvert';
-            log('[Big Shot] Wayland selection and cursor options require a portal source; using the existing full stream');
+            let target = portal.stream.serial
+                ? ' target-object=' + GLib.shell_quote(portal.stream.serial)
+                : ' path=' + portal.stream.nodeId;
+            srcElement = 'pipewiresrc fd=3 do-timestamp=true ' +
+                'provide-clock=false on-disconnect=error' + target;
+            if (portalCrop) {
+                srcElement += ' ! videocrop left=' + portalCrop.left +
+                    ' top=' + portalCrop.top +
+                    ' right=' + portalCrop.right +
+                    ' bottom=' + portalCrop.bottom;
+            }
+            srcElement += ' ! videoconvert';
         } else {
             let endX = captureGeometry.x + captureGeometry.width - 1;
             let endY = captureGeometry.y + captureGeometry.height - 1;
-            srcElement = 'ximagesrc use-damage=0 show-pointer=' +
+            srcElement = 'ximagesrc use-damage=0 do-timestamp=true show-pointer=' +
                 (includeCursor ? 'true' : 'false') +
                 ' startx=' + captureGeometry.x +
                 ' starty=' + captureGeometry.y +
@@ -1895,13 +2352,21 @@ var BigShotExtension = class BigShotExtension {
                 ' ! videoconvert';
         }
 
-        let pipeline = this._makePipelineString(
-            config,
-            framerate + '/1',
-            downsize,
-            quality,
-            captureGeometry
-        );
+        let pipeline;
+        try {
+            pipeline = this._makePipelineString(
+                config,
+                framerate + '/1',
+                downsize,
+                quality,
+                captureGeometry
+            );
+        } catch (e) {
+            if (portal)
+                portal.close();
+            log('[Big Shot] Failed to build recording pipeline: ' + e.message);
+            return;
+        }
         if (captureGeometry) {
             let outputWidth = downsize < 1.0
                 ? toEvenDimension(captureGeometry.width * downsize)
@@ -1917,16 +2382,28 @@ var BigShotExtension = class BigShotExtension {
 
         let pipelineBase = srcElement + ' ! video/x-raw,framerate=' +
             framerate + '/1 ! ' + pipeline;
-        let reservedFinalPath = makeUniqueFilePath(filePath);
         let sessionLocation;
         try {
             sessionLocation = createRecordingSessionDirectory(recordingDir);
         } catch (e) {
             log('[Big Shot] Failed to create recording session: ' + e.message);
+            if (portal)
+                portal.close();
             return;
         }
         let sessionId = sessionLocation.id;
         let sessionDir = sessionLocation.path;
+        let outputReservation;
+        try {
+            outputReservation = reserveRecordingOutput(filePath, sessionId);
+        } catch (e) {
+            log('[Big Shot] Failed to reserve recording output: ' + e.message);
+            if (portal)
+                portal.close();
+            deletePathIfExists(sessionDir);
+            return;
+        }
+        let reservedFinalPath = outputReservation.finalPath;
 
         let session = {
             id: sessionId,
@@ -1945,6 +2422,7 @@ var BigShotExtension = class BigShotExtension {
             framerate: framerate,
             downsize: downsize,
             quality: quality,
+            portal: portal,
             segments: [],
             currentSegment: null,
             nextIndex: 1,
@@ -1958,6 +2436,8 @@ var BigShotExtension = class BigShotExtension {
             publication: {
                 phase: 'pending',
                 finalPath: reservedFinalPath,
+                reservationPath: outputReservation.path,
+                reservationToken: outputReservation.token,
             },
         };
         session.finalPath = session.publication.finalPath;
@@ -1969,6 +2449,25 @@ var BigShotExtension = class BigShotExtension {
             captureGeometry: captureGeometry,
             requestedGeometry: requestedGeometry,
         };
+
+        // Remove the capture UI before the first video frame is produced.
+        this._recordingState = 'starting';
+        this._screencastStarting = false;
+        if (this._screenshotUI && this._screenshotUI.visible)
+            this._screenshotUI.close();
+        await waitForStageRedraw(32);
+        if (this._disabled || this._recordingSession !== session) {
+            this._recordingSession = null;
+            this._recordingContext = null;
+            this._recordingState = 'idle';
+            getRecordingOwnerRegistry().delete(session.id);
+            if (session.portal)
+                session.portal.close();
+            this._releaseRecordingReservation(session);
+            deletePathIfExists(session.manifestPath);
+            deletePathIfExists(session.sessionDir);
+            return;
+        }
 
         try {
             this._spawnRecordingSegment(session);
@@ -1985,7 +2484,11 @@ var BigShotExtension = class BigShotExtension {
             }
             this._recordingSession = null;
             this._recordingContext = null;
+            this._recordingState = 'idle';
             getRecordingOwnerRegistry().delete(session.id);
+            if (session.portal)
+                session.portal.close();
+            this._releaseRecordingReservation(session);
             deletePathIfExists(session.manifestPath);
             deletePathIfExists(session.sessionDir);
             return;
@@ -2005,8 +2508,10 @@ var BigShotExtension = class BigShotExtension {
                 this._webcam.reparentForRecording();
 
             this._screencastStarting = false;
-            if (this._screenshotUI) {
+            if (this._screenshotUI && this._screenshotUI.visible) {
                 this._screenshotUI.close();
+                this._screenshotUI.screencastInProgress = true;
+            } else if (this._screenshotUI) {
                 this._screenshotUI.screencastInProgress = true;
             }
         } catch (e) {
@@ -2044,6 +2549,116 @@ var BigShotExtension = class BigShotExtension {
         return true;
     }
 
+    captureScreenshotDuringRecording() {
+        if (this._recordingScreenshotPending ||
+            !this._recordingSession ||
+            (this._recordingState !== 'recording' &&
+             this._recordingState !== 'paused'))
+            return false;
+
+        let session = this._recordingSession;
+        let geometry = session.requestedGeometry;
+        if (!geometry || geometry.length !== 4)
+            return false;
+
+        let restoreControls = this._videoAnnotation
+            ? this._videoAnnotation.suspendControlsForCapture()
+            : () => {};
+        let captureFinished = false;
+        let finishCapture = () => {
+            if (captureFinished)
+                return;
+            captureFinished = true;
+            try {
+                restoreControls();
+            } catch (e) {
+                log('[Big Shot] Failed to restore recording controls: ' +
+                    e.message);
+            }
+            this._recordingScreenshotPending = false;
+        };
+        this._recordingScreenshotPending = true;
+        global.stage.queue_redraw();
+        GLib.timeout_add(GLib.PRIORITY_DEFAULT, 5000, () => {
+            if (!captureFinished) {
+                log('[Big Shot] Recording screenshot timed out');
+                finishCapture();
+            }
+            return GLib.SOURCE_REMOVE;
+        });
+
+        GLib.timeout_add(GLib.PRIORITY_DEFAULT, 32, () => {
+            let filePath = null;
+            let dir = GLib.get_user_special_dir(
+                GLib.UserDirectory.DIRECTORY_PICTURES
+            ) || GLib.get_home_dir();
+            let screenshotsDir = GLib.build_filenamev([
+                dir,
+                _('Screenshots'),
+            ]);
+            try {
+                Gio.File.new_for_path(screenshotsDir)
+                    .make_directory_with_parents(null);
+            } catch (e) {
+                if (!e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.EXISTS)) {
+                    log('[Big Shot] Failed to create screenshots dir: ' +
+                        e.message);
+                }
+            }
+
+            let time = GLib.DateTime.new_now_local();
+            try {
+                filePath = makeUniqueFilePath(GLib.build_filenamev([
+                    screenshotsDir,
+                    _('Screenshot from %s').format(
+                        time.format('%Y-%m-%d %H-%M-%S')
+                    ) + '.png',
+                ]));
+                let scale = global.ui_scale || 1;
+                let screenshot = new Cinnamon.Screenshot();
+                screenshot.screenshot_area(
+                    session.includeCursor,
+                    Math.round(geometry[0] * scale),
+                    Math.round(geometry[1] * scale),
+                    Math.round(geometry[2] * scale),
+                    Math.round(geometry[3] * scale),
+                    filePath,
+                    () => {
+                        finishCapture();
+                        let file = Gio.File.new_for_path(filePath);
+                        if (!file.query_exists(null)) {
+                            log('[Big Shot] Recording screenshot failed');
+                            return;
+                        }
+                        try {
+                            let bytes = GLib.file_get_contents(filePath);
+                            if (bytes[0]) {
+                                St.Clipboard.get_default().set_content(
+                                    St.ClipboardType.CLIPBOARD,
+                                    'image/png',
+                                    bytes[1]
+                                );
+                            }
+                        } catch (e) {
+                            log('[Big Shot] Recording screenshot clipboard failed: ' +
+                                e.message);
+                        }
+                        this._showNotification(
+                            _('Screenshot taken'),
+                            _('Click to open the Screenshots folder'),
+                            screenshotsDir
+                        );
+                    }
+                );
+            } catch (e) {
+                finishCapture();
+                log('[Big Shot] Recording screenshot failed: ' + e.message);
+            }
+            return GLib.SOURCE_REMOVE;
+        });
+        return true;
+    }
+
     _writeRecordingManifest(session) {
         if (!session || !session.manifestPath)
             return;
@@ -2058,10 +2673,11 @@ var BigShotExtension = class BigShotExtension {
                 forced: !!segment.forced,
                 valid: segment.probe ? !!segment.probe.valid : null,
                 duration: segment.probe ? segment.probe.duration : null,
+                writer: segment.writer || null,
             };
         };
         let data = {
-            version: 2,
+            version: 3,
             id: session.id,
             state: session.status || this._recordingState,
             extension: session.ext,
@@ -2116,7 +2732,17 @@ var BigShotExtension = class BigShotExtension {
             throw new Error('Could not parse the GStreamer pipeline');
 
         log('[Big Shot] Starting recording segment ' + index + ': ' + fullPipeline);
-        let process = Gio.Subprocess.new(argv, Gio.SubprocessFlags.NONE);
+        let process;
+        if (session.portal) {
+            let descriptor = session.portal.takeDuplicateFd(3);
+            let launcher = new Gio.SubprocessLauncher({
+                flags: Gio.SubprocessFlags.NONE,
+            });
+            launcher.take_fd(descriptor.fd, descriptor.targetFd);
+            process = launcher.spawnv(argv);
+        } else {
+            process = Gio.Subprocess.new(argv, Gio.SubprocessFlags.NONE);
+        }
         let segment = {
             index: index,
             fileName: fileName,
@@ -2128,6 +2754,7 @@ var BigShotExtension = class BigShotExtension {
             stopTimeoutId: 0,
             forced: false,
             probe: null,
+            writer: readProcessIdentity(process.get_identifier(), path),
         };
 
         session.currentSegment = segment;
@@ -2481,6 +3108,10 @@ var BigShotExtension = class BigShotExtension {
         session.publication.expectedDuration = validation.expectedDuration;
         session.publication.expectedSignature = validation.referenceSignature;
         session.status = 'publishing';
+        this._validateRecordingReservation(
+            session,
+            !session.recovering || session.manifestVersion >= 3
+        );
         this._writeRecordingManifest(session);
 
         if (session.segments.length === 1) {
@@ -2502,6 +3133,7 @@ var BigShotExtension = class BigShotExtension {
         session.publication.phase = 'published';
         session.status = 'published';
         this._writeRecordingManifest(session);
+        this._releaseRecordingReservation(session);
         session.cleanupPending = !this._cleanupRecordingSession(session);
         if (session.cleanupPending) {
             session.status = 'published-cleanup-pending';
@@ -2648,6 +3280,10 @@ var BigShotExtension = class BigShotExtension {
     }
 
     _completeRecordingSession(session, completedPath, error) {
+        if (session.portal) {
+            session.portal.close();
+            session.portal = null;
+        }
         if (error) {
             session.status = 'recovery-required';
             session.errorMessage = error.message;

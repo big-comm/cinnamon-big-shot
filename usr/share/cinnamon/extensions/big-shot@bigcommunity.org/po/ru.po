@@ -221,3 +221,12 @@ msgstr "Наложение с веб-камеры"
 
 msgid "Camera"
 msgstr "Камера"
+
+msgid "Crop"
+msgstr "Обрезка"
+
+msgid "Padding"
+msgstr "Отступ"
+
+msgid "Gradient"
+msgstr "Градиент"

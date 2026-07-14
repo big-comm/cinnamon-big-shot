@@ -221,3 +221,12 @@ msgstr "Suprapunere webcam"
 
 msgid "Camera"
 msgstr "Cameră"
+
+msgid "Crop"
+msgstr "Decupare"
+
+msgid "Padding"
+msgstr "Spațiere"
+
+msgid "Gradient"
+msgstr "Degrade"

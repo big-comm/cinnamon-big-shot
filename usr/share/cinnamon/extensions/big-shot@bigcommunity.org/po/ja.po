@@ -221,3 +221,12 @@ msgstr "ウェブカメラオーバーレイ"
 
 msgid "Camera"
 msgstr "カメラ"
+
+msgid "Crop"
+msgstr "切り抜き"
+
+msgid "Padding"
+msgstr "余白"
+
+msgid "Gradient"
+msgstr "グラデーション"

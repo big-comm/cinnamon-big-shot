@@ -221,3 +221,12 @@ msgstr "웹캠 오버레이"
 
 msgid "Camera"
 msgstr "카메라"
+
+msgid "Crop"
+msgstr "자르기"
+
+msgid "Padding"
+msgstr "여백"
+
+msgid "Gradient"
+msgstr "그레이디언트"

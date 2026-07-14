@@ -221,3 +221,12 @@ msgstr "שכבת מצלמת רשת"
 
 msgid "Camera"
 msgstr "מצלמה"
+
+msgid "Crop"
+msgstr "חיתוך"
+
+msgid "Padding"
+msgstr "שוליים"
+
+msgid "Gradient"
+msgstr "מדרג"

@@ -221,3 +221,12 @@ msgstr "Наслагване на уебкамера"
 
 msgid "Camera"
 msgstr "Камера"
+
+msgid "Crop"
+msgstr "Кадриране"
+
+msgid "Padding"
+msgstr "Отстъп"
+
+msgid "Gradient"
+msgstr "Преливка"

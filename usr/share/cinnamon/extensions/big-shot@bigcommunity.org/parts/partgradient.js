@@ -166,14 +166,30 @@ var PartGradient = class PartGradient extends PartUI {
         }
     }
 
+    get visible() {
+        return !!(this._picker && this._picker.visible);
+    }
+
+    reset() {
+        this.setVisible(false);
+        this._selected = GRADIENTS.length - 1;
+        this._angleIndex = 3;
+        this._radiusIndex = 0;
+        for (let i = 0; i < this._swatches.length; i++)
+            this._swatches[i].checked = i === this._selected;
+        this._angleButton.child.text = ANGLE_VALUES[this._angleIndex] + '\u00B0';
+        this._radiusButton.child.text = 'R:' + RADIUS_VALUES[this._radiusIndex];
+    }
+
     _repositionPicker() {
         if (!this._picker || !this._picker.visible) return;
 
         let panel = this._ui.panel;
         if (!panel) return;
         let pos = panel.get_transformed_position();
-        let bgX = pos[0];
-        let bgY = pos[1];
+        let monitor = this._ui.monitorGeometry;
+        let bgX = pos[0] - monitor.x;
+        let bgY = pos[1] - monitor.y;
         let bgW = panel.width;
         let pw = this._picker.width;
         let ph = this._picker.height;

@@ -221,3 +221,12 @@ msgstr "Webcam Üstü"
 
 msgid "Camera"
 msgstr "Kamera"
+
+msgid "Crop"
+msgstr "Kırp"
+
+msgid "Padding"
+msgstr "İç boşluk"
+
+msgid "Gradient"
+msgstr "Renk geçişi"

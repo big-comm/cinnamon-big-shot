@@ -221,3 +221,12 @@ msgstr "Vefmyndavélarlag"
 
 msgid "Camera"
 msgstr "Myndavél"
+
+msgid "Crop"
+msgstr "Utansníða"
+
+msgid "Padding"
+msgstr "Spássía"
+
+msgid "Gradient"
+msgstr "Litstigull"

@@ -32,7 +32,7 @@ var PartAnnotation = class PartAnnotation extends PartUI {
         }
 
         // When screenshot UI opens, create the overlay
-        this._connectSignal(this._ui.actor, 'notify::visible', () => {
+        this._connectSignal(this._ui, 'notify::visible', () => {
             this._onUIVisibilityChanged();
         });
     }

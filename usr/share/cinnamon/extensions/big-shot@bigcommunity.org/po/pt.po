@@ -221,3 +221,12 @@ msgstr "Sobreposição da webcam"
 
 msgid "Camera"
 msgstr "Câmara"
+
+msgid "Crop"
+msgstr "Recortar"
+
+msgid "Padding"
+msgstr "Margem"
+
+msgid "Gradient"
+msgstr "Gradiente"

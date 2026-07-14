@@ -236,3 +236,12 @@ msgstr "Suave"
 
 msgid "Spot"
 msgstr "Ponto"
+
+msgid "Crop"
+msgstr "Recortar"
+
+msgid "Padding"
+msgstr "Margem"
+
+msgid "Gradient"
+msgstr "Gradiente"

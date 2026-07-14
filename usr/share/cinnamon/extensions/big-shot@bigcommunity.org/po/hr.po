@@ -221,3 +221,12 @@ msgstr "Preklop web kamere"
 
 msgid "Camera"
 msgstr "Kamera"
+
+msgid "Crop"
+msgstr "Odreži"
+
+msgid "Padding"
+msgstr "Unutarnji razmak"
+
+msgid "Gradient"
+msgstr "Gradijent"

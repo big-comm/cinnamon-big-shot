@@ -36,6 +36,7 @@ var PartVideoAnnotation = class PartVideoAnnotation extends PartUI {
         this._previewCaptureGeneration = 0;
         this._pendingFrame = false;
         this._editModalActive = false;
+        this._captureHiddenActors = [];
         this._panelBox = null;
 
         if (this._toolbar) {
@@ -111,6 +112,7 @@ var PartVideoAnnotation = class PartVideoAnnotation extends PartUI {
         if (!this._overlay)
             return;
 
+        this._overlay.clearPreviewCache();
         this._pendingFrame = true;
         this._syncPanelState();
         this._captureBaseFrame((pixbuf, scale) => {
@@ -155,8 +157,7 @@ var PartVideoAnnotation = class PartVideoAnnotation extends PartUI {
             'big-shot-video-preview-' + GLib.get_monotonic_time() + '.png',
         ]);
 
-        if (this._overlayHost)
-            this._overlayHost.hide();
+        this._hideCaptureActors(true);
         global.stage.queue_redraw();
         this._previewCaptureId = GLib.timeout_add(
             GLib.PRIORITY_DEFAULT,
@@ -201,8 +202,44 @@ var PartVideoAnnotation = class PartVideoAnnotation extends PartUI {
     }
 
     _restoreOverlayVisibility() {
-        if (this._overlayHost)
-            this._overlayHost.show();
+        for (let i = 0; i < this._captureHiddenActors.length; i++) {
+            let item = this._captureHiddenActors[i];
+            if (item.actor && item.wasVisible)
+                item.actor.show();
+        }
+        this._captureHiddenActors = [];
+    }
+
+    _hideCaptureActors(includeOverlay) {
+        this._restoreOverlayVisibility();
+        let actors = [
+            includeOverlay ? this._overlayHost : null,
+            ...(this._toolbar.previewHiddenActors
+                ? this._toolbar.previewHiddenActors()
+                : []),
+            this._ext._indicator
+                ? this._ext._indicator._panelButton
+                : null,
+        ].filter(Boolean);
+        let seen = [];
+        for (let i = 0; i < actors.length; i++) {
+            let actor = actors[i];
+            if (seen.indexOf(actor) >= 0)
+                continue;
+            seen.push(actor);
+            let wasVisible = actor.visible;
+            this._captureHiddenActors.push({
+                actor: actor,
+                wasVisible: wasVisible,
+            });
+            if (wasVisible)
+                actor.hide();
+        }
+    }
+
+    suspendControlsForCapture() {
+        this._hideCaptureActors(false);
+        return () => this._restoreOverlayVisibility();
     }
 
     _acquireEditModal() {
@@ -237,6 +274,7 @@ var PartVideoAnnotation = class PartVideoAnnotation extends PartUI {
         this._toolbar._onRedo = this._savedRedo;
         this._setOverlayInput(false);
         this._releaseEditModal();
+        this._overlay.clearPreviewCache();
 
         this._editing = false;
         this._activeMode = null;
@@ -399,8 +437,14 @@ var PartVideoAnnotation = class PartVideoAnnotation extends PartUI {
             _('Eraser'),
             () => this.clearAnnotations()
         );
+        this._screenshotButton = this._makeButton(
+            'camera-photo-symbolic',
+            _('Save Screenshot'),
+            () => this._ext.captureScreenshotDuringRecording()
+        );
         this._panelBox.add_child(this._editButton);
         this._panelBox.add_child(this._clearButton);
+        this._panelBox.add_child(this._screenshotButton);
 
         let indicator = this._ext._indicator
             ? this._ext._indicator._panelButton
@@ -454,6 +498,7 @@ var PartVideoAnnotation = class PartVideoAnnotation extends PartUI {
         this._panelBox = null;
         this._editButton = null;
         this._clearButton = null;
+        this._screenshotButton = null;
     }
 
     _cancelWait() {

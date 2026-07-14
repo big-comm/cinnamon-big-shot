@@ -221,3 +221,12 @@ msgstr "Překryv webkamery"
 
 msgid "Camera"
 msgstr "Kamera"
+
+msgid "Crop"
+msgstr "Ořez"
+
+msgid "Padding"
+msgstr "Odsazení"
+
+msgid "Gradient"
+msgstr "Barevný přechod"

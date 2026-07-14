@@ -221,3 +221,12 @@ msgstr "Nakładka z kamery internetowej"
 
 msgid "Camera"
 msgstr "Kamera"
+
+msgid "Crop"
+msgstr "Przytnij"
+
+msgid "Padding"
+msgstr "Margines"
+
+msgid "Gradient"
+msgstr "Gradient"

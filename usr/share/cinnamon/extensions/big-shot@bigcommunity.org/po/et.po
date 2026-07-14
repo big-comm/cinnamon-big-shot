@@ -221,3 +221,12 @@ msgstr "Veebikaamera ülekatte"
 
 msgid "Camera"
 msgstr "Kaamera"
+
+msgid "Crop"
+msgstr "Kärbi"
+
+msgid "Padding"
+msgstr "Polsterdus"
+
+msgid "Gradient"
+msgstr "Värviüleminek"

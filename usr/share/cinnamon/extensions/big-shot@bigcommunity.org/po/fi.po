@@ -221,3 +221,12 @@ msgstr "Verkkokameran peittokuva"
 
 msgid "Camera"
 msgstr "Kamera"
+
+msgid "Crop"
+msgstr "Rajaa"
+
+msgid "Padding"
+msgstr "Sisämarginaali"
+
+msgid "Gradient"
+msgstr "Liukuväri"

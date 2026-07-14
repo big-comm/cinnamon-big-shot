@@ -462,6 +462,30 @@ var PartToolbar = class PartToolbar extends PartUI {
         // Separator
         this._editContainer.add_child(new St.Widget({ style_class: 'big-shot-edit-sep' }));
 
+        this._cropButton = this._makePresentationButton(
+            'big-shot-crop-symbolic',
+            _('Crop'),
+            'crop',
+            true
+        );
+        this._paddingButton = this._makePresentationButton(
+            'big-shot-padding-symbolic',
+            _('Padding'),
+            'padding',
+            false
+        );
+        this._gradientButton = this._makePresentationButton(
+            'big-shot-gradient-symbolic',
+            _('Gradient'),
+            'gradient',
+            true
+        );
+        this._editContainer.add_child(this._cropButton);
+        this._editContainer.add_child(this._paddingButton);
+        this._editContainer.add_child(this._gradientButton);
+
+        this._editContainer.add_child(new St.Widget({ style_class: 'big-shot-edit-sep' }));
+
         // Undo
         this._undoButton = new St.Button({
             style_class: 'big-shot-edit-tool-btn',
@@ -919,6 +943,12 @@ var PartToolbar = class PartToolbar extends PartUI {
             this._toolbarCloseSep.visible = active;
         if (this._toolbarCloseBtn)
             this._toolbarCloseBtn.visible = active;
+        if (this._cropButton)
+            this._cropButton.visible = !active;
+        if (this._paddingButton)
+            this._paddingButton.visible = !active;
+        if (this._gradientButton)
+            this._gradientButton.visible = !active;
 
         const unavailable = ['censor', 'blur', 'invert', 'zoom'];
         for (let i = 0; i < unavailable.length; i++) {
@@ -960,6 +990,18 @@ var PartToolbar = class PartToolbar extends PartUI {
                 // Parent may be changing while Cinnamon updates chrome.
             }
         }
+    }
+
+    previewHiddenActors() {
+        return [
+            this._editContainer,
+            this._videoContainer,
+            this._colorPopup,
+            this._sizePopup,
+            this._fontPopup,
+            this._intensityPopup,
+            this._tooltip,
+        ].filter(actor => actor && actor.get_parent());
     }
 
     _addFloatingActor(actor) {
@@ -1726,6 +1768,36 @@ var PartToolbar = class PartToolbar extends PartUI {
 
     onAction(callback) {
         this._actionCallback = callback;
+    }
+
+    _makePresentationButton(iconName, label, action, toggle) {
+        let button = new St.Button({
+            style_class: 'big-shot-edit-tool-btn',
+            child: new St.Icon({
+                gicon: this._getIcon(iconName),
+                icon_size: 18,
+            }),
+            can_focus: true,
+            toggle_mode: toggle,
+            accessible_name: label,
+        });
+        button.connect('clicked', () => {
+            if (this._actionCallback)
+                this._actionCallback(action);
+        });
+        button.connect('enter-event', () => this._showTooltip(button, label));
+        button.connect('leave-event', () => this._hideTooltip());
+        return button;
+    }
+
+    setCropActive(active) {
+        if (this._cropButton)
+            this._cropButton.checked = !!active;
+    }
+
+    setGradientActive(active) {
+        if (this._gradientButton)
+            this._gradientButton.checked = !!active;
     }
 
     /**

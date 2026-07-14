@@ -221,3 +221,12 @@ msgstr "Superposición de cámara web"
 
 msgid "Camera"
 msgstr "Cámara"
+
+msgid "Crop"
+msgstr "Recortar"
+
+msgid "Padding"
+msgstr "Margen"
+
+msgid "Gradient"
+msgstr "Degradado"

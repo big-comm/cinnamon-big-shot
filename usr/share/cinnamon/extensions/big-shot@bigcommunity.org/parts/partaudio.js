@@ -18,6 +18,11 @@ const Cvc = imports.gi.Cvc;
 const PartBase = imports.parts.partbase;
 const PartUI = PartBase.PartUI;
 
+const AUDIO_CAPS =
+    'audio/x-raw,format=S16LE,layout=interleaved,rate=48000,channels=2';
+const AUDIO_QUEUE =
+    'queue max-size-buffers=0 max-size-bytes=0 max-size-time=2000000000';
+
 let _ = function(str) { return str; };
 
 // =============================================================================
@@ -233,50 +238,29 @@ var PartAudio = class PartAudio extends PartUI {
 
         // Desktop audio source
         let desktopSource = null;
-        let desktopChannels = 2;
         if (desktopActive) {
-            let sink = this._mixer.get_default_sink();
-            if (sink) {
-                let channelMap = sink.get_channel_map();
-                if (channelMap)
-                    desktopChannels = channelMap.get_num_channels();
-            }
             desktopSource = [
-                'pulsesrc device=' + this._desktopDevice + ' provide-clock=false do-timestamp=true',
-                'queue',
+                'pulsesrc device=' + GLib.shell_quote(this._desktopDevice) +
+                    ' provide-clock=false do-timestamp=true slave-method=resample',
+                AUDIO_QUEUE,
                 'audioconvert',
                 'audioresample',
-                'capsfilter caps=audio/x-raw,rate=48000,channels=' + desktopChannels,
-                'queue',
+                'capsfilter caps=' + AUDIO_CAPS,
+                AUDIO_QUEUE,
             ].join(' ! ');
         }
 
         // Microphone source
         let micSource = null;
         if (micActive) {
-            let micChannels = 2;
-            if (this._selectedMicId !== null) {
-                let stream = this._mixer.lookup_stream_id(this._selectedMicId);
-                if (stream) {
-                    let channelMap = stream.get_channel_map();
-                    if (channelMap)
-                        micChannels = channelMap.get_num_channels();
-                }
-            } else {
-                let src = this._mixer.get_default_source();
-                if (src) {
-                    let channelMap = src.get_channel_map();
-                    if (channelMap)
-                        micChannels = channelMap.get_num_channels();
-                }
-            }
             micSource = [
-                'pulsesrc device=' + micDeviceName + ' provide-clock=false do-timestamp=true',
-                'queue',
+                'pulsesrc device=' + GLib.shell_quote(micDeviceName) +
+                    ' provide-clock=false do-timestamp=true slave-method=resample',
+                AUDIO_QUEUE,
                 'audioconvert',
                 'audioresample',
-                'capsfilter caps=audio/x-raw,rate=48000,channels=' + micChannels,
-                'queue',
+                'capsfilter caps=' + AUDIO_CAPS,
+                AUDIO_QUEUE,
             ].join(' ! ');
         }
 
@@ -285,8 +269,7 @@ var PartAudio = class PartAudio extends PartUI {
             return desktopSource + ' ! audiomixer name=am latency=100000000 ' +
                    micSource + ' ! am. ' +
                    'am. ! audioconvert ! audioresample ! ' +
-                   'capsfilter caps=audio/x-raw,rate=48000,channels=' +
-                   desktopChannels + ' ! queue';
+                   'capsfilter caps=' + AUDIO_CAPS + ' ! ' + AUDIO_QUEUE;
         }
 
         return desktopSource || micSource;

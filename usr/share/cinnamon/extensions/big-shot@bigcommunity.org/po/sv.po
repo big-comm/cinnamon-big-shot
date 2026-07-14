@@ -221,3 +221,12 @@ msgstr "Webbkameralager"
 
 msgid "Camera"
 msgstr "Kamera"
+
+msgid "Crop"
+msgstr "Beskär"
+
+msgid "Padding"
+msgstr "Marginal"
+
+msgid "Gradient"
+msgstr "Gradient"

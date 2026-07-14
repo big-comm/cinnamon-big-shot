@@ -221,3 +221,12 @@ msgstr "网络摄像头叠加"
 
 msgid "Camera"
 msgstr "相机"
+
+msgid "Crop"
+msgstr "裁剪"
+
+msgid "Padding"
+msgstr "边距"
+
+msgid "Gradient"
+msgstr "渐变"

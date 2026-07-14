@@ -221,3 +221,12 @@ msgstr "Webkamera átfedés"
 
 msgid "Camera"
 msgstr "Kamera"
+
+msgid "Crop"
+msgstr "Levágás"
+
+msgid "Padding"
+msgstr "Belső margó"
+
+msgid "Gradient"
+msgstr "Színátmenet"

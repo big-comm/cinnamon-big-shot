@@ -221,3 +221,12 @@ msgstr "Επικάλυψη κάμερας"
 
 msgid "Camera"
 msgstr "Κάμερα"
+
+msgid "Crop"
+msgstr "Περικοπή"
+
+msgid "Padding"
+msgstr "Περιθώριο"
+
+msgid "Gradient"
+msgstr "Διαβάθμιση"

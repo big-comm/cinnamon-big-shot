@@ -221,3 +221,12 @@ msgstr "Webcam-overlay"
 
 msgid "Camera"
 msgstr "Kamera"
+
+msgid "Crop"
+msgstr "Beskær"
+
+msgid "Padding"
+msgstr "Margen"
+
+msgid "Gradient"
+msgstr "Overgang"

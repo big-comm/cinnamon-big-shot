@@ -230,6 +230,18 @@ msgstr ""
 msgid "Save As…"
 msgstr ""
 
+#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:467
+msgid "Crop"
+msgstr ""
+
+#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:473
+msgid "Padding"
+msgstr ""
+
+#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:479
+msgid "Gradient"
+msgstr ""
+
 #: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:478
 #: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:483
 msgid "Close"

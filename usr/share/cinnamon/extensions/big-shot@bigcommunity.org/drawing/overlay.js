@@ -1469,6 +1469,21 @@ var DrawingOverlay = class DrawingOverlay {
     setCachedPixbuf(pixbuf, bufScale) {
         this._cachedPixbuf = pixbuf;
         this._cachedBufScale = bufScale;
+        for (let i = 0; i < this._actions.length; i++) {
+            let action = this._actions[i];
+            if (typeof action.generatePreview !== 'function')
+                continue;
+            action._previewBlocks = null;
+            action._previewSurface = null;
+            action._sourceSurface = null;
+            action.generatePreview(pixbuf, bufScale);
+        }
+        this._actor.queue_repaint();
+    }
+
+    clearPreviewCache() {
+        this._cachedPixbuf = null;
+        this._cachedBufScale = null;
     }
 
     _generateEffectPreview(action) {

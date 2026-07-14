@@ -38,6 +38,8 @@ var PartCrop = class PartCrop extends PartUI {
         this._cropRect = null;
         this._imageWidth = 0;
         this._imageHeight = 0;
+        this._imageX = 0;
+        this._imageY = 0;
         this._padding = 0;
         this._isActive = false;
         this._dragging = null;
@@ -106,11 +108,24 @@ var PartCrop = class PartCrop extends PartUI {
         }
     }
 
-    activate(imageWidth, imageHeight) {
+    activate(imageX, imageY, imageWidth, imageHeight) {
+        let sameBounds = this._cropRect &&
+            this._imageX === imageX && this._imageY === imageY &&
+            this._imageWidth === imageWidth &&
+            this._imageHeight === imageHeight;
         this._isActive = true;
+        this._imageX = imageX;
+        this._imageY = imageY;
         this._imageWidth = imageWidth;
         this._imageHeight = imageHeight;
-        this._cropRect = { x: 0, y: 0, width: imageWidth, height: imageHeight };
+        if (!sameBounds) {
+            this._cropRect = {
+                x: imageX,
+                y: imageY,
+                width: imageWidth,
+                height: imageHeight,
+            };
+        }
         this._updateOverlay();
         this._overlay.visible = true;
         this._handles.forEach((h) => { h.visible = true; });
@@ -137,6 +152,17 @@ var PartCrop = class PartCrop extends PartUI {
 
     get cropRect() {
         return this._cropRect;
+    }
+
+    get isActive() {
+        return this._isActive;
+    }
+
+    reset() {
+        this.deactivate();
+        this._cropRect = null;
+        this._padding = 0;
+        this._paddingLabel.text = '0px';
     }
 
     _onHandlePress(def, event) {
@@ -182,10 +208,10 @@ var PartCrop = class PartCrop extends PartUI {
         let rw = this._cropRect.width;
         let rh = this._cropRect.height;
 
-        if (edges.indexOf('left') >= 0) { let nx = Math.max(0, Math.min(rx + dx, rx + rw - MIN_CROP)); rw -= nx - rx; rx = nx; }
-        if (edges.indexOf('right') >= 0) { rw = Math.max(MIN_CROP, Math.min(rw + dx, this._imageWidth - rx)); }
-        if (edges.indexOf('top') >= 0) { let ny = Math.max(0, Math.min(ry + dy, ry + rh - MIN_CROP)); rh -= ny - ry; ry = ny; }
-        if (edges.indexOf('bottom') >= 0) { rh = Math.max(MIN_CROP, Math.min(rh + dy, this._imageHeight - ry)); }
+        if (edges.indexOf('left') >= 0) { let nx = Math.max(this._imageX, Math.min(rx + dx, rx + rw - MIN_CROP)); rw -= nx - rx; rx = nx; }
+        if (edges.indexOf('right') >= 0) { rw = Math.max(MIN_CROP, Math.min(rw + dx, this._imageX + this._imageWidth - rx)); }
+        if (edges.indexOf('top') >= 0) { let ny = Math.max(this._imageY, Math.min(ry + dy, ry + rh - MIN_CROP)); rh -= ny - ry; ry = ny; }
+        if (edges.indexOf('bottom') >= 0) { rh = Math.max(MIN_CROP, Math.min(rh + dy, this._imageY + this._imageHeight - ry)); }
 
         this._cropRect = { x: rx, y: ry, width: rw, height: rh };
         this._updateOverlay();
@@ -203,8 +229,10 @@ var PartCrop = class PartCrop extends PartUI {
         if (this._dragging.handleId === 'move') {
             let nx = orig.x + dx;
             let ny = orig.y + dy;
-            nx = Math.max(0, Math.min(nx, this._imageWidth - orig.width));
-            ny = Math.max(0, Math.min(ny, this._imageHeight - orig.height));
+            nx = Math.max(this._imageX, Math.min(nx,
+                this._imageX + this._imageWidth - orig.width));
+            ny = Math.max(this._imageY, Math.min(ny,
+                this._imageY + this._imageHeight - orig.height));
             this._cropRect.x = nx;
             this._cropRect.y = ny;
         } else {
@@ -212,20 +240,22 @@ var PartCrop = class PartCrop extends PartUI {
             let rx = orig.x, ry = orig.y, rw = orig.width, rh = orig.height;
 
             if (edges.indexOf('left') >= 0) {
-                let newX = Math.max(0, Math.min(rx + dx, rx + rw - MIN_CROP));
+                let newX = Math.max(this._imageX, Math.min(rx + dx, rx + rw - MIN_CROP));
                 rw = rw - (newX - rx);
                 rx = newX;
             }
             if (edges.indexOf('right') >= 0) {
-                rw = Math.max(MIN_CROP, Math.min(orig.width + dx, this._imageWidth - rx));
+                rw = Math.max(MIN_CROP, Math.min(orig.width + dx,
+                    this._imageX + this._imageWidth - rx));
             }
             if (edges.indexOf('top') >= 0) {
-                let newY = Math.max(0, Math.min(ry + dy, ry + rh - MIN_CROP));
+                let newY = Math.max(this._imageY, Math.min(ry + dy, ry + rh - MIN_CROP));
                 rh = rh - (newY - ry);
                 ry = newY;
             }
             if (edges.indexOf('bottom') >= 0) {
-                rh = Math.max(MIN_CROP, Math.min(orig.height + dy, this._imageHeight - ry));
+                rh = Math.max(MIN_CROP, Math.min(orig.height + dy,
+                    this._imageY + this._imageHeight - ry));
             }
 
             this._cropRect = { x: rx, y: ry, width: rw, height: rh };
@@ -267,6 +297,10 @@ var PartCrop = class PartCrop extends PartUI {
             let pos = positions[id];
             if (pos) handle.set_position(pos[0], pos[1]);
         });
+        this._paddingLabel.set_position(
+            rect.x + rect.width - 38,
+            rect.y + rect.height + 8
+        );
     }
 
     _onModeChanged(isCast) {
