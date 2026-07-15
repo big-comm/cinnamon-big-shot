@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: big-shot 1.0\n"
-"Report-Msgid-Bugs-To: https://github.com/BigCommunity/cinnamon-big-shot/issues\n"
-"POT-Creation-Date: 2026-03-28 00:00-0300\n"
+"Report-Msgid-Bugs-To: https://github.com/big-comm/cinnamon-big-shot/issues\n"
+"POT-Creation-Date: 2026-07-15 13:12-0300\n"
 "PO-Revision-Date: 2026-03-28 00:00+0000\n"
 "Last-Translator: BigCommunity <dev@bigcommunity.org>\n"
 "Language-Team: ko\n"
@@ -15,218 +15,426 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-msgid "Drawing canvas"
-msgstr "드로잉 캔버스"
-
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:886
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1161
 msgid "Text…"
 msgstr "텍스트…"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:893
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1162
 msgid "Annotation text"
 msgstr "주석 텍스트"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:928
 msgid "Confirm"
 msgstr "확인"
 
-msgid "Screenshot taken"
-msgstr "스크린샷이 찍혔습니다"
-
-msgid "Screenshots"
-msgstr "스크린샷들"
-
-msgid "Screenshot from %s"
-msgstr "%s의 스크린샷"
-
-msgid "Screenshot copied"
-msgstr "스크린샷이 복사되었습니다"
-
-msgid "Save Screenshot"
-msgstr "스크린샷 저장"
-
-msgid "Recording complete"
-msgstr "녹화 완료"
-
-msgid "Click to open the BigShot folder"
-msgstr "클릭하여 BigShot 폴더 열기"
-
-msgid "Click to open the Screenshots folder"
-msgstr "클릭하여 스크린샷 폴더 열기"
-
-msgid "Desktop"
-msgstr "바탕화면"
-
-msgid "Mic"
-msgstr "마이크"
-
-msgid "Record Desktop Audio"
-msgstr "데스크탑 오디오 녹음"
-
-msgid "Record Microphone"
-msgstr "마이크 녹음"
-
-msgid "Recording resolution"
-msgstr "녹화 해상도"
-
-msgid "Frames per second"
-msgstr "초당 프레임"
-
-msgid "Gradient Angle"
-msgstr "그라디언트 각도"
-
-msgid "Border Radius"
-msgstr "테두리 반경"
-
-msgid "Select / Move"
-msgstr "선택 / 이동"
-
-msgid "Pen"
-msgstr "펜"
-
-msgid "Arrow"
-msgstr "화살표"
-
-msgid "Line"
-msgstr "라인"
-
-msgid "Rectangle"
-msgstr "사각형"
-
-msgid "Oval"
-msgstr "Oval"
-
-msgid "Text"
-msgstr "텍스트"
-
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1119
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:64
 msgid "Highlighter"
 msgstr "형광펜"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:636
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2650
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:1260
+msgid "Screenshot taken"
+msgstr "스크린샷이 찍혔습니다"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:637
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2651
+msgid "Click to open the Screenshots folder"
+msgstr "클릭하여 스크린샷 폴더 열기"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1328
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:3322
+msgid "Recording complete"
+msgstr "녹화 완료"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1329
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:3323
+msgid "Click to open the BigShot folder"
+msgstr "클릭하여 BigShot 폴더 열기"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1697
+msgid "Screenshot copied"
+msgstr "스크린샷이 복사되었습니다"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1962
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2623
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:1234
+#, javascript-format
+msgid "Screenshot from %s"
+msgstr "%s의 스크린샷"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1973
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partvideoannotation.js:442
+msgid "Save Screenshot"
+msgstr "스크린샷 저장"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1982
+msgid "PNG Images"
+msgstr "PNG 이미지"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2333
+#, javascript-format
+msgid "Screencast from %s"
+msgstr "%s의 화면 녹화"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2607
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:1223
+msgid "Screenshots"
+msgstr "스크린샷들"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:88
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:180
+msgid "Desktop"
+msgstr "바탕화면"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:99
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:188
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:689
+msgid "Mic"
+msgstr "마이크"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:119
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:182
+msgid "Record Desktop Audio"
+msgstr "데스크탑 오디오 녹음"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:124
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:190
+msgid "Record Microphone"
+msgstr "마이크 녹음"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partcrop.js:80
+#, javascript-format
+msgid "Crop handle %s"
+msgstr "자르기 핸들 %s"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partdownsize.js:22
+msgid "Recording resolution"
+msgstr "녹화 해상도"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partframerate.js:22
+msgid "Frames per second"
+msgstr "초당 프레임"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:27
+msgid "Red Flame"
+msgstr "적색 화염"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:28
+msgid "Sunset Orange"
+msgstr "노을 오렌지"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:29
+msgid "Golden Hour"
+msgstr "골든 아워"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:30
+msgid "Mint Fresh"
+msgstr "상쾌한 민트"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:31
+msgid "Ocean Breeze"
+msgstr "바닷바람"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:32
+msgid "Purple Dream"
+msgstr "보라빛 꿈"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:33
+msgid "Night Sky"
+msgstr "별이 빛나는 밤하늘"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:34
+msgid "Coral Pink"
+msgstr "산호 핑크"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:35
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:726
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:42
+msgid "None"
+msgstr "없음"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:99
+msgid "Gradient Angle"
+msgstr "그라디언트 각도"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:112
+msgid "Border Radius"
+msgstr "테두리 반경"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:57
+msgid "Select / Move"
+msgstr "선택 / 이동"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:58
+msgid "Pen"
+msgstr "펜"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:59
+msgid "Arrow"
+msgstr "화살표"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:60
+msgid "Line"
+msgstr "라인"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:61
+msgid "Rectangle"
+msgstr "사각형"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:62
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:728
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:44
+msgid "Oval"
+msgstr "타원"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:63
+msgid "Text"
+msgstr "텍스트"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:65
 msgid "Censor"
 msgstr "검열"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:66
 msgid "Blur"
 msgstr "블러"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:67
 msgid "Invert Colors"
 msgstr "색상 반전"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:68
 msgid "Magnify / Zoom"
 msgstr "확대 / 줌"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:69
 msgid "Number"
 msgstr "숫자"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:70
 msgid "Number with Arrow"
 msgstr "화살표가 있는 숫자"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:71
 msgid "Number with Pointer"
 msgstr "포인터가 있는 숫자"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:72
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partvideoannotation.js:437
 msgid "Eraser"
 msgstr "지우개"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:164
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:172
 msgid "Show screenshot panel"
 msgstr "스크린샷 패널 표시"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:172
 msgid "Hide screenshot panel"
 msgstr "스크린샷 패널 숨기기"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:323
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:326
 msgid "Color"
 msgstr "색상"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:338
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:341
 msgid "Fill"
 msgstr "채우기"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:351
 msgid "Decrease Size"
 msgstr "크기 줄이기"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:368
 msgid "Brush Size"
 msgstr "브러시 크기"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:392
 msgid "Increase Size"
 msgstr "크기 늘리기"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:411
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:415
 msgid "Font"
 msgstr "글꼴"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:438
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:458
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1350
 msgid "Intensity"
 msgstr "강도"
 
-msgid "Undo"
-msgstr "실행 취소"
-
-msgid "Redo"
-msgstr "다시 실행"
-
-msgid "Copy to Clipboard"
-msgstr "클립보드에 복사"
-
-msgid "Save As…"
-msgstr "다른 이름으로 저장…"
-
-msgid "Close"
-msgstr "닫기"
-
-msgid "Video Settings"
-msgstr "비디오 설정"
-
-msgid "Quality"
-msgstr "품질"
-
-msgid "High"
-msgstr "높음"
-
-msgid "Medium"
-msgstr "중간"
-
-msgid "Low"
-msgstr "낮음"
-
-msgid "Recording quality (bitrate)"
-msgstr "녹화 품질 (비트레이트)"
-
-msgid "Codec"
-msgstr "코덱"
-
-msgid "Mask"
-msgstr "마스크"
-
-msgid "Size"
-msgstr "크기"
-
-msgid "Edit"
-msgstr "편집"
-
-msgid "Edit Screenshot"
-msgstr "스크린샷 편집"
-
-msgid "Custom"
-msgstr "사용자 정의"
-
-msgid "No Fill"
-msgstr "채우기 없음"
-
-msgid "Auto"
-msgstr "자동"
-
-msgid "Use best available codec"
-msgstr "최고의 사용 가능한 코덱 사용"
-
-msgid "Video codec"
-msgstr "비디오 코덱"
-
-msgid "Webcam"
-msgstr "웹캠"
-
-msgid "Webcam Overlay"
-msgstr "웹캠 오버레이"
-
-msgid "Camera"
-msgstr "카메라"
-
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:467
 msgid "Crop"
 msgstr "자르기"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:473
 msgid "Padding"
 msgstr "여백"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:479
 msgid "Gradient"
 msgstr "그레이디언트"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:494
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:497
+msgid "Undo"
+msgstr "실행 취소"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:506
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:509
+msgid "Redo"
+msgstr "다시 실행"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:521
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:524
+msgid "Copy to Clipboard"
+msgstr "클립보드에 복사"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:533
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:536
+msgid "Save As…"
+msgstr "다른 이름으로 저장…"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:556
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:568
+msgid "Close"
+msgstr "닫기"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:601
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:803
+msgid "Video Settings"
+msgstr "비디오 설정"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:645
+msgid "Quality"
+msgstr "품질"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:651
+msgid "High"
+msgstr "높음"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:652
+msgid "Medium"
+msgstr "중간"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:653
+msgid "Low"
+msgstr "낮음"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:666
+msgid "Recording quality (bitrate)"
+msgstr "녹화 품질 (비트레이트)"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:676
+msgid "Codec"
+msgstr "코덱"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:703
+msgid "Camera"
+msgstr "카메라"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:717
+msgid "Mask"
+msgstr "마스크"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:727
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:43
+msgid "Circle"
+msgstr "원형"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:729
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:45
+msgid "Soft"
+msgstr "부드러운"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:730
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:46
+msgid "Spot"
+msgstr "점"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:731
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:47
+msgid "Ornate"
+msgstr "화려한"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:732
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:48
+msgid "Checker"
+msgstr "체커"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:733
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:49
+msgid "Neon"
+msgstr "네온"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:756
+msgid "Size"
+msgstr "크기"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:797
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partvideoannotation.js:432
+msgid "Edit"
+msgstr "편집"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:803
+msgid "Edit Screenshot"
+msgstr "스크린샷 편집"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1206
+msgid "Custom"
+msgstr "사용자 정의"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1370
+#, javascript-format
+msgid "Intensity: %s"
+msgstr "강도: %s"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1454
+msgid "No Fill"
+msgstr "채우기 없음"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1582
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1645
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1720
+msgid "Auto"
+msgstr "자동"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1724
+msgid "Use best available codec"
+msgstr "최고의 사용 가능한 코덱 사용"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1741
+msgid "Video codec"
+msgstr "비디오 코덱"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:129
+msgid "Webcam"
+msgstr "웹캠"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:154
+msgid "Webcam Overlay"
+msgstr "웹캠 오버레이"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:245
+#, javascript-format
+msgid "Camera %s"
+msgstr "카메라 %s"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:263
+msgid "Area"
+msgstr "영역"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:275
+msgid "Fullscreen"
+msgstr "전체 화면"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:286
+msgid "Window"
+msgstr "창"

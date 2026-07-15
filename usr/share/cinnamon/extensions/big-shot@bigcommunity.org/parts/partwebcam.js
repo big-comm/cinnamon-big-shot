@@ -39,14 +39,14 @@ try {
 const WEBCAM_DEFAULT_WIDTH = 320;
 
 const BUILTIN_MASKS = [
-    { id: 'none',             label: 'None' },
-    { id: 'circle',           label: 'Circle' },
-    { id: 'ellipse',          label: 'Oval' },
-    { id: 'soft-circle',      label: 'Soft' },
-    { id: 'spotlight',        label: 'Spot' },
-    { id: 'ornate-frame',     label: 'Ornate' },
-    { id: 'checker',           label: 'Checker' },
-    { id: 'neon',              label: 'Neon' },
+    { id: 'none',             label: function() { return _('None'); } },
+    { id: 'circle',           label: function() { return _('Circle'); } },
+    { id: 'ellipse',          label: function() { return _('Oval'); } },
+    { id: 'soft-circle',      label: function() { return _('Soft'); } },
+    { id: 'spotlight',        label: function() { return _('Spot'); } },
+    { id: 'ornate-frame',     label: function() { return _('Ornate'); } },
+    { id: 'checker',          label: function() { return _('Checker'); } },
+    { id: 'neon',             label: function() { return _('Neon'); } },
 ];
 
 // =============================================================================
@@ -209,7 +209,12 @@ var PartWebcam = class PartWebcam extends PartUI {
         }
     }
 
-    get masks() { return BUILTIN_MASKS; }
+    get masks() {
+        return BUILTIN_MASKS.map(mask => ({
+            id: mask.id,
+            label: mask.label(),
+        }));
+    }
     get available() { return Gst !== null; }
 
     get selectedDevice() { return this._selectedDevice ? this._selectedDevice : null; }
@@ -237,7 +242,7 @@ var PartWebcam = class PartWebcam extends PartUI {
                 continue;
             // Read device name from sysfs
             const nameFile = '/sys/class/video4linux/video' + i + '/name';
-            let name = 'Camera ' + i;
+            let name = _('Camera %s').format(i);
             try {
                 let [ok, contents] = GLib.file_get_contents(nameFile);
                 if (ok) {

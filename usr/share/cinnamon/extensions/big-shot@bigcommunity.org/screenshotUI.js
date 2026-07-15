@@ -1152,6 +1152,35 @@ var ScreenshotUI = class ScreenshotUI {
     }
 
     /**
+     * Publish a PNG as image data and as a copyable file.
+     */
+    copyFileToClipboard(filePath, deleteOnClear) {
+        let loaded = GLib.file_get_contents(filePath);
+        if (!loaded[0]) return;
+
+        // Keep image-only clipboard support as a dependency fallback.
+        St.Clipboard.get_default().set_content(
+            St.ClipboardType.CLIPBOARD,
+            'image/png',
+            GLib.Bytes.new(loaded[1])
+        );
+
+        let python = GLib.find_program_in_path('python3');
+        let provider = GLib.build_filenamev([
+            this._extensionPath,
+            'clipboardProvider.py',
+        ]);
+        if (!python || !Gio.File.new_for_path(provider).query_exists(null)) {
+            log('[Big Shot] Multi-format clipboard provider unavailable');
+            return;
+        }
+
+        let argv = [python, provider, filePath];
+        if (deleteOnClear) argv.push('--delete-on-clear');
+        Gio.Subprocess.new(argv, Gio.SubprocessFlags.STDERR_SILENCE);
+    }
+
+    /**
      * Save the screenshot (with or without annotations).
      * Crops to selected region, copies to clipboard, plays sound.
      */
@@ -1220,16 +1249,7 @@ var ScreenshotUI = class ScreenshotUI {
         try {
             pixbuf.savev(filePath, 'png', [], []);
 
-            // Copy to clipboard
-            let clipboard = St.Clipboard.get_default();
-            let bytes = GLib.file_get_contents(filePath);
-            if (bytes[0]) {
-                clipboard.set_content(
-                    St.ClipboardType.CLIPBOARD,
-                    'image/png',
-                    bytes[1]
-                );
-            }
+            this.copyFileToClipboard(filePath, false);
 
             // Play capture sound
             try {

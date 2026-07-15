@@ -17,6 +17,8 @@ const PartBase = imports.parts.partbase;
 const PartUI = PartBase.PartUI;
 const Gradients = imports.data.gradients;
 
+let _ = function(str) { return str; };
+
 const PADDING_VALUES = [0, 16, 32, 48, 64];
 const HANDLE_SIZE = 10;
 const MIN_CROP = 32;
@@ -75,7 +77,7 @@ var PartCrop = class PartCrop extends PartUI {
                 reactive: true,
                 can_focus: true,
                 visible: false,
-                accessible_name: 'Crop ' + def.id,
+                accessible_name: _('Crop handle %s').format(def.id),
             });
 
             let hdef = def;
@@ -423,3 +425,5 @@ var PartCrop = class PartCrop extends PartUI {
         PartUI.prototype.destroy.call(this);
     }
 };
+
+PartCrop.setGettext = function(fn) { _ = fn; };

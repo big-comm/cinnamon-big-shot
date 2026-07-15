@@ -723,14 +723,14 @@ var PartToolbar = class PartToolbar extends PartUI {
         this._selectedMaskId = 'circle';
 
         const maskOptions = [
-            { id: 'none', label: 'None' },
-            { id: 'circle', label: 'Circle' },
-            { id: 'ellipse', label: 'Oval' },
-            { id: 'soft-circle', label: 'Soft' },
-            { id: 'spotlight', label: 'Spot' },
-            { id: 'ornate-frame', label: 'Ornate' },
-            { id: 'checker', label: 'Checker' },
-            { id: 'neon', label: 'Neon' },
+            { id: 'none', label: _('None') },
+            { id: 'circle', label: _('Circle') },
+            { id: 'ellipse', label: _('Oval') },
+            { id: 'soft-circle', label: _('Soft') },
+            { id: 'spotlight', label: _('Spot') },
+            { id: 'ornate-frame', label: _('Ornate') },
+            { id: 'checker', label: _('Checker') },
+            { id: 'neon', label: _('Neon') },
         ];
         for (let mi = 0; mi < maskOptions.length; mi++) {
             const m = maskOptions[mi];
@@ -1367,7 +1367,7 @@ var PartToolbar = class PartToolbar extends PartUI {
                     x_align: Clutter.ActorAlign.CENTER,
                     y_align: Clutter.ActorAlign.CENTER,
                 }),
-                accessible_name: _('Intensity') + ' ' + level,
+                accessible_name: _('Intensity: %s').format(level),
             });
             if (level === this._intensityLevel)
                 btn.add_style_pseudo_class('checked');

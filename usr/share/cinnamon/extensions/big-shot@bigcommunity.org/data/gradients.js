@@ -8,13 +8,13 @@ const Cairo = imports.gi.cairo;
 
 /**
  * Each gradient has:
- *   name   — Display name
+ *   id     — Stable preset identifier
  *   stops  — Array of [offset, r, g, b] in 0-1 range
  *   angle  — Degrees (0 = top-to-bottom, 90 = left-to-right)
  */
 var GRADIENTS = [
     {
-        name: 'Red Flame',
+        id: 'red-flame',
         angle: 135,
         stops: [
             [0.0, 0.93, 0.11, 0.14],
@@ -22,7 +22,7 @@ var GRADIENTS = [
         ],
     },
     {
-        name: 'Sunset Orange',
+        id: 'sunset-orange',
         angle: 135,
         stops: [
             [0.0, 1.0, 0.47, 0.0],
@@ -30,7 +30,7 @@ var GRADIENTS = [
         ],
     },
     {
-        name: 'Golden Hour',
+        id: 'golden-hour',
         angle: 135,
         stops: [
             [0.0, 1.0, 0.68, 0.0],
@@ -38,7 +38,7 @@ var GRADIENTS = [
         ],
     },
     {
-        name: 'Mint Fresh',
+        id: 'mint-fresh',
         angle: 135,
         stops: [
             [0.0, 0.34, 0.89, 0.54],
@@ -46,7 +46,7 @@ var GRADIENTS = [
         ],
     },
     {
-        name: 'Ocean Breeze',
+        id: 'ocean-breeze',
         angle: 135,
         stops: [
             [0.0, 0.38, 0.63, 0.92],
@@ -54,7 +54,7 @@ var GRADIENTS = [
         ],
     },
     {
-        name: 'Purple Dream',
+        id: 'purple-dream',
         angle: 135,
         stops: [
             [0.0, 0.57, 0.25, 0.67],
@@ -62,7 +62,7 @@ var GRADIENTS = [
         ],
     },
     {
-        name: 'Night Sky',
+        id: 'night-sky',
         angle: 135,
         stops: [
             [0.0, 0.12, 0.12, 0.30],
@@ -70,7 +70,7 @@ var GRADIENTS = [
         ],
     },
     {
-        name: 'Coral Pink',
+        id: 'coral-pink',
         angle: 135,
         stops: [
             [0.0, 1.0, 0.44, 0.47],
@@ -78,7 +78,7 @@ var GRADIENTS = [
         ],
     },
     {
-        name: 'None',
+        id: 'none',
         angle: 0,
         stops: [],
     },

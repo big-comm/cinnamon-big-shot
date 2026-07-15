@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: big-shot 1.0\n"
-"Report-Msgid-Bugs-To: https://github.com/BigCommunity/cinnamon-big-shot/issues\n"
-"POT-Creation-Date: 2026-03-28 00:00-0300\n"
+"Report-Msgid-Bugs-To: https://github.com/big-comm/cinnamon-big-shot/issues\n"
+"POT-Creation-Date: 2026-07-15 13:12-0300\n"
 "PO-Revision-Date: 2026-03-28 00:00+0000\n"
 "Last-Translator: BigCommunity <dev@bigcommunity.org>\n"
 "Language-Team: tr\n"
@@ -15,218 +15,426 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-msgid "Drawing canvas"
-msgstr "Çizim tuvali"
-
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:886
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1161
 msgid "Text…"
 msgstr "Metin…"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:893
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1162
 msgid "Annotation text"
 msgstr "Açıklama metni"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:928
 msgid "Confirm"
 msgstr "Onayla"
 
-msgid "Screenshot taken"
-msgstr "Ekran görüntüsü alındı"
-
-msgid "Screenshots"
-msgstr "Ekran görüntüleri"
-
-msgid "Screenshot from %s"
-msgstr "%s ekran görüntüsü"
-
-msgid "Screenshot copied"
-msgstr "Ekran görüntüsü kopyalandı"
-
-msgid "Save Screenshot"
-msgstr "Ekran Görüntüsünü Kaydet"
-
-msgid "Recording complete"
-msgstr "Kayıt tamamlandı"
-
-msgid "Click to open the BigShot folder"
-msgstr "BigShot klasörünü açmak için tıklayın"
-
-msgid "Click to open the Screenshots folder"
-msgstr "Ekran görüntüleri klasörünü açmak için tıklayın"
-
-msgid "Desktop"
-msgstr "Masaüstü"
-
-msgid "Mic"
-msgstr "Mikrofon"
-
-msgid "Record Desktop Audio"
-msgstr "Masaüstü Sesini Kaydet"
-
-msgid "Record Microphone"
-msgstr "Mikrofonu Kaydet"
-
-msgid "Recording resolution"
-msgstr "Kayıt çözünürlüğü"
-
-msgid "Frames per second"
-msgstr "Kare/saniye"
-
-msgid "Gradient Angle"
-msgstr "Gradyan Açısı"
-
-msgid "Border Radius"
-msgstr "Kenar Yarıçapı"
-
-msgid "Select / Move"
-msgstr "Seç / Taşı"
-
-msgid "Pen"
-msgstr "Kalem"
-
-msgid "Arrow"
-msgstr "Okçular"
-
-msgid "Line"
-msgstr "Satır"
-
-msgid "Rectangle"
-msgstr "Dikdörtgen"
-
-msgid "Oval"
-msgstr "Oval"
-
-msgid "Text"
-msgstr "Metin"
-
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1119
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:64
 msgid "Highlighter"
 msgstr "Vurgulayıcı"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:636
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2650
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:1260
+msgid "Screenshot taken"
+msgstr "Ekran görüntüsü alındı"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:637
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2651
+msgid "Click to open the Screenshots folder"
+msgstr "Ekran görüntüleri klasörünü açmak için tıklayın"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1328
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:3322
+msgid "Recording complete"
+msgstr "Kayıt tamamlandı"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1329
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:3323
+msgid "Click to open the BigShot folder"
+msgstr "BigShot klasörünü açmak için tıklayın"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1697
+msgid "Screenshot copied"
+msgstr "Ekran görüntüsü kopyalandı"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1962
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2623
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:1234
+#, javascript-format
+msgid "Screenshot from %s"
+msgstr "%s ekran görüntüsü"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1973
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partvideoannotation.js:442
+msgid "Save Screenshot"
+msgstr "Ekran Görüntüsünü Kaydet"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1982
+msgid "PNG Images"
+msgstr "PNG Görüntüleri"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2333
+#, javascript-format
+msgid "Screencast from %s"
+msgstr "%s ekran kaydı"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2607
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:1223
+msgid "Screenshots"
+msgstr "Ekran görüntüleri"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:88
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:180
+msgid "Desktop"
+msgstr "Masaüstü"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:99
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:188
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:689
+msgid "Mic"
+msgstr "Mikrofon"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:119
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:182
+msgid "Record Desktop Audio"
+msgstr "Masaüstü Sesini Kaydet"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:124
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:190
+msgid "Record Microphone"
+msgstr "Mikrofonu Kaydet"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partcrop.js:80
+#, javascript-format
+msgid "Crop handle %s"
+msgstr "Kırpma tutamacı %s"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partdownsize.js:22
+msgid "Recording resolution"
+msgstr "Kayıt çözünürlüğü"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partframerate.js:22
+msgid "Frames per second"
+msgstr "Kare/saniye"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:27
+msgid "Red Flame"
+msgstr "Kırmızı Alev"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:28
+msgid "Sunset Orange"
+msgstr "Günbatımı Turuncusu"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:29
+msgid "Golden Hour"
+msgstr "Altın Saat"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:30
+msgid "Mint Fresh"
+msgstr "Nane Tazeliği"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:31
+msgid "Ocean Breeze"
+msgstr "Okyanus Esintisi"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:32
+msgid "Purple Dream"
+msgstr "Mor Rüya"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:33
+msgid "Night Sky"
+msgstr "Gece Gökyüzü"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:34
+msgid "Coral Pink"
+msgstr "Mercan Pembe"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:35
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:726
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:42
+msgid "None"
+msgstr "Yok"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:99
+msgid "Gradient Angle"
+msgstr "Gradyan Açısı"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:112
+msgid "Border Radius"
+msgstr "Kenar Yarıçapı"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:57
+msgid "Select / Move"
+msgstr "Seç / Taşı"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:58
+msgid "Pen"
+msgstr "Kalem"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:59
+msgid "Arrow"
+msgstr "Okçular"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:60
+msgid "Line"
+msgstr "Satır"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:61
+msgid "Rectangle"
+msgstr "Dikdörtgen"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:62
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:728
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:44
+msgid "Oval"
+msgstr "Elips"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:63
+msgid "Text"
+msgstr "Metin"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:65
 msgid "Censor"
 msgstr "Sansürle"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:66
 msgid "Blur"
 msgstr "Bulanıklaştırma"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:67
 msgid "Invert Colors"
 msgstr "Renkleri tersine çevir"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:68
 msgid "Magnify / Zoom"
 msgstr "Büyüt / Yakınlaştır"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:69
 msgid "Number"
 msgstr "Numara"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:70
 msgid "Number with Arrow"
 msgstr "Ok ile Sayı"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:71
 msgid "Number with Pointer"
 msgstr "Pointer ile Sayı"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:72
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partvideoannotation.js:437
 msgid "Eraser"
 msgstr "Silgi"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:164
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:172
 msgid "Show screenshot panel"
 msgstr "Ekran görüntüsü panelini göster"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:172
 msgid "Hide screenshot panel"
 msgstr "Ekran görüntüsü panelini gizle"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:323
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:326
 msgid "Color"
 msgstr "Renk"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:338
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:341
 msgid "Fill"
 msgstr "Doldur"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:351
 msgid "Decrease Size"
 msgstr "Boyut Azalt"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:368
 msgid "Brush Size"
 msgstr "Fırça Boyutu"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:392
 msgid "Increase Size"
 msgstr "Boyutu Artır"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:411
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:415
 msgid "Font"
 msgstr "Yazı Tipi"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:438
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:458
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1350
 msgid "Intensity"
 msgstr "Yoğunluk"
 
-msgid "Undo"
-msgstr "Geri Al"
-
-msgid "Redo"
-msgstr "Yinele"
-
-msgid "Copy to Clipboard"
-msgstr "Panoza Kopyala"
-
-msgid "Save As…"
-msgstr "Farklı Kaydet…"
-
-msgid "Close"
-msgstr "Kapat"
-
-msgid "Video Settings"
-msgstr "Video Ayarları"
-
-msgid "Quality"
-msgstr "Kalite"
-
-msgid "High"
-msgstr "Yüksek"
-
-msgid "Medium"
-msgstr "Orta"
-
-msgid "Low"
-msgstr "Düşük"
-
-msgid "Recording quality (bitrate)"
-msgstr "Kayıt kalitesi (bit hızı)"
-
-msgid "Codec"
-msgstr "Kodek"
-
-msgid "Mask"
-msgstr "Maske"
-
-msgid "Size"
-msgstr "Boyut"
-
-msgid "Edit"
-msgstr "Düzenle"
-
-msgid "Edit Screenshot"
-msgstr "Ekran Görüntüsünü Düzenle"
-
-msgid "Custom"
-msgstr "Özel"
-
-msgid "No Fill"
-msgstr "Doldurma Yok"
-
-msgid "Auto"
-msgstr "Otomatik"
-
-msgid "Use best available codec"
-msgstr "En iyi mevcut kodeği kullanın"
-
-msgid "Video codec"
-msgstr "Video kodek"
-
-msgid "Webcam"
-msgstr "Webcam"
-
-msgid "Webcam Overlay"
-msgstr "Webcam Üstü"
-
-msgid "Camera"
-msgstr "Kamera"
-
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:467
 msgid "Crop"
 msgstr "Kırp"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:473
 msgid "Padding"
 msgstr "İç boşluk"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:479
 msgid "Gradient"
 msgstr "Renk geçişi"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:494
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:497
+msgid "Undo"
+msgstr "Geri Al"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:506
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:509
+msgid "Redo"
+msgstr "Yinele"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:521
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:524
+msgid "Copy to Clipboard"
+msgstr "Panoza Kopyala"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:533
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:536
+msgid "Save As…"
+msgstr "Farklı Kaydet…"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:556
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:568
+msgid "Close"
+msgstr "Kapat"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:601
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:803
+msgid "Video Settings"
+msgstr "Video Ayarları"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:645
+msgid "Quality"
+msgstr "Kalite"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:651
+msgid "High"
+msgstr "Yüksek"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:652
+msgid "Medium"
+msgstr "Orta"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:653
+msgid "Low"
+msgstr "Düşük"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:666
+msgid "Recording quality (bitrate)"
+msgstr "Kayıt kalitesi (bit hızı)"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:676
+msgid "Codec"
+msgstr "Kodek"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:703
+msgid "Camera"
+msgstr "Kamera"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:717
+msgid "Mask"
+msgstr "Maske"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:727
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:43
+msgid "Circle"
+msgstr "Daire"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:729
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:45
+msgid "Soft"
+msgstr "Yumuşak"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:730
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:46
+msgid "Spot"
+msgstr "Nokta"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:731
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:47
+msgid "Ornate"
+msgstr "Süslü"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:732
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:48
+msgid "Checker"
+msgstr "Damalı"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:733
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:49
+msgid "Neon"
+msgstr "Neon efekti"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:756
+msgid "Size"
+msgstr "Boyut"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:797
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partvideoannotation.js:432
+msgid "Edit"
+msgstr "Düzenle"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:803
+msgid "Edit Screenshot"
+msgstr "Ekran Görüntüsünü Düzenle"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1206
+msgid "Custom"
+msgstr "Özel"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1370
+#, javascript-format
+msgid "Intensity: %s"
+msgstr "Yoğunluk: %s"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1454
+msgid "No Fill"
+msgstr "Doldurma Yok"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1582
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1645
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1720
+msgid "Auto"
+msgstr "Otomatik"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1724
+msgid "Use best available codec"
+msgstr "En iyi mevcut kodeği kullanın"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1741
+msgid "Video codec"
+msgstr "Video kodek"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:129
+msgid "Webcam"
+msgstr "Web kamerası"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:154
+msgid "Webcam Overlay"
+msgstr "Webcam Üstü"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:245
+#, javascript-format
+msgid "Camera %s"
+msgstr "Kamera %s"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:263
+msgid "Area"
+msgstr "Bölge"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:275
+msgid "Fullscreen"
+msgstr "Tam ekran"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:286
+msgid "Window"
+msgstr "Pencere"

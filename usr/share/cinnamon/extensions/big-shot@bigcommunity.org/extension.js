@@ -10,7 +10,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-var APP_VERSION = '26.8.1';
+var APP_VERSION = '26.8.2';
 
 const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
@@ -1518,6 +1518,7 @@ var BigShotExtension = class BigShotExtension {
             PartVideoAnnotationMod.PartVideoAnnotation.setGettext(_);
         if (PartGradientMod.PartGradient.setGettext)
             PartGradientMod.PartGradient.setGettext(_);
+        if (PartCropMod.PartCrop.setGettext) PartCropMod.PartCrop.setGettext(_);
 
         // Toolbar
         this._toolbar = new PartToolbarMod.PartToolbar(ui, ext);
@@ -1682,8 +1683,14 @@ var BigShotExtension = class BigShotExtension {
             let pixbuf = result.pixbuf;
 
             if (action === 'copy') {
-                let clipboard = St.Clipboard.get_default();
-                clipboard.set_content(St.ClipboardType.CLIPBOARD, 'image/png', bytes);
+                let tmpPath = GLib.build_filenamev([
+                    GLib.get_tmp_dir(), 'bigshot-copy-' + Date.now() + '.png'
+                ]);
+                let tmpFile = Gio.File.new_for_path(tmpPath);
+                let outStream = tmpFile.create(Gio.FileCreateFlags.NONE, null);
+                outStream.write_bytes(bytes, null);
+                outStream.close(null);
+                this._screenshotUI.copyFileToClipboard(tmpPath, true);
                 try {
                     let player = global.display.get_sound_player();
                     if (player)
@@ -1972,7 +1979,7 @@ var BigShotExtension = class BigShotExtension {
                                 GLib.get_home_dir()
                             )),
                         'filters': new GLib.Variant('a(sa(us))', [
-                            ['PNG Images', [
+                            [_('PNG Images'), [
                                 [0, '*.png'],
                             ]],
                         ]),
@@ -2007,6 +2014,9 @@ var BigShotExtension = class BigShotExtension {
                                         let srcFile = Gio.File.new_for_path(tmpPath);
                                         try {
                                             srcFile.copy(destFile, Gio.FileCopyFlags.OVERWRITE, null, null);
+                                            let destPath = destFile.get_path();
+                                            if (destPath)
+                                                this._screenshotUI.copyFileToClipboard(destPath, false);
                                         } catch (err) {
                                             log('[Big Shot] Save failed: ' + err.message);
                                         }
@@ -2631,14 +2641,7 @@ var BigShotExtension = class BigShotExtension {
                             return;
                         }
                         try {
-                            let bytes = GLib.file_get_contents(filePath);
-                            if (bytes[0]) {
-                                St.Clipboard.get_default().set_content(
-                                    St.ClipboardType.CLIPBOARD,
-                                    'image/png',
-                                    bytes[1]
-                                );
-                            }
+                            this._screenshotUI.copyFileToClipboard(filePath, false);
                         } catch (e) {
                             log('[Big Shot] Recording screenshot clipboard failed: ' +
                                 e.message);

@@ -31,7 +31,7 @@ done
 # Pack the extension
 cd "${EXT_DIR}"
 zip -r "../../../../${OUTPUT}" \
-    metadata.json extension.js stylesheet.css \
+    metadata.json extension.js clipboardProvider.py stylesheet.css \
     parts/ drawing/ data/ locale/ \
     --exclude '*.po' --exclude '*.pot' --exclude 'po/'
 cd "../../../.."

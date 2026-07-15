@@ -6,10 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: big-shot 1.0\n"
-"Report-Msgid-Bugs-To: https://github.com/BigCommunity/gnome-shell-big-shot/"
-"issues\n"
-"POT-Creation-Date: 2026-03-19 13:22-0300\n"
+"Project-Id-Version: big-shot 26.7\n"
+"Report-Msgid-Bugs-To: https://github.com/big-comm/cinnamon-big-shot/issues\n"
+"POT-Creation-Date: 2026-07-15 13:12-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,304 +17,426 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/drawing/overlay.js:74
-msgid "Drawing canvas"
-msgstr ""
-
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/drawing/overlay.js:495
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:886
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1161
 msgid "Text…"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/drawing/overlay.js:498
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:893
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1162
 msgid "Annotation text"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/drawing/overlay.js:510
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:928
 msgid "Confirm"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/extension.js:493
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/extension.js:506
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1119
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:64
+msgid "Highlighter"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:636
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2650
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:1260
 msgid "Screenshot taken"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/extension.js:548
-msgid "Screenshots"
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:637
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2651
+msgid "Click to open the Screenshots folder"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/extension.js:558
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/extension.js:777
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1328
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:3322
+msgid "Recording complete"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1329
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:3323
+msgid "Click to open the BigShot folder"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1697
+msgid "Screenshot copied"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1962
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2623
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:1234
 #, javascript-format
 msgid "Screenshot from %s"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/extension.js:740
-msgid "Screenshot copied"
-msgstr ""
-
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/extension.js:789
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1973
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partvideoannotation.js:442
 msgid "Save Screenshot"
 msgstr ""
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js
-msgid "Recording complete"
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1982
+msgid "PNG Images"
 msgstr ""
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js
-msgid "Click to open the BigShot folder"
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2333
+#, javascript-format
+msgid "Screencast from %s"
 msgstr ""
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js
-msgid "Click to open the Screenshots folder"
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2607
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:1223
+msgid "Screenshots"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/partaudio.js:96
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/partaudio.js:153
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:88
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:180
 msgid "Desktop"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/partaudio.js:108
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/partaudio.js:161
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:99
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:188
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:689
 msgid "Mic"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/partaudio.js:155
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:119
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:182
 msgid "Record Desktop Audio"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/partaudio.js:163
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:124
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:190
 msgid "Record Microphone"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/partdownsize.js:18
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partcrop.js:80
+#, javascript-format
+msgid "Crop handle %s"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partdownsize.js:22
 msgid "Recording resolution"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/partframerate.js:18
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partframerate.js:22
 msgid "Frames per second"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/partgradient.js:92
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:27
+msgid "Red Flame"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:28
+msgid "Sunset Orange"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:29
+msgid "Golden Hour"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:30
+msgid "Mint Fresh"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:31
+msgid "Ocean Breeze"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:32
+msgid "Purple Dream"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:33
+msgid "Night Sky"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:34
+msgid "Coral Pink"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:35
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:726
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:42
+msgid "None"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:99
 msgid "Gradient Angle"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/partgradient.js:105
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:112
 msgid "Border Radius"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:35
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:57
 msgid "Select / Move"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:36
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:58
 msgid "Pen"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:37
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:59
 msgid "Arrow"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:38
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:60
 msgid "Line"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:39
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:61
 msgid "Rectangle"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:40
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:62
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:728
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:44
 msgid "Oval"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:41
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:63
 msgid "Text"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:42
-msgid "Highlighter"
-msgstr ""
-
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:43
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:65
 msgid "Censor"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:44
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:66
 msgid "Blur"
 msgstr ""
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:53
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:67
 msgid "Invert Colors"
 msgstr ""
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:68
 msgid "Magnify / Zoom"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:45
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:69
 msgid "Number"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:46
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:70
 msgid "Number with Arrow"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:47
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:71
 msgid "Number with Pointer"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:48
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:72
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partvideoannotation.js:437
 msgid "Eraser"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:116
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:124
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:164
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:172
 msgid "Show screenshot panel"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:124
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:172
 msgid "Hide screenshot panel"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:269
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:272
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:323
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:326
 msgid "Color"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:284
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:287
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:338
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:341
 msgid "Fill"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:297
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:351
 msgid "Decrease Size"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:314
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:368
 msgid "Brush Size"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:338
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:392
 msgid "Increase Size"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:357
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:361
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:411
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:415
 msgid "Font"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:384
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:404
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1041
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1061
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:438
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:458
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1350
 msgid "Intensity"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:416
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:419
-msgid "Undo"
-msgstr ""
-
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:428
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:431
-msgid "Redo"
-msgstr ""
-
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:443
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:446
-msgid "Copy to Clipboard"
-msgstr ""
-
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:455
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:458
-msgid "Save As…"
-msgstr ""
-
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:467
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:467
 msgid "Crop"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:473
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:473
 msgid "Padding"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:479
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:479
 msgid "Gradient"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:478
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:483
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:494
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:497
+msgid "Undo"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:506
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:509
+msgid "Redo"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:521
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:524
+msgid "Copy to Clipboard"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:533
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:536
+msgid "Save As…"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:556
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:568
 msgid "Close"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:516
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:686
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:601
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:803
 msgid "Video Settings"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:560
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:645
 msgid "Quality"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:566
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:651
 msgid "High"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:567
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:652
 msgid "Medium"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:568
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:653
 msgid "Low"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:580
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:666
 msgid "Recording quality (bitrate)"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:590
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:676
 msgid "Codec"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:603
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:703
+msgid "Camera"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:717
 msgid "Mask"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:640
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:727
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:43
+msgid "Circle"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:729
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:45
+msgid "Soft"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:730
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:46
+msgid "Spot"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:731
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:47
+msgid "Ornate"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:732
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:48
+msgid "Checker"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:733
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:49
+msgid "Neon"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:756
 msgid "Size"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:680
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:797
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partvideoannotation.js:432
 msgid "Edit"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:686
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:803
 msgid "Edit Screenshot"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:905
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1206
 msgid "Custom"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1144
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1370
+#, javascript-format
+msgid "Intensity: %s"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1454
 msgid "No Fill"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1277
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1582
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1645
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1720
 msgid "Auto"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1281
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1724
 msgid "Use best available codec"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1297
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1741
 msgid "Video codec"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:88
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:129
 msgid "Webcam"
 msgstr ""
 
-#: usr/share/gnome-shell/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:113
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:154
 msgid "Webcam Overlay"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:245
+#, javascript-format
+msgid "Camera %s"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:263
+msgid "Area"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:275
+msgid "Fullscreen"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:286
+msgid "Window"
 msgstr ""

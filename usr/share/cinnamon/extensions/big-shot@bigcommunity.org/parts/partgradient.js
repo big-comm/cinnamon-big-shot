@@ -22,6 +22,21 @@ let _ = function(str) { return str; };
 const ANGLE_VALUES = [0, 45, 90, 135, 180, 225, 270, 315];
 const RADIUS_VALUES = [0, 8, 16, 24, 32];
 
+function _gradientName(id) {
+    switch (id) {
+    case 'red-flame': return _('Red Flame');
+    case 'sunset-orange': return _('Sunset Orange');
+    case 'golden-hour': return _('Golden Hour');
+    case 'mint-fresh': return _('Mint Fresh');
+    case 'ocean-breeze': return _('Ocean Breeze');
+    case 'purple-dream': return _('Purple Dream');
+    case 'night-sky': return _('Night Sky');
+    case 'coral-pink': return _('Coral Pink');
+    case 'none': return _('None');
+    default: return id;
+    }
+}
+
 var PartGradient = class PartGradient extends PartUI {
     constructor(screenshotUI, extension) {
         super(screenshotUI, extension);
@@ -58,7 +73,7 @@ var PartGradient = class PartGradient extends PartUI {
                 child: preview,
             });
 
-            swatch.set_accessible_name(grad.name);
+            swatch.set_accessible_name(_gradientName(grad.id));
             let idx = i;
             swatch.connect('clicked', () => this._onSwatchClicked(idx));
 
