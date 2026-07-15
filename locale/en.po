@@ -48,6 +48,9 @@ msgstr "Screenshot copied"
 msgid "Save Screenshot"
 msgstr "Save Screenshot"
 
+msgid "PNG Images"
+msgstr "PNG Images"
+
 msgid "Screencast from %s"
 msgstr "Screencast from %s"
 
@@ -75,17 +78,71 @@ msgstr "Record Desktop Audio"
 msgid "Record Microphone"
 msgstr "Record Microphone"
 
+msgid "None"
+msgstr "None"
+
+msgid "Circle"
+msgstr "Circle"
+
+msgid "Oval"
+msgstr "Oval"
+
+msgid "Soft"
+msgstr "Soft"
+
+msgid "Spot"
+msgstr "Spot"
+
+msgid "Ornate"
+msgstr "Ornate"
+
+msgid "Checker"
+msgstr "Checker"
+
+msgid "Neon"
+msgstr "Neon"
+
 msgid "Webcam"
 msgstr "Webcam"
 
 msgid "Webcam Overlay"
 msgstr "Webcam Overlay"
 
+msgid "Camera %s"
+msgstr "Camera %s"
+
+msgid "Red Flame"
+msgstr "Red Flame"
+
+msgid "Sunset Orange"
+msgstr "Sunset Orange"
+
+msgid "Golden Hour"
+msgstr "Golden Hour"
+
+msgid "Mint Fresh"
+msgstr "Mint Fresh"
+
+msgid "Ocean Breeze"
+msgstr "Ocean Breeze"
+
+msgid "Purple Dream"
+msgstr "Purple Dream"
+
+msgid "Night Sky"
+msgstr "Night Sky"
+
+msgid "Coral Pink"
+msgstr "Coral Pink"
+
 msgid "Gradient Angle"
 msgstr "Gradient Angle"
 
 msgid "Border Radius"
 msgstr "Border Radius"
+
+msgid "Crop handle %s"
+msgstr "Crop handle %s"
 
 msgid "Edit"
 msgstr "Edit"
@@ -113,9 +170,6 @@ msgstr "Line"
 
 msgid "Rectangle"
 msgstr "Rectangle"
-
-msgid "Oval"
-msgstr "Oval"
 
 msgid "Text"
 msgstr "Text"
@@ -227,6 +281,9 @@ msgstr "Edit Screenshot"
 
 msgid "Custom"
 msgstr "Custom"
+
+msgid "Intensity: %s"
+msgstr "Intensity: %s"
 
 msgid "No Fill"
 msgstr "No Fill"
