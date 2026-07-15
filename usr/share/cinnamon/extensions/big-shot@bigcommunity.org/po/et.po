@@ -42,6 +42,15 @@ msgstr "Ekraanipilt kopeeritud"
 msgid "Save Screenshot"
 msgstr "Salvesta ekraanipilt"
 
+msgid "Recording complete"
+msgstr "Salvestamine lõpetatud"
+
+msgid "Click to open the BigShot folder"
+msgstr "Klõpsa BigShot-kausta avamiseks"
+
+msgid "Click to open the Screenshots folder"
+msgstr "Klõpsa ekraanipiltide kausta avamiseks"
+
 msgid "Desktop"
 msgstr "Töölaua"
 
@@ -95,6 +104,12 @@ msgstr "Tsenseeri"
 
 msgid "Blur"
 msgstr "Hägu"
+
+msgid "Invert Colors"
+msgstr "Pööra värvid ümber"
+
+msgid "Magnify / Zoom"
+msgstr "Suurenda / Suum"
 
 msgid "Number"
 msgstr "Number"
@@ -207,3 +222,11 @@ msgstr "Veebikaamera ülekatte"
 msgid "Camera"
 msgstr "Kaamera"
 
+msgid "Crop"
+msgstr "Kärbi"
+
+msgid "Padding"
+msgstr "Polsterdus"
+
+msgid "Gradient"
+msgstr "Värviüleminek"

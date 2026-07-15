@@ -53,6 +53,7 @@ const BAR_BOTTOM_MARGIN = 40;
  *   .screencastInProgress — getter/setter for screencast state
  *   .open(mode)         — activate the UI (0=screenshot, 1=screencast)
  *   .close()            — deactivate the UI
+ *   .includeCursor      — whether the pointer is included
  *   .getSelectedGeometry() — returns [x, y, w, h]
  *   .getScreenshotPixbuf() — returns the captured GdkPixbuf
  *
@@ -75,6 +76,10 @@ var ScreenshotUI = class ScreenshotUI {
         this._screenshotSurface = null;
         this._scale = 1;
         this._annotationCompositor = null;
+        this._monitorIndex = global.display.get_primary_monitor();
+        this._monitor = global.display.get_monitor_geometry(
+            this._monitorIndex
+        );
 
         // Selection rectangle (screen coords)
         this._selX = 0;
@@ -125,12 +130,24 @@ var ScreenshotUI = class ScreenshotUI {
         return this._pointerBtn;
     }
 
+    get includeCursor() {
+        return this._includeCursor;
+    }
+
     get editArea() {
         return this._editArea;
     }
 
     get screencastInProgress() {
         return this._screencastInProgress;
+    }
+
+    get monitorGeometry() {
+        return this._monitor;
+    }
+
+    get captureScale() {
+        return this._scale;
     }
 
     set screencastInProgress(val) {
@@ -142,7 +159,7 @@ var ScreenshotUI = class ScreenshotUI {
     // =========================================================================
 
     _buildUI() {
-        let monitor = Main.layoutManager.primaryMonitor;
+        let monitor = this._monitor;
 
         // Root fullscreen actor — FixedLayout for manual child positioning.
         // Children are allocated at their set_position coords with their
@@ -429,7 +446,7 @@ var ScreenshotUI = class ScreenshotUI {
      * the screen. Called after show and whenever layout may have changed.
      */
     _positionBottomBar() {
-        let monitor = Main.layoutManager.primaryMonitor;
+        let monitor = this._monitor;
         let natW = this._bottomBar.get_preferred_width(-1)[1];
         let natH = this._bottomBar.get_preferred_height(-1)[1];
         let x = Math.round((monitor.width - natW) / 2);
@@ -481,7 +498,7 @@ var ScreenshotUI = class ScreenshotUI {
         this._windowBtn.checked = (mode === SelectionMode.WINDOW);
         this._areaBtn.checked = (mode === SelectionMode.AREA);
 
-        let monitor = Main.layoutManager.primaryMonitor;
+        let monitor = this._monitor;
         if (mode === SelectionMode.SCREEN) {
             this._selX = 0;
             this._selY = 0;
@@ -508,10 +525,15 @@ var ScreenshotUI = class ScreenshotUI {
         let windows = global.get_window_actors()
             .filter(a => {
                 let mw = a.meta_window;
-                return mw &&
-                    !mw.minimized &&
-                    mw.get_window_type() === Meta.WindowType.NORMAL &&
-                    mw.showing_on_its_workspace();
+                if (!mw || mw.minimized ||
+                    mw.get_window_type() !== Meta.WindowType.NORMAL ||
+                    !mw.showing_on_its_workspace())
+                    return false;
+                let rect = mw.get_frame_rect();
+                return rect.x < this._monitor.x + this._monitor.width &&
+                    rect.x + rect.width > this._monitor.x &&
+                    rect.y < this._monitor.y + this._monitor.height &&
+                    rect.y + rect.height > this._monitor.y;
             })
             .sort((a, b) => {
                 // Higher stacking order = more on top
@@ -523,10 +545,12 @@ var ScreenshotUI = class ScreenshotUI {
 
         // If cursor coords provided, find window under cursor
         if (mx !== undefined && my !== undefined) {
+            let screenX = mx + this._monitor.x;
+            let screenY = my + this._monitor.y;
             for (let i = 0; i < windows.length; i++) {
                 let rect = windows[i].meta_window.get_frame_rect();
-                if (mx >= rect.x && mx < rect.x + rect.width &&
-                    my >= rect.y && my < rect.y + rect.height) {
+                if (screenX >= rect.x && screenX < rect.x + rect.width &&
+                    screenY >= rect.y && screenY < rect.y + rect.height) {
                     found = windows[i].meta_window;
                     break;
                 }
@@ -536,9 +560,7 @@ var ScreenshotUI = class ScreenshotUI {
         // Fallback: use focused window or topmost
         if (!found) {
             let focused = global.display.focus_window;
-            if (focused &&
-                !focused.minimized &&
-                focused.get_window_type() === Meta.WindowType.NORMAL) {
+            if (focused && windows.some(a => a.meta_window === focused)) {
                 found = focused;
             } else if (windows.length > 0) {
                 found = windows[0].meta_window;
@@ -547,13 +569,24 @@ var ScreenshotUI = class ScreenshotUI {
 
         if (found) {
             let rect = found.get_frame_rect();
-            this._selX = rect.x;
-            this._selY = rect.y;
-            this._selW = rect.width;
-            this._selH = rect.height;
+            let left = Math.max(rect.x, this._monitor.x);
+            let top = Math.max(rect.y, this._monitor.y);
+            let right = Math.min(
+                rect.x + rect.width,
+                this._monitor.x + this._monitor.width
+            );
+            let bottom = Math.min(
+                rect.y + rect.height,
+                this._monitor.y + this._monitor.height
+            );
+            this._selX = left - this._monitor.x;
+            this._selY = top - this._monitor.y;
+            this._selW = Math.max(MIN_SELECTION, right - left);
+            this._selH = Math.max(MIN_SELECTION, bottom - top);
+            this._clampSelection();
         } else {
             // No windows — fall back to full screen
-            let monitor = Main.layoutManager.primaryMonitor;
+            let monitor = this._monitor;
             this._selX = 0;
             this._selY = 0;
             this._selW = monitor.width;
@@ -564,6 +597,22 @@ var ScreenshotUI = class ScreenshotUI {
     // =========================================================================
     // OPEN / CLOSE
     // =========================================================================
+
+    _setActiveMonitor(index) {
+        let count = global.display.get_n_monitors();
+        if (index < 0 || index >= count)
+            index = global.display.get_primary_monitor();
+        this._monitorIndex = index;
+        this._monitor = global.display.get_monitor_geometry(index);
+        this.actor.set_position(this._monitor.x, this._monitor.y);
+        this.actor.set_size(this._monitor.width, this._monitor.height);
+        this._previewActor.set_size(this._monitor.width, this._monitor.height);
+        this._selectionOverlay.set_size(
+            this._monitor.width,
+            this._monitor.height
+        );
+        this._editArea.set_size(this._monitor.width, this._monitor.height);
+    }
 
     /**
      * Open the screenshot UI.
@@ -577,16 +626,11 @@ var ScreenshotUI = class ScreenshotUI {
             this._shotBtn.checked = (mode === UIMode.SCREENSHOT);
         }
 
+        this._setActiveMonitor(global.display.get_current_monitor());
+
         // Capture the screen before showing the UI
         this._captureScreen(() => {
-            let monitor = Main.layoutManager.primaryMonitor;
-
-            // Resize layers to current monitor
-            this.actor.set_size(monitor.width, monitor.height);
-            this.actor.set_position(monitor.x, monitor.y);
-            this._previewActor.set_size(monitor.width, monitor.height);
-            this._selectionOverlay.set_size(monitor.width, monitor.height);
-            this._editArea.set_size(monitor.width, monitor.height);
+            let monitor = this._monitor;
 
             // Default to area selection
             this._selX = Math.round(monitor.width * 0.15);
@@ -675,11 +719,20 @@ var ScreenshotUI = class ScreenshotUI {
         ]);
 
         let screenshot = new Cinnamon.Screenshot();
-        screenshot.screenshot(this._includeCursor, tmpFile, (obj, result) => {
+        let scale = global.ui_scale || 1;
+        screenshot.screenshot_area(
+            this._includeCursor,
+            Math.round(this._monitor.x * scale),
+            Math.round(this._monitor.y * scale),
+            Math.round(this._monitor.width * scale),
+            Math.round(this._monitor.height * scale),
+            tmpFile,
+            (obj, result) => {
             try {
                 // Load as pixbuf for annotation compositing
                 this._screenshotPixbuf = GdkPixbuf.Pixbuf.new_from_file(tmpFile);
-                this._scale = 1;
+                this._scale = this._screenshotPixbuf.get_width() /
+                    this._monitor.width;
 
                 // Load as Clutter texture for preview
                 let image = new Clutter.Image();
@@ -712,7 +765,8 @@ var ScreenshotUI = class ScreenshotUI {
             }
 
             if (callback) callback();
-        });
+            }
+        );
     }
 
     /**
@@ -723,15 +777,44 @@ var ScreenshotUI = class ScreenshotUI {
     }
 
     /**
-     * Get the selected geometry in screen coordinates.
+     * Get the selected geometry in monitor-local logical coordinates.
      * @returns {Array} [x, y, width, height]
      */
     getSelectedGeometry() {
         if (this._selectionMode === SelectionMode.SCREEN) {
-            let monitor = Main.layoutManager.primaryMonitor;
+            let monitor = this._monitor;
             return [0, 0, monitor.width, monitor.height];
         }
         return [this._selX, this._selY, this._selW, this._selH];
+    }
+
+    /** Get the selected geometry in global logical screen coordinates. */
+    getSelectedScreenGeometry() {
+        let geometry = this.getSelectedGeometry();
+        return [
+            geometry[0] + this._monitor.x,
+            geometry[1] + this._monitor.y,
+            geometry[2],
+            geometry[3],
+        ];
+    }
+
+    /** Get the selected geometry in captured-pixbuf coordinates. */
+    getSelectedPixelGeometry() {
+        if (!this._screenshotPixbuf)
+            return null;
+        let geometry = this.getSelectedGeometry();
+        let x = Math.max(0, Math.round(geometry[0] * this._scale));
+        let y = Math.max(0, Math.round(geometry[1] * this._scale));
+        let width = Math.min(
+            Math.round(geometry[2] * this._scale),
+            this._screenshotPixbuf.get_width() - x
+        );
+        let height = Math.min(
+            Math.round(geometry[3] * this._scale),
+            this._screenshotPixbuf.get_height() - y
+        );
+        return [x, y, Math.max(0, width), Math.max(0, height)];
     }
 
     // =========================================================================
@@ -863,11 +946,19 @@ var ScreenshotUI = class ScreenshotUI {
     // INPUT HANDLING
     // =========================================================================
 
+    _eventToLocal(event) {
+        let coords = event.get_coords();
+        return [
+            coords[0] - this._monitor.x,
+            coords[1] - this._monitor.y,
+        ];
+    }
+
     _onButtonPress(event) {
         if (event.get_button() !== Clutter.BUTTON_PRIMARY)
             return Clutter.EVENT_PROPAGATE;
 
-        let coords = event.get_coords();
+        let coords = this._eventToLocal(event);
         let mx = coords[0];
         let my = coords[1];
 
@@ -900,7 +991,7 @@ var ScreenshotUI = class ScreenshotUI {
     }
 
     _onMotion(event) {
-        let coords = event.get_coords();
+        let coords = this._eventToLocal(event);
         let mx = coords[0];
         let my = coords[1];
 
@@ -921,6 +1012,7 @@ var ScreenshotUI = class ScreenshotUI {
             this._selY = y0;
             this._selW = x1 - x0;
             this._selH = y1 - y0;
+            this._clampSelection();
             this._selectionOverlay.queue_repaint();
             return Clutter.EVENT_STOP;
         }
@@ -944,12 +1036,13 @@ var ScreenshotUI = class ScreenshotUI {
             this._isSelecting = false;
             // Reset to default if selection too small
             if (this._selW < MIN_SELECTION || this._selH < MIN_SELECTION) {
-                let monitor = Main.layoutManager.primaryMonitor;
+                let monitor = this._monitor;
                 this._selX = Math.round(monitor.width * 0.2);
                 this._selY = Math.round(monitor.height * 0.2);
                 this._selW = Math.round(monitor.width * 0.6);
                 this._selH = Math.round(monitor.height * 0.6);
             }
+            this._clampSelection();
             this._selectionOverlay.queue_repaint();
             return Clutter.EVENT_STOP;
         }
@@ -1011,9 +1104,22 @@ var ScreenshotUI = class ScreenshotUI {
             break;
         }
 
-        // Enforce minimum size
-        if (this._selW < MIN_SELECTION) this._selW = MIN_SELECTION;
-        if (this._selH < MIN_SELECTION) this._selH = MIN_SELECTION;
+        this._clampSelection();
+    }
+
+    _clampSelection() {
+        let width = this._monitor.width;
+        let height = this._monitor.height;
+        this._selW = Math.min(width, Math.max(MIN_SELECTION, this._selW));
+        this._selH = Math.min(height, Math.max(MIN_SELECTION, this._selH));
+        this._selX = Math.max(
+            0,
+            Math.min(this._selX, width - this._selW)
+        );
+        this._selY = Math.max(
+            0,
+            Math.min(this._selY, height - this._selH)
+        );
     }
 
     _onKeyPress(event) {
@@ -1056,14 +1162,15 @@ var ScreenshotUI = class ScreenshotUI {
         }
 
         let geom = this.getSelectedGeometry();
+        let pixelGeom = this.getSelectedPixelGeometry();
         let pixbuf = this._screenshotPixbuf;
 
         // Crop to selection unless fullscreen
         if (this._selectionMode !== SelectionMode.SCREEN) {
-            let cx = Math.max(0, geom[0]);
-            let cy = Math.max(0, geom[1]);
-            let cw = Math.min(geom[2], pixbuf.get_width() - cx);
-            let ch = Math.min(geom[3], pixbuf.get_height() - cy);
+            let cx = pixelGeom[0];
+            let cy = pixelGeom[1];
+            let cw = pixelGeom[2];
+            let ch = pixelGeom[3];
 
             if (cw > 0 && ch > 0) {
                 pixbuf = pixbuf.new_subpixbuf(cx, cy, cw, ch);

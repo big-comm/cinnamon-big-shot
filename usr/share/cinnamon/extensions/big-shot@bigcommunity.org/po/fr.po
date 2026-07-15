@@ -42,6 +42,15 @@ msgstr "Capture d’écran copiée"
 msgid "Save Screenshot"
 msgstr "Enregistrer la capture d’écran"
 
+msgid "Recording complete"
+msgstr "Enregistrement terminé"
+
+msgid "Click to open the BigShot folder"
+msgstr "Cliquez pour ouvrir le dossier BigShot"
+
+msgid "Click to open the Screenshots folder"
+msgstr "Cliquez pour ouvrir le dossier Captures d’écran"
+
 msgid "Desktop"
 msgstr "Bureau"
 
@@ -95,6 +104,12 @@ msgstr "Censure"
 
 msgid "Blur"
 msgstr "Flou"
+
+msgid "Invert Colors"
+msgstr "Inverser les couleurs"
+
+msgid "Magnify / Zoom"
+msgstr "Agrandir / Zoom"
 
 msgid "Number"
 msgstr "Nombre"
@@ -207,3 +222,11 @@ msgstr "Superposition Webcam"
 msgid "Camera"
 msgstr "Caméra"
 
+msgid "Crop"
+msgstr "Rogner"
+
+msgid "Padding"
+msgstr "Espacement"
+
+msgid "Gradient"
+msgstr "Dégradé"

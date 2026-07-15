@@ -15,14 +15,35 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-msgid "Text…"
-msgstr "Text…"
+msgid "Area"
+msgstr "Area"
 
-msgid "Screenshot copied"
-msgstr "Screenshot copied"
+msgid "Fullscreen"
+msgstr "Fullscreen"
+
+msgid "Window"
+msgstr "Window"
+
+msgid "Screenshots"
+msgstr "Screenshots"
 
 msgid "Screenshot from %s"
 msgstr "Screenshot from %s"
+
+msgid "Screenshot taken"
+msgstr "Screenshot taken"
+
+msgid "Click to open the Screenshots folder"
+msgstr "Click to open the Screenshots folder"
+
+msgid "Recording complete"
+msgstr "Recording complete"
+
+msgid "Click to open the BigShot folder"
+msgstr "Click to open the BigShot folder"
+
+msgid "Screenshot copied"
+msgstr "Screenshot copied"
 
 msgid "Save Screenshot"
 msgstr "Save Screenshot"
@@ -30,8 +51,17 @@ msgstr "Save Screenshot"
 msgid "Screencast from %s"
 msgstr "Screencast from %s"
 
-msgid "Recording resolution"
-msgstr "Recording resolution"
+msgid "Text…"
+msgstr "Text…"
+
+msgid "Annotation text"
+msgstr "Annotation text"
+
+msgid "Confirm"
+msgstr "Confirm"
+
+msgid "Highlighter"
+msgstr "Highlighter"
 
 msgid "Desktop"
 msgstr "Desktop"
@@ -50,6 +80,24 @@ msgstr "Webcam"
 
 msgid "Webcam Overlay"
 msgstr "Webcam Overlay"
+
+msgid "Gradient Angle"
+msgstr "Gradient Angle"
+
+msgid "Border Radius"
+msgstr "Border Radius"
+
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Eraser"
+msgstr "Eraser"
+
+msgid "Frames per second"
+msgstr "Frames per second"
+
+msgid "Recording resolution"
+msgstr "Recording resolution"
 
 msgid "Select / Move"
 msgstr "Select / Move"
@@ -72,14 +120,17 @@ msgstr "Oval"
 msgid "Text"
 msgstr "Text"
 
-msgid "Highlighter"
-msgstr "Highlighter"
-
 msgid "Censor"
 msgstr "Censor"
 
 msgid "Blur"
 msgstr "Blur"
+
+msgid "Invert Colors"
+msgstr "Invert Colors"
+
+msgid "Magnify / Zoom"
+msgstr "Magnify / Zoom"
 
 msgid "Number"
 msgstr "Number"
@@ -89,9 +140,6 @@ msgstr "Number with Arrow"
 
 msgid "Number with Pointer"
 msgstr "Number with Pointer"
-
-msgid "Eraser"
-msgstr "Eraser"
 
 msgid "Show screenshot panel"
 msgstr "Show screenshot panel"
@@ -119,6 +167,15 @@ msgstr "Font"
 
 msgid "Intensity"
 msgstr "Intensity"
+
+msgid "Crop"
+msgstr "Crop"
+
+msgid "Padding"
+msgstr "Padding"
+
+msgid "Gradient"
+msgstr "Gradient"
 
 msgid "Undo"
 msgstr "Undo"
@@ -165,9 +222,6 @@ msgstr "Mask"
 msgid "Size"
 msgstr "Size"
 
-msgid "Edit"
-msgstr "Edit"
-
 msgid "Edit Screenshot"
 msgstr "Edit Screenshot"
 
@@ -185,27 +239,3 @@ msgstr "Use best available codec"
 
 msgid "Video codec"
 msgstr "Video codec"
-
-msgid "Gradient Angle"
-msgstr "Gradient Angle"
-
-msgid "Border Radius"
-msgstr "Border Radius"
-
-msgid "Frames per second"
-msgstr "Frames per second"
-
-msgid "Area"
-msgstr "Area"
-
-msgid "Fullscreen"
-msgstr "Fullscreen"
-
-msgid "Window"
-msgstr "Window"
-
-msgid "Screenshots"
-msgstr "Screenshots"
-
-msgid "Screenshot taken"
-msgstr "Screenshot taken"

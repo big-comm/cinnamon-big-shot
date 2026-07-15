@@ -42,6 +42,15 @@ msgstr "Zrzut ekranu skopiowany"
 msgid "Save Screenshot"
 msgstr "Zapisz zrzut ekranu"
 
+msgid "Recording complete"
+msgstr "Nagrywanie zakończone"
+
+msgid "Click to open the BigShot folder"
+msgstr "Kliknij, aby otworzyć folder BigShot"
+
+msgid "Click to open the Screenshots folder"
+msgstr "Kliknij, aby otworzyć folder Zrzuty ekranu"
+
 msgid "Desktop"
 msgstr "Pulpit"
 
@@ -95,6 +104,12 @@ msgstr "Cenzura"
 
 msgid "Blur"
 msgstr "Rozmycie"
+
+msgid "Invert Colors"
+msgstr "Odwróć kolory"
+
+msgid "Magnify / Zoom"
+msgstr "Powiększ / Zoom"
 
 msgid "Number"
 msgstr "Numer"
@@ -207,3 +222,11 @@ msgstr "Nakładka z kamery internetowej"
 msgid "Camera"
 msgstr "Kamera"
 
+msgid "Crop"
+msgstr "Przytnij"
+
+msgid "Padding"
+msgstr "Margines"
+
+msgid "Gradient"
+msgstr "Gradient"

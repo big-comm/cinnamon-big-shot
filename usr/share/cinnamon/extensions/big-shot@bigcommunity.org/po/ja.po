@@ -42,6 +42,15 @@ msgstr "スクリーンショットをコピーしました"
 msgid "Save Screenshot"
 msgstr "スクリーンショットを保存"
 
+msgid "Recording complete"
+msgstr "録画が完了しました"
+
+msgid "Click to open the BigShot folder"
+msgstr "クリックして BigShot フォルダーを開きます"
+
+msgid "Click to open the Screenshots folder"
+msgstr "クリックしてスクリーンショットフォルダーを開きます"
+
 msgid "Desktop"
 msgstr "デスクトップ"
 
@@ -95,6 +104,12 @@ msgstr "モザイク"
 
 msgid "Blur"
 msgstr "ぼかし"
+
+msgid "Invert Colors"
+msgstr "色を反転"
+
+msgid "Magnify / Zoom"
+msgstr "拡大 / ズーム"
 
 msgid "Number"
 msgstr "数字"
@@ -207,3 +222,11 @@ msgstr "ウェブカメラオーバーレイ"
 msgid "Camera"
 msgstr "カメラ"
 
+msgid "Crop"
+msgstr "切り抜き"
+
+msgid "Padding"
+msgstr "余白"
+
+msgid "Gradient"
+msgstr "グラデーション"

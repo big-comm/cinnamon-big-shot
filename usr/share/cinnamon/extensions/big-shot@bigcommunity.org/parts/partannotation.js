@@ -32,7 +32,7 @@ var PartAnnotation = class PartAnnotation extends PartUI {
         }
 
         // When screenshot UI opens, create the overlay
-        this._connectSignal(this._ui.actor, 'notify::visible', () => {
+        this._connectSignal(this._ui, 'notify::visible', () => {
             this._onUIVisibilityChanged();
         });
     }
@@ -58,17 +58,23 @@ var PartAnnotation = class PartAnnotation extends PartUI {
         if (this._overlay) return;
 
         // In Cinnamon, use editArea from our screenshotUI
-        this._overlay = new DrawingOverlay(this._ui.editArea, this._toolbar);
+        this._overlay = new DrawingOverlay(
+            this._ui.editArea,
+            this._toolbar,
+            this._ui.actor
+        );
 
         // Size the overlay to the full monitor
-        let monitor = global.display.get_current_monitor();
-        let rect = global.display.get_monitor_geometry(monitor);
+        let rect = this._ui.monitorGeometry;
         this._overlay.show(rect.width, rect.height);
 
         // If the screenshot UI has a pixbuf ready, provide it to the overlay
         let pixbuf = this._ui.getScreenshotPixbuf();
         if (pixbuf) {
-            this._overlay.setCachedPixbuf(pixbuf, 1);
+            this._overlay.setCachedPixbuf(
+                pixbuf,
+                this._ui.captureScale
+            );
         }
     }
 

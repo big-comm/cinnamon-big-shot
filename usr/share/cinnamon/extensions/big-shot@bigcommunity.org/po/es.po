@@ -42,6 +42,15 @@ msgstr "Captura de pantalla copiada"
 msgid "Save Screenshot"
 msgstr "Guardar captura de pantalla"
 
+msgid "Recording complete"
+msgstr "Grabación completada"
+
+msgid "Click to open the BigShot folder"
+msgstr "Haz clic para abrir la carpeta BigShot"
+
+msgid "Click to open the Screenshots folder"
+msgstr "Haz clic para abrir la carpeta Capturas de pantalla"
+
 msgid "Desktop"
 msgstr "Escritorio"
 
@@ -95,6 +104,12 @@ msgstr "Censurar"
 
 msgid "Blur"
 msgstr "Desenfoque"
+
+msgid "Invert Colors"
+msgstr "Invertir colores"
+
+msgid "Magnify / Zoom"
+msgstr "Ampliar / Zoom"
 
 msgid "Number"
 msgstr "Número"
@@ -207,3 +222,11 @@ msgstr "Superposición de cámara web"
 msgid "Camera"
 msgstr "Cámara"
 
+msgid "Crop"
+msgstr "Recortar"
+
+msgid "Padding"
+msgstr "Margen"
+
+msgid "Gradient"
+msgstr "Degradado"

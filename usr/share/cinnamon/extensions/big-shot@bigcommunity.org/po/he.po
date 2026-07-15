@@ -42,6 +42,15 @@ msgstr "צילום מסך הועתק"
 msgid "Save Screenshot"
 msgstr "שמור צילום מסך"
 
+msgid "Recording complete"
+msgstr "ההקלטה הושלמה"
+
+msgid "Click to open the BigShot folder"
+msgstr "יש ללחוץ כדי לפתוח את התיקייה BigShot"
+
+msgid "Click to open the Screenshots folder"
+msgstr "יש ללחוץ כדי לפתוח את תיקיית צילומי המסך"
+
 msgid "Desktop"
 msgstr "שולחן עבודה"
 
@@ -95,6 +104,12 @@ msgstr "צנזור"
 
 msgid "Blur"
 msgstr "טשטוש"
+
+msgid "Invert Colors"
+msgstr "היפוך צבעים"
+
+msgid "Magnify / Zoom"
+msgstr "הגדלה / זום"
 
 msgid "Number"
 msgstr "מספר"
@@ -207,3 +222,11 @@ msgstr "שכבת מצלמת רשת"
 msgid "Camera"
 msgstr "מצלמה"
 
+msgid "Crop"
+msgstr "חיתוך"
+
+msgid "Padding"
+msgstr "שוליים"
+
+msgid "Gradient"
+msgstr "מדרג"

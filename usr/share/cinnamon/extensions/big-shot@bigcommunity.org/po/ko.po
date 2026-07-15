@@ -42,6 +42,15 @@ msgstr "스크린샷이 복사되었습니다"
 msgid "Save Screenshot"
 msgstr "스크린샷 저장"
 
+msgid "Recording complete"
+msgstr "녹화 완료"
+
+msgid "Click to open the BigShot folder"
+msgstr "클릭하여 BigShot 폴더 열기"
+
+msgid "Click to open the Screenshots folder"
+msgstr "클릭하여 스크린샷 폴더 열기"
+
 msgid "Desktop"
 msgstr "바탕화면"
 
@@ -95,6 +104,12 @@ msgstr "검열"
 
 msgid "Blur"
 msgstr "블러"
+
+msgid "Invert Colors"
+msgstr "색상 반전"
+
+msgid "Magnify / Zoom"
+msgstr "확대 / 줌"
 
 msgid "Number"
 msgstr "숫자"
@@ -207,3 +222,11 @@ msgstr "웹캠 오버레이"
 msgid "Camera"
 msgstr "카메라"
 
+msgid "Crop"
+msgstr "자르기"
+
+msgid "Padding"
+msgstr "여백"
+
+msgid "Gradient"
+msgstr "그레이디언트"

@@ -45,19 +45,57 @@ var PartIndicator = class PartIndicator extends PartUI {
         this._startTimer();
     }
 
+    onPausing() {
+        if (this._pauseBtn)
+            this._pauseBtn.reactive = false;
+        if (this._panelButton) {
+            this._panelButton.style = 'spacing: 2px; background-color: rgba(200, 140, 20, 0.9); border-radius: 6px; padding: 0 6px; margin: 2px 4px;';
+        }
+    }
+
     onPaused() {
         this._isPaused = true;
         this._pausedElapsed += this._elapsed;
         this._elapsed = 0;
         this._stopTimer();
+        if (this._pauseBtn)
+            this._pauseBtn.reactive = true;
+        this._updatePanelButton();
+    }
+
+    onPauseCancelled() {
+        if (this._pauseBtn)
+            this._pauseBtn.reactive = true;
+        this._isPaused = false;
         this._updatePanelButton();
     }
 
     onResumed() {
         this._isPaused = false;
         this._elapsed = 0;
+        if (this._stopBtn)
+            this._stopBtn.reactive = true;
+        if (this._pauseBtn)
+            this._pauseBtn.reactive = true;
         this._startTimer();
         this._updatePanelButton();
+    }
+
+    onFinalizing() {
+        this._stopTimer();
+        if (this._stopBtn)
+            this._stopBtn.reactive = false;
+        if (this._stopBtn)
+            this._stopBtn.can_focus = false;
+        if (this._pauseBtn) {
+            this._pauseBtn.reactive = false;
+            this._pauseBtn.can_focus = false;
+        }
+        if (this._icon)
+            this._icon.icon_name = 'document-save-symbolic';
+        if (this._panelButton) {
+            this._panelButton.style = 'spacing: 2px; background-color: rgba(90, 90, 90, 0.9); border-radius: 6px; padding: 0 6px; margin: 2px 4px;';
+        }
     }
 
     onRecordingStopped() {

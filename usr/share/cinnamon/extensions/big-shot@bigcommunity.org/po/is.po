@@ -42,6 +42,15 @@ msgstr "Skjámynd afrituð"
 msgid "Save Screenshot"
 msgstr "Vista skjámynd"
 
+msgid "Recording complete"
+msgstr "Upptöku lokið"
+
+msgid "Click to open the BigShot folder"
+msgstr "Smelltu til að opna BigShot-möppuna"
+
+msgid "Click to open the Screenshots folder"
+msgstr "Smelltu til að opna möppuna Skjámyndir"
+
 msgid "Desktop"
 msgstr "Skjáborð"
 
@@ -95,6 +104,12 @@ msgstr "Ritskoða"
 
 msgid "Blur"
 msgstr "Ófærð"
+
+msgid "Invert Colors"
+msgstr "Snúa við litum"
+
+msgid "Magnify / Zoom"
+msgstr "Stækka / Aðdráttur"
 
 msgid "Number"
 msgstr "Tala"
@@ -207,3 +222,11 @@ msgstr "Vefmyndavélarlag"
 msgid "Camera"
 msgstr "Myndavél"
 
+msgid "Crop"
+msgstr "Utansníða"
+
+msgid "Padding"
+msgstr "Spássía"
+
+msgid "Gradient"
+msgstr "Litstigull"

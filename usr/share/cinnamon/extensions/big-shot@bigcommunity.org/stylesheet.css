@@ -244,6 +244,42 @@
     spacing: 4px;
 }
 
+.big-shot-gradient-control {
+    min-width: 42px;
+    padding: 3px 8px;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 7px;
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+}
+
+.big-shot-gradient-control:hover,
+.big-shot-gradient-control:focus {
+    border-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.22);
+}
+
+.big-shot-gradient-control:active {
+    background-color: rgba(53, 132, 228, 0.65);
+}
+
+.big-shot-gradient-swatch {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.big-shot-gradient-swatch:hover,
+.big-shot-gradient-swatch:focus {
+    border-color: rgba(255, 255, 255, 0.9);
+}
+
+.big-shot-gradient-swatch:checked {
+    border: 2px solid #ffffff;
+}
+
 /* ===== Crop Overlay ===== */
 .big-shot-crop-overlay {
     border: 2px dashed rgba(255, 255, 255, 0.8);
@@ -253,4 +289,21 @@
     background: white;
     border: 1px solid #62a0ea;
     border-radius: 1px;
+}
+
+/* ===== Selection Magnifier ===== */
+.big-shot-magnifier-lens {
+    background-color: transparent;
+}
+
+.big-shot-magnifier-crosshair {
+    background-color: rgba(255, 50, 50, 0.7);
+}
+
+.big-shot-magnifier-zoom-label {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #ffffff;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
 }

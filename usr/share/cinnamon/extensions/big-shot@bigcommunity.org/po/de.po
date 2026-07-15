@@ -42,6 +42,15 @@ msgstr "Screenshot kopiert"
 msgid "Save Screenshot"
 msgstr "Screenshot speichern"
 
+msgid "Recording complete"
+msgstr "Aufnahme abgeschlossen"
+
+msgid "Click to open the BigShot folder"
+msgstr "Klicken Sie, um den BigShot-Ordner zu öffnen"
+
+msgid "Click to open the Screenshots folder"
+msgstr "Klicken Sie, um den Screenshots-Ordner zu öffnen"
+
 msgid "Desktop"
 msgstr "Desktop"
 
@@ -95,6 +104,12 @@ msgstr "Zensieren"
 
 msgid "Blur"
 msgstr "Unschärfe"
+
+msgid "Invert Colors"
+msgstr "Farben umkehren"
+
+msgid "Magnify / Zoom"
+msgstr "Vergrößern / Zoomen"
 
 msgid "Number"
 msgstr "Nummer"
@@ -207,3 +222,11 @@ msgstr "Webcam-Overlay"
 msgid "Camera"
 msgstr "Kamera"
 
+msgid "Crop"
+msgstr "Zuschneiden"
+
+msgid "Padding"
+msgstr "Abstand"
+
+msgid "Gradient"
+msgstr "Farbverlauf"

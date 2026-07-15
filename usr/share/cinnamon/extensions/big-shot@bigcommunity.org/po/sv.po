@@ -42,6 +42,15 @@ msgstr "Skärmbild kopierad"
 msgid "Save Screenshot"
 msgstr "Spara skärmbild"
 
+msgid "Recording complete"
+msgstr "Inspelning slutförd"
+
+msgid "Click to open the BigShot folder"
+msgstr "Klicka för att öppna BigShot-mappen"
+
+msgid "Click to open the Screenshots folder"
+msgstr "Klicka för att öppna mappen Skärmbilder"
+
 msgid "Desktop"
 msgstr "Skrivbord"
 
@@ -95,6 +104,12 @@ msgstr "Censur"
 
 msgid "Blur"
 msgstr "Sudda"
+
+msgid "Invert Colors"
+msgstr "Invertera färger"
+
+msgid "Magnify / Zoom"
+msgstr "Förstora / Zooma"
 
 msgid "Number"
 msgstr "Nummer"
@@ -207,3 +222,11 @@ msgstr "Webbkameralager"
 msgid "Camera"
 msgstr "Kamera"
 
+msgid "Crop"
+msgstr "Beskär"
+
+msgid "Padding"
+msgstr "Marginal"
+
+msgid "Gradient"
+msgstr "Gradient"

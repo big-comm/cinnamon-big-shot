@@ -42,6 +42,15 @@ msgstr "Ekran görüntüsü kopyalandı"
 msgid "Save Screenshot"
 msgstr "Ekran Görüntüsünü Kaydet"
 
+msgid "Recording complete"
+msgstr "Kayıt tamamlandı"
+
+msgid "Click to open the BigShot folder"
+msgstr "BigShot klasörünü açmak için tıklayın"
+
+msgid "Click to open the Screenshots folder"
+msgstr "Ekran görüntüleri klasörünü açmak için tıklayın"
+
 msgid "Desktop"
 msgstr "Masaüstü"
 
@@ -95,6 +104,12 @@ msgstr "Sansürle"
 
 msgid "Blur"
 msgstr "Bulanıklaştırma"
+
+msgid "Invert Colors"
+msgstr "Renkleri tersine çevir"
+
+msgid "Magnify / Zoom"
+msgstr "Büyüt / Yakınlaştır"
 
 msgid "Number"
 msgstr "Numara"
@@ -207,3 +222,11 @@ msgstr "Webcam Üstü"
 msgid "Camera"
 msgstr "Kamera"
 
+msgid "Crop"
+msgstr "Kırp"
+
+msgid "Padding"
+msgstr "İç boşluk"
+
+msgid "Gradient"
+msgstr "Renk geçişi"

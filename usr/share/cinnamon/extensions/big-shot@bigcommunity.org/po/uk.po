@@ -42,6 +42,15 @@ msgstr "Знімок екрана скопійовано"
 msgid "Save Screenshot"
 msgstr "Зберегти знімок екрана"
 
+msgid "Recording complete"
+msgstr "Запис завершено"
+
+msgid "Click to open the BigShot folder"
+msgstr "Натисніть, щоб відкрити теку BigShot"
+
+msgid "Click to open the Screenshots folder"
+msgstr "Натисніть, щоб відкрити теку «Знімки екрану»"
+
 msgid "Desktop"
 msgstr "Десктоп"
 
@@ -95,6 +104,12 @@ msgstr "Цензура"
 
 msgid "Blur"
 msgstr "Розмиття"
+
+msgid "Invert Colors"
+msgstr "Інвертувати кольори"
+
+msgid "Magnify / Zoom"
+msgstr "Збільшити / Масштаб"
 
 msgid "Number"
 msgstr "Номер"
@@ -207,3 +222,11 @@ msgstr "Накладення вебкамери"
 msgid "Camera"
 msgstr "Камера"
 
+msgid "Crop"
+msgstr "Обрізати"
+
+msgid "Padding"
+msgstr "Відступ"
+
+msgid "Gradient"
+msgstr "Градієнт"

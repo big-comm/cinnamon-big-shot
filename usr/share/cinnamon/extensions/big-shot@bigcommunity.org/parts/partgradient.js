@@ -16,8 +16,6 @@ const PartBase = imports.parts.partbase;
 const PartUI = PartBase.PartUI;
 const Gradients = imports.data.gradients;
 const GRADIENTS = Gradients.GRADIENTS;
-const Colors = imports.drawing.colors;
-const rgbToCSS = Colors.rgbToCSS;
 
 let _ = function(str) { return str; };
 
@@ -50,25 +48,15 @@ var PartGradient = class PartGradient extends PartUI {
 
         for (let i = 0; i < GRADIENTS.length; i++) {
             let grad = GRADIENTS[i];
+            let preview = this._createSwatchPreview(grad);
             let swatch = new St.Button({
                 style_class: 'big-shot-gradient-swatch',
                 toggle_mode: true,
                 can_focus: true,
+                width: 24,
+                height: 24,
+                child: preview,
             });
-
-            if (grad.stops.length >= 2) {
-                let s0 = grad.stops[0];
-                let sN = grad.stops[grad.stops.length - 1];
-                let c1 = rgbToCSS(s0[1], s0[2], s0[3]);
-                let c2 = rgbToCSS(sN[1], sN[2], sN[3]);
-                swatch.set_style(
-                    'background: linear-gradient(135deg, ' + c1 + ', ' + c2 + ');'
-                );
-            } else {
-                swatch.set_style(
-                    'background: transparent; border: 2px dashed rgba(255,255,255,0.3);'
-                );
-            }
 
             swatch.set_accessible_name(grad.name);
             let idx = i;
@@ -86,7 +74,7 @@ var PartGradient = class PartGradient extends PartUI {
 
         // Angle button
         this._angleButton = new St.Button({
-            style_class: 'big-shot-popup-btn',
+            style_class: 'big-shot-gradient-control',
             child: new St.Label({
                 text: ANGLE_VALUES[this._angleIndex] + '\u00B0',
                 y_align: Clutter.ActorAlign.CENTER,
@@ -99,7 +87,7 @@ var PartGradient = class PartGradient extends PartUI {
 
         // Border radius button
         this._radiusButton = new St.Button({
-            style_class: 'big-shot-popup-btn',
+            style_class: 'big-shot-gradient-control',
             child: new St.Label({
                 text: 'R:' + RADIUS_VALUES[this._radiusIndex],
                 y_align: Clutter.ActorAlign.CENTER,
@@ -118,6 +106,56 @@ var PartGradient = class PartGradient extends PartUI {
         if (this._ui && this._ui.actor) {
             this._ui.actor.add_child(this._picker);
         }
+
+        let anchor = this._toolbar && this._toolbar._editContainer;
+        if (anchor) {
+            this._anchorXId = anchor.connect('notify::x', () => {
+                this._repositionPicker();
+            });
+            this._anchorYId = anchor.connect('notify::y', () => {
+                this._repositionPicker();
+            });
+        }
+    }
+
+    _createSwatchPreview(gradient) {
+        let preview = new St.DrawingArea({
+            width: 20,
+            height: 20,
+            reactive: false,
+        });
+        preview.connect('repaint', area => {
+            let cr = area.get_context();
+            let size = area.get_surface_size();
+            let width = size[0];
+            let height = size[1];
+            if (gradient.stops.length > 0) {
+                Gradients.paintGradient(
+                    cr,
+                    gradient,
+                    0,
+                    0,
+                    width,
+                    height
+                );
+            } else {
+                let block = 5;
+                for (let y = 0; y < height; y += block) {
+                    for (let x = 0; x < width; x += block) {
+                        let light = ((x / block + y / block) % 2) === 0;
+                        cr.setSourceRGBA(
+                            light ? 0.65 : 0.25,
+                            light ? 0.65 : 0.25,
+                            light ? 0.65 : 0.25,
+                            1
+                        );
+                        cr.rectangle(x, y, block, block);
+                        cr.fill();
+                    }
+                }
+            }
+        });
+        return preview;
     }
 
     _onSwatchClicked(index) {
@@ -125,16 +163,26 @@ var PartGradient = class PartGradient extends PartUI {
             this._swatches[i].checked = (i === index);
         }
         this._selected = index;
+        let gradient = GRADIENTS[index];
+        if (gradient && gradient.stops.length > 0 &&
+            this._ext._crop && this._ext._crop.padding === 0)
+            this._ext._crop.setPadding(32);
+        if (this._ext._crop)
+            this._ext._crop.refreshPresentationPreview();
     }
 
     _cycleAngle() {
         this._angleIndex = (this._angleIndex + 1) % ANGLE_VALUES.length;
         this._angleButton.child.text = ANGLE_VALUES[this._angleIndex] + '\u00B0';
+        if (this._ext._crop)
+            this._ext._crop.refreshPresentationPreview();
     }
 
     _cycleRadius() {
         this._radiusIndex = (this._radiusIndex + 1) % RADIUS_VALUES.length;
         this._radiusButton.child.text = 'R:' + RADIUS_VALUES[this._radiusIndex];
+        if (this._ext._crop)
+            this._ext._crop.refreshPresentationPreview();
     }
 
     get selectedGradient() {
@@ -159,6 +207,9 @@ var PartGradient = class PartGradient extends PartUI {
     setVisible(visible) {
         this._picker.visible = visible;
         if (visible) {
+            let parent = this._picker.get_parent();
+            if (parent)
+                parent.set_child_above_sibling(this._picker, null);
             GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
                 this._repositionPicker();
                 return GLib.SOURCE_REMOVE;
@@ -166,24 +217,53 @@ var PartGradient = class PartGradient extends PartUI {
         }
     }
 
+    get visible() {
+        return !!(this._picker && this._picker.visible);
+    }
+
+    reset() {
+        this.setVisible(false);
+        this._selected = GRADIENTS.length - 1;
+        this._angleIndex = 3;
+        this._radiusIndex = 0;
+        for (let i = 0; i < this._swatches.length; i++)
+            this._swatches[i].checked = i === this._selected;
+        this._angleButton.child.text = ANGLE_VALUES[this._angleIndex] + '\u00B0';
+        this._radiusButton.child.text = 'R:' + RADIUS_VALUES[this._radiusIndex];
+    }
+
     _repositionPicker() {
         if (!this._picker || !this._picker.visible) return;
 
-        let panel = this._ui.panel;
-        if (!panel) return;
-        let pos = panel.get_transformed_position();
-        let bgX = pos[0];
-        let bgY = pos[1];
-        let bgW = panel.width;
-        let pw = this._picker.width;
-        let ph = this._picker.height;
+        let anchor = this._toolbar && this._toolbar._editContainer;
+        if (!anchor || !anchor.get_parent() || !anchor.visible)
+            anchor = this._ui.panel;
+        if (!anchor) return;
+        let pos = anchor.get_transformed_position();
+        let monitor = this._ui.monitorGeometry;
+        let bgX = pos[0] - monitor.x;
+        let bgY = pos[1] - monitor.y;
+        let bgW = anchor.width;
+        let pw = this._picker.get_preferred_width(-1)[1] || this._picker.width;
+        let ph = this._picker.get_preferred_height(-1)[1] || this._picker.height;
         this._picker.set_position(
             bgX + (bgW - pw) / 2,
-            bgY - ph - 8
+            bgY - ph - 5
         );
     }
 
     destroy() {
+        let anchor = this._toolbar && this._toolbar._editContainer;
+        if (anchor) {
+            try {
+                if (this._anchorXId) anchor.disconnect(this._anchorXId);
+                if (this._anchorYId) anchor.disconnect(this._anchorYId);
+            } catch (e) {
+                // Toolbar may already be destroyed during extension shutdown.
+            }
+        }
+        this._anchorXId = 0;
+        this._anchorYId = 0;
         if (this._picker) {
             let parent = this._picker.get_parent();
             if (parent) parent.remove_child(this._picker);

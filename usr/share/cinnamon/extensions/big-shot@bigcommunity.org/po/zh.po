@@ -42,6 +42,15 @@ msgstr "截图已复制"
 msgid "Save Screenshot"
 msgstr "保存截图"
 
+msgid "Recording complete"
+msgstr "录制完成"
+
+msgid "Click to open the BigShot folder"
+msgstr "点击打开 BigShot 文件夹"
+
+msgid "Click to open the Screenshots folder"
+msgstr "点击打开截图文件夹"
+
 msgid "Desktop"
 msgstr "桌面"
 
@@ -95,6 +104,12 @@ msgstr "马赛克"
 
 msgid "Blur"
 msgstr "模糊"
+
+msgid "Invert Colors"
+msgstr "反转颜色"
+
+msgid "Magnify / Zoom"
+msgstr "放大 / 缩放"
 
 msgid "Number"
 msgstr "数字"
@@ -207,3 +222,11 @@ msgstr "网络摄像头叠加"
 msgid "Camera"
 msgstr "相机"
 
+msgid "Crop"
+msgstr "裁剪"
+
+msgid "Padding"
+msgstr "边距"
+
+msgid "Gradient"
+msgstr "渐变"

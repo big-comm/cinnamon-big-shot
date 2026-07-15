@@ -42,6 +42,15 @@ msgstr "Snimka zaslona kopirana"
 msgid "Save Screenshot"
 msgstr "Spremi snimku zaslona"
 
+msgid "Recording complete"
+msgstr "Snimanje je završeno"
+
+msgid "Click to open the BigShot folder"
+msgstr "Kliknite za otvaranje mape BigShot"
+
+msgid "Click to open the Screenshots folder"
+msgstr "Kliknite za otvaranje mape Snimke zaslona"
+
 msgid "Desktop"
 msgstr "Desktop"
 
@@ -95,6 +104,12 @@ msgstr "Cenzuriraj"
 
 msgid "Blur"
 msgstr "Zamućenje"
+
+msgid "Invert Colors"
+msgstr "Obrni boje"
+
+msgid "Magnify / Zoom"
+msgstr "Povećaj / Zumiraj"
 
 msgid "Number"
 msgstr "Broj"
@@ -207,3 +222,11 @@ msgstr "Preklop web kamere"
 msgid "Camera"
 msgstr "Kamera"
 
+msgid "Crop"
+msgstr "Odreži"
+
+msgid "Padding"
+msgstr "Unutarnji razmak"
+
+msgid "Gradient"
+msgstr "Gradijent"

@@ -42,6 +42,15 @@ msgstr "Екранната снимка е копирана"
 msgid "Save Screenshot"
 msgstr "Запази екранната снимка"
 
+msgid "Recording complete"
+msgstr "Записът е завършен"
+
+msgid "Click to open the BigShot folder"
+msgstr "Щракнете, за да отворите папката BigShot"
+
+msgid "Click to open the Screenshots folder"
+msgstr "Щракнете, за да отворите папката с екранни снимки"
+
 msgid "Desktop"
 msgstr "Десктоп"
 
@@ -95,6 +104,12 @@ msgstr "Цензуриране"
 
 msgid "Blur"
 msgstr "Замъгляване"
+
+msgid "Invert Colors"
+msgstr "Инвертиране на цветовете"
+
+msgid "Magnify / Zoom"
+msgstr "Увеличаване / Мащабиране"
 
 msgid "Number"
 msgstr "Номер"
@@ -207,3 +222,11 @@ msgstr "Наслагване на уебкамера"
 msgid "Camera"
 msgstr "Камера"
 
+msgid "Crop"
+msgstr "Кадриране"
+
+msgid "Padding"
+msgstr "Отстъп"
+
+msgid "Gradient"
+msgstr "Преливка"

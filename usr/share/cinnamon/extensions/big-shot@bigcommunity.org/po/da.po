@@ -42,6 +42,15 @@ msgstr "Skærmbillede kopieret"
 msgid "Save Screenshot"
 msgstr "Gem skærmbillede"
 
+msgid "Recording complete"
+msgstr "Optagelsen er færdig"
+
+msgid "Click to open the BigShot folder"
+msgstr "Klik for at åbne BigShot-mappen"
+
+msgid "Click to open the Screenshots folder"
+msgstr "Klik for at åbne mappen Skærmbilleder"
+
 msgid "Desktop"
 msgstr "Skrivebord"
 
@@ -95,6 +104,12 @@ msgstr "Censur"
 
 msgid "Blur"
 msgstr "Sløring"
+
+msgid "Invert Colors"
+msgstr "Inverter farver"
+
+msgid "Magnify / Zoom"
+msgstr "Forstør / Zoom"
 
 msgid "Number"
 msgstr "Nummer"
@@ -207,3 +222,11 @@ msgstr "Webcam-overlay"
 msgid "Camera"
 msgstr "Kamera"
 
+msgid "Crop"
+msgstr "Beskær"
+
+msgid "Padding"
+msgstr "Margen"
+
+msgid "Gradient"
+msgstr "Overgang"

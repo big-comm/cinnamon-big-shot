@@ -42,6 +42,15 @@ msgstr "Snímka obrazovky skopírovaná"
 msgid "Save Screenshot"
 msgstr "Uložiť snímku obrazovky"
 
+msgid "Recording complete"
+msgstr "Nahrávanie dokončené"
+
+msgid "Click to open the BigShot folder"
+msgstr "Kliknutím otvoríte priečinok BigShot"
+
+msgid "Click to open the Screenshots folder"
+msgstr "Kliknutím otvoríte priečinok Snímky obrazovky"
+
 msgid "Desktop"
 msgstr "Desktop"
 
@@ -95,6 +104,12 @@ msgstr "Cenzúra"
 
 msgid "Blur"
 msgstr "Rozmazanie"
+
+msgid "Invert Colors"
+msgstr "Invertovať farby"
+
+msgid "Magnify / Zoom"
+msgstr "Zväčšiť / Priblížiť"
 
 msgid "Number"
 msgstr "Číslo"
@@ -207,3 +222,11 @@ msgstr "Prekrytie webkamery"
 msgid "Camera"
 msgstr "Kamera"
 
+msgid "Crop"
+msgstr "Orezať"
+
+msgid "Padding"
+msgstr "Odsadenie"
+
+msgid "Gradient"
+msgstr "Prechod"
