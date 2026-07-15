@@ -6,435 +6,339 @@ msgid ""
 msgstr ""
 "Project-Id-Version: big-shot 1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/big-comm/cinnamon-big-shot/issues\n"
-"POT-Creation-Date: 2026-07-15 13:12-0300\n"
-"PO-Revision-Date: 2026-03-28 00:00+0000\n"
 "Last-Translator: BigCommunity <dev@bigcommunity.org>\n"
 "Language-Team: de\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:886
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1161
 msgid "Text…"
 msgstr "Text…"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:893
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1162
 msgid "Annotation text"
 msgstr "Anmerkungstext"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:928
 msgid "Confirm"
 msgstr "Bestätigen"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1119
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:64
 msgid "Highlighter"
 msgstr "Marker"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:636
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2650
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:1260
 msgid "Screenshot taken"
 msgstr "Screenshot aufgenommen"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:637
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2651
 msgid "Click to open the Screenshots folder"
 msgstr "Klicken Sie, um den Screenshots-Ordner zu öffnen"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1328
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:3322
 msgid "Recording complete"
 msgstr "Aufnahme abgeschlossen"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1329
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:3323
 msgid "Click to open the BigShot folder"
 msgstr "Klicken Sie, um den BigShot-Ordner zu öffnen"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1697
 msgid "Screenshot copied"
 msgstr "Screenshot kopiert"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1962
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2623
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:1234
 #, javascript-format
 msgid "Screenshot from %s"
 msgstr "Screenshot von %s"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1973
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partvideoannotation.js:442
 msgid "Save Screenshot"
 msgstr "Screenshot speichern"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1982
 msgid "PNG Images"
 msgstr "PNG-Bilder"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2333
 #, javascript-format
 msgid "Screencast from %s"
 msgstr "Bildschirmaufzeichnung von %s"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2607
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:1223
 msgid "Screenshots"
 msgstr "Bildschirmfotos"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:88
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:180
 msgid "Desktop"
 msgstr "Arbeitsfläche"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:99
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:188
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:689
 msgid "Mic"
 msgstr "Mikrofon"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:119
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:182
 msgid "Record Desktop Audio"
 msgstr "Desktop-Audio aufnehmen"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:124
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:190
 msgid "Record Microphone"
 msgstr "Mikrofon aufnehmen"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partcrop.js:80
 #, javascript-format
 msgid "Crop handle %s"
 msgstr "Zuschneidegriff %s"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partdownsize.js:22
 msgid "Recording resolution"
 msgstr "Aufnahmeauflösung"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partframerate.js:22
 msgid "Frames per second"
 msgstr "Bilder pro Sekunde"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:27
 msgid "Red Flame"
 msgstr "Rote Flamme"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:28
 msgid "Sunset Orange"
 msgstr "Orange des Sonnenuntergangs"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:29
 msgid "Golden Hour"
 msgstr "Goldene Stunde"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:30
 msgid "Mint Fresh"
 msgstr "Minzfrisch"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:31
 msgid "Ocean Breeze"
 msgstr "Meeresbrise"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:32
 msgid "Purple Dream"
 msgstr "Lila Traum"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:33
 msgid "Night Sky"
 msgstr "Nachthimmel"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:34
 msgid "Coral Pink"
 msgstr "Korallenrosa"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:35
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:726
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:42
 msgid "None"
 msgstr "Keine"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:99
 msgid "Gradient Angle"
 msgstr "Farbverlaufwinkel"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:112
 msgid "Border Radius"
 msgstr "Rahmenecke"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:57
 msgid "Select / Move"
 msgstr "Auswählen / Verschieben"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:58
 msgid "Pen"
 msgstr "Stift"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:59
 msgid "Arrow"
 msgstr "Pfeil"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:60
 msgid "Line"
 msgstr "Linie"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:61
 msgid "Rectangle"
 msgstr "Rechteck"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:62
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:728
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:44
 msgid "Oval"
 msgstr "Ellipse"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:63
 msgid "Text"
 msgstr "Text"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:65
 msgid "Censor"
 msgstr "Zensieren"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:66
 msgid "Blur"
 msgstr "Unschärfe"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:67
 msgid "Invert Colors"
 msgstr "Farben umkehren"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:68
 msgid "Magnify / Zoom"
 msgstr "Vergrößern / Zoomen"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:69
 msgid "Number"
 msgstr "Nummer"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:70
 msgid "Number with Arrow"
 msgstr "Zahl mit Pfeil"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:71
 msgid "Number with Pointer"
 msgstr "Zahl mit Zeiger"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:72
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partvideoannotation.js:437
 msgid "Eraser"
 msgstr "Radiergummi"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:164
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:172
 msgid "Show screenshot panel"
 msgstr "Screenshot-Panel anzeigen"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:172
 msgid "Hide screenshot panel"
 msgstr "Screenshot-Panel ausblenden"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:323
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:326
 msgid "Color"
 msgstr "Farbe"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:338
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:341
 msgid "Fill"
 msgstr "Füllen"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:351
 msgid "Decrease Size"
 msgstr "Größe verringern"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:368
 msgid "Brush Size"
 msgstr "Pinselgröße"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:392
 msgid "Increase Size"
 msgstr "Größe erhöhen"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:411
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:415
 msgid "Font"
 msgstr "Schriftart"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:438
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:458
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1350
 msgid "Intensity"
 msgstr "Intensität"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:467
 msgid "Crop"
 msgstr "Zuschneiden"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:473
 msgid "Padding"
 msgstr "Abstand"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:479
 msgid "Gradient"
 msgstr "Farbverlauf"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:494
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:497
 msgid "Undo"
 msgstr "Rückgängig"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:506
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:509
 msgid "Redo"
 msgstr "Wiederholen"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:521
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:524
 msgid "Copy to Clipboard"
 msgstr "In die Zwischenablage kopieren"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:533
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:536
 msgid "Save As…"
 msgstr "Speichern unter…"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:556
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:568
 msgid "Close"
 msgstr "Schließen"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:601
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:803
 msgid "Video Settings"
 msgstr "Videoeinstellungen"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:645
 msgid "Quality"
 msgstr "Qualität"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:651
 msgid "High"
 msgstr "Hoch"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:652
 msgid "Medium"
 msgstr "Mittel"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:653
 msgid "Low"
 msgstr "Niedrig"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:666
 msgid "Recording quality (bitrate)"
 msgstr "Aufnahmequalität (Bitrate)"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:676
 msgid "Codec"
 msgstr "Codec"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:703
 msgid "Camera"
 msgstr "Kamera"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:717
 msgid "Mask"
 msgstr "Maske"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:727
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:43
 msgid "Circle"
 msgstr "Kreis"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:729
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:45
 msgid "Soft"
 msgstr "Weich"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:730
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:46
 msgid "Spot"
 msgstr "Punkt"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:731
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:47
 msgid "Ornate"
 msgstr "Ornamental"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:732
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:48
 msgid "Checker"
 msgstr "Schachbrett"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:733
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:49
 msgid "Neon"
 msgstr "Neon-Effekt"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:756
 msgid "Size"
 msgstr "Größe"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:797
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partvideoannotation.js:432
 msgid "Edit"
 msgstr "Bearbeiten"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:803
 msgid "Edit Screenshot"
 msgstr "Screenshot bearbeiten"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1206
 msgid "Custom"
 msgstr "Benutzerdefiniert"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1370
 #, javascript-format
 msgid "Intensity: %s"
 msgstr "Intensität: %s"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1454
 msgid "No Fill"
 msgstr "Keine Füllung"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1582
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1645
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1720
 msgid "Auto"
 msgstr "Automatisch"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1724
 msgid "Use best available codec"
 msgstr "Verwenden Sie den besten verfügbaren Codec"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1741
 msgid "Video codec"
 msgstr "Video-Codec"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:129
 msgid "Webcam"
 msgstr "Webcam"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:154
 msgid "Webcam Overlay"
 msgstr "Webcam-Overlay"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:245
 #, javascript-format
 msgid "Camera %s"
 msgstr "Kamera %s"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:263
 msgid "Area"
 msgstr "Bereich"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:275
 msgid "Fullscreen"
 msgstr "Vollbild"
-
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:286
 msgid "Window"
 msgstr "Fenster"
