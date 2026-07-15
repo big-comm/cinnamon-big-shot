@@ -15,21 +15,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-msgid "Area"
-msgstr "Area"
-
-msgid "Fullscreen"
-msgstr "Fullscreen"
-
-msgid "Window"
-msgstr "Window"
-
-msgid "Screenshots"
-msgstr "Screenshots"
-
-msgid "Screenshot from %s"
-msgstr "Screenshot from %s"
-
 msgid "Screenshot taken"
 msgstr "Screenshot taken"
 
@@ -45,6 +30,9 @@ msgstr "Click to open the BigShot folder"
 msgid "Screenshot copied"
 msgstr "Screenshot copied"
 
+msgid "Screenshot from %s"
+msgstr "Screenshot from %s"
+
 msgid "Save Screenshot"
 msgstr "Save Screenshot"
 
@@ -53,6 +41,18 @@ msgstr "PNG Images"
 
 msgid "Screencast from %s"
 msgstr "Screencast from %s"
+
+msgid "Screenshots"
+msgstr "Screenshots"
+
+msgid "Area"
+msgstr "Area"
+
+msgid "Fullscreen"
+msgstr "Fullscreen"
+
+msgid "Window"
+msgstr "Window"
 
 msgid "Text…"
 msgstr "Text…"
@@ -66,6 +66,12 @@ msgstr "Confirm"
 msgid "Highlighter"
 msgstr "Highlighter"
 
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Eraser"
+msgstr "Eraser"
+
 msgid "Desktop"
 msgstr "Desktop"
 
@@ -77,6 +83,9 @@ msgstr "Record Desktop Audio"
 
 msgid "Record Microphone"
 msgstr "Record Microphone"
+
+msgid "Crop handle %s"
+msgstr "Crop handle %s"
 
 msgid "None"
 msgstr "None"
@@ -111,50 +120,8 @@ msgstr "Webcam Overlay"
 msgid "Camera %s"
 msgstr "Camera %s"
 
-msgid "Red Flame"
-msgstr "Red Flame"
-
-msgid "Sunset Orange"
-msgstr "Sunset Orange"
-
-msgid "Golden Hour"
-msgstr "Golden Hour"
-
-msgid "Mint Fresh"
-msgstr "Mint Fresh"
-
-msgid "Ocean Breeze"
-msgstr "Ocean Breeze"
-
-msgid "Purple Dream"
-msgstr "Purple Dream"
-
-msgid "Night Sky"
-msgstr "Night Sky"
-
-msgid "Coral Pink"
-msgstr "Coral Pink"
-
-msgid "Gradient Angle"
-msgstr "Gradient Angle"
-
-msgid "Border Radius"
-msgstr "Border Radius"
-
-msgid "Crop handle %s"
-msgstr "Crop handle %s"
-
-msgid "Edit"
-msgstr "Edit"
-
-msgid "Eraser"
-msgstr "Eraser"
-
 msgid "Frames per second"
 msgstr "Frames per second"
-
-msgid "Recording resolution"
-msgstr "Recording resolution"
 
 msgid "Select / Move"
 msgstr "Select / Move"
@@ -296,3 +263,36 @@ msgstr "Use best available codec"
 
 msgid "Video codec"
 msgstr "Video codec"
+
+msgid "Recording resolution"
+msgstr "Recording resolution"
+
+msgid "Red Flame"
+msgstr "Red Flame"
+
+msgid "Sunset Orange"
+msgstr "Sunset Orange"
+
+msgid "Golden Hour"
+msgstr "Golden Hour"
+
+msgid "Mint Fresh"
+msgstr "Mint Fresh"
+
+msgid "Ocean Breeze"
+msgstr "Ocean Breeze"
+
+msgid "Purple Dream"
+msgstr "Purple Dream"
+
+msgid "Night Sky"
+msgstr "Night Sky"
+
+msgid "Coral Pink"
+msgstr "Coral Pink"
+
+msgid "Gradient Angle"
+msgstr "Gradient Angle"
+
+msgid "Border Radius"
+msgstr "Border Radius"

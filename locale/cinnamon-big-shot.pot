@@ -14,21 +14,6 @@ msgstr  "Project-Id-Version: cinnamon-big-shot\n"
         "Content-Type: text/plain; charset=UTF-8\n"
         "Content-Transfer-Encoding: 8bit\n"
 
-msgid   "Area"
-msgstr  ""
-
-msgid   "Fullscreen"
-msgstr  ""
-
-msgid   "Window"
-msgstr  ""
-
-msgid   "Screenshots"
-msgstr  ""
-
-msgid   "Screenshot from %s"
-msgstr  ""
-
 msgid   "Screenshot taken"
 msgstr  ""
 
@@ -44,6 +29,9 @@ msgstr  ""
 msgid   "Screenshot copied"
 msgstr  ""
 
+msgid   "Screenshot from %s"
+msgstr  ""
+
 msgid   "Save Screenshot"
 msgstr  ""
 
@@ -51,6 +39,18 @@ msgid   "PNG Images"
 msgstr  ""
 
 msgid   "Screencast from %s"
+msgstr  ""
+
+msgid   "Screenshots"
+msgstr  ""
+
+msgid   "Area"
+msgstr  ""
+
+msgid   "Fullscreen"
+msgstr  ""
+
+msgid   "Window"
 msgstr  ""
 
 msgid   "Text…"
@@ -65,6 +65,12 @@ msgstr  ""
 msgid   "Highlighter"
 msgstr  ""
 
+msgid   "Edit"
+msgstr  ""
+
+msgid   "Eraser"
+msgstr  ""
+
 msgid   "Desktop"
 msgstr  ""
 
@@ -75,6 +81,9 @@ msgid   "Record Desktop Audio"
 msgstr  ""
 
 msgid   "Record Microphone"
+msgstr  ""
+
+msgid   "Crop handle %s"
 msgstr  ""
 
 msgid   "None"
@@ -110,49 +119,7 @@ msgstr  ""
 msgid   "Camera %s"
 msgstr  ""
 
-msgid   "Red Flame"
-msgstr  ""
-
-msgid   "Sunset Orange"
-msgstr  ""
-
-msgid   "Golden Hour"
-msgstr  ""
-
-msgid   "Mint Fresh"
-msgstr  ""
-
-msgid   "Ocean Breeze"
-msgstr  ""
-
-msgid   "Purple Dream"
-msgstr  ""
-
-msgid   "Night Sky"
-msgstr  ""
-
-msgid   "Coral Pink"
-msgstr  ""
-
-msgid   "Gradient Angle"
-msgstr  ""
-
-msgid   "Border Radius"
-msgstr  ""
-
-msgid   "Crop handle %s"
-msgstr  ""
-
-msgid   "Edit"
-msgstr  ""
-
-msgid   "Eraser"
-msgstr  ""
-
 msgid   "Frames per second"
-msgstr  ""
-
-msgid   "Recording resolution"
 msgstr  ""
 
 msgid   "Select / Move"
@@ -294,4 +261,37 @@ msgid   "Use best available codec"
 msgstr  ""
 
 msgid   "Video codec"
+msgstr  ""
+
+msgid   "Recording resolution"
+msgstr  ""
+
+msgid   "Red Flame"
+msgstr  ""
+
+msgid   "Sunset Orange"
+msgstr  ""
+
+msgid   "Golden Hour"
+msgstr  ""
+
+msgid   "Mint Fresh"
+msgstr  ""
+
+msgid   "Ocean Breeze"
+msgstr  ""
+
+msgid   "Purple Dream"
+msgstr  ""
+
+msgid   "Night Sky"
+msgstr  ""
+
+msgid   "Coral Pink"
+msgstr  ""
+
+msgid   "Gradient Angle"
+msgstr  ""
+
+msgid   "Border Radius"
 msgstr  ""
