@@ -10,7 +10,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-var APP_VERSION = '26.8.4';
+var APP_VERSION = '26.8.5';
 
 const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
@@ -818,6 +818,11 @@ var BigShotExtension = class BigShotExtension {
         }
 
         this._destroyRecordingRegionMask();
+
+        // Release modal state and focus before destroying any UI actors.
+        if (this._screenshotUI)
+            this._screenshotUI.close();
+        global.stage.set_key_focus(null);
 
         // Destroy all parts
         for (let i = 0; i < this._parts.length; i++) {
