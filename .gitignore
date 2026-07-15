@@ -1,7 +1,6 @@
 *.mo
 *.zip
 GNOME_PARITY_PLAN.md
-locale/
 node_modules/
 .idea/
 .vscode/
