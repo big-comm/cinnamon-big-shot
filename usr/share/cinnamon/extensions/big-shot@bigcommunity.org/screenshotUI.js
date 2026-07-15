@@ -1155,16 +1155,6 @@ var ScreenshotUI = class ScreenshotUI {
      * Publish a PNG as image data and as a copyable file.
      */
     copyFileToClipboard(filePath, deleteOnClear) {
-        let loaded = GLib.file_get_contents(filePath);
-        if (!loaded[0]) return;
-
-        // Keep image-only clipboard support as a dependency fallback.
-        St.Clipboard.get_default().set_content(
-            St.ClipboardType.CLIPBOARD,
-            'image/png',
-            GLib.Bytes.new(loaded[1])
-        );
-
         let python = GLib.find_program_in_path('python3');
         let provider = GLib.build_filenamev([
             this._extensionPath,
@@ -1172,12 +1162,28 @@ var ScreenshotUI = class ScreenshotUI {
         ]);
         if (!python || !Gio.File.new_for_path(provider).query_exists(null)) {
             log('[Big Shot] Multi-format clipboard provider unavailable');
+            this._copyImageToClipboard(filePath);
             return;
         }
 
         let argv = [python, provider, filePath];
         if (deleteOnClear) argv.push('--delete-on-clear');
-        Gio.Subprocess.new(argv, Gio.SubprocessFlags.STDERR_SILENCE);
+        try {
+            Gio.Subprocess.new(argv, Gio.SubprocessFlags.STDERR_SILENCE);
+        } catch (e) {
+            log('[Big Shot] Clipboard provider failed: ' + e.message);
+            this._copyImageToClipboard(filePath);
+        }
+    }
+
+    _copyImageToClipboard(filePath) {
+        let loaded = GLib.file_get_contents(filePath);
+        if (!loaded[0]) return;
+        St.Clipboard.get_default().set_content(
+            St.ClipboardType.CLIPBOARD,
+            'image/png',
+            loaded[1]
+        );
     }
 
     /**
