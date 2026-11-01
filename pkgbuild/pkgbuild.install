@@ -31,24 +31,28 @@ _toggle_extension() {
                 cur=$(gsettings get org.cinnamon enabled-extensions 2>/dev/null)
                 if [[ "$cur" != *"$uuid"* ]]; then
                     if [[ "$cur" == "@as []" || "$cur" == "[]" ]]; then
-                        gsettings set org.cinnamon enabled-extensions "['"'"'$uuid'"'"']"
+                        gsettings set org.cinnamon enabled-extensions "['"'"'$uuid'"'"']" || exit 1
                     else
                         new="${cur%]}, '"'"'$uuid'"'"']"
-                        gsettings set org.cinnamon enabled-extensions "$new"
+                        gsettings set org.cinnamon enabled-extensions "$new" || exit 1
                     fi
                 fi
-            '
-            printMsg "Extension enabled for user: $user"
+                # Same marker used by auto-enable.sh, so a later manual
+                # disable is respected on the next login.
+                marker_dir="${XDG_CONFIG_HOME:-$HOME/.config}/cinnamon-big-shot"
+                mkdir -p "$marker_dir" && touch "$marker_dir/auto-enabled"
+            ' && printMsg "Extension enabled for user: $user" \
+              || printMsg "Could not enable extension for user: $user"
         else
             sudo -u "$user" DBUS_SESSION_BUS_ADDRESS="$dbus_addr" bash -c '
                 uuid="'"$_UUID"'"
                 cur=$(gsettings get org.cinnamon enabled-extensions 2>/dev/null)
                 if [[ "$cur" == *"$uuid"* ]]; then
                     new=$(echo "$cur" | sed "s/, *'"'"'$uuid'"'"'//; s/'"'"'$uuid'"'"', *//; s/'"'"'$uuid'"'"'//")
-                    gsettings set org.cinnamon enabled-extensions "$new"
+                    gsettings set org.cinnamon enabled-extensions "$new" || exit 1
                 fi
-            '
-            printMsg "Extension disabled for user: $user"
+            ' && printMsg "Extension disabled for user: $user" \
+              || printMsg "Could not disable extension for user: $user"
         fi
     done
 }
@@ -60,7 +64,8 @@ post_install() {
 }
 
 post_upgrade() {
-    post_install
+    # Never re-enable on upgrade: the user may have disabled the extension.
+    printMsg "Restart Cinnamon (Ctrl+Alt+Esc) or log out to load the new version."
 }
 
 post_remove() {

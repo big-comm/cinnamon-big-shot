@@ -9,7 +9,7 @@ optdepends=(
     'gst-plugin-pipewire: Wayland screen capture through PipeWire'
     'xdg-desktop-portal: Wayland ScreenCast permission and stream handoff'
 )
-makedepends=('gettext')
+makedepends=('gettext' 'git')
 pkgver=$(date +%y.%m.%d)
 pkgrel=$(date +%H%M)
 arch=('any')

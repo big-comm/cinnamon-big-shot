@@ -86,6 +86,8 @@ var PartAnnotation = class PartAnnotation extends PartUI {
 
     destroy() {
         this._destroyOverlay();
+        // Free module-level Cairo resources kept by the drawing actions
+        imports.drawing.actions.releaseResources();
         PartUI.prototype.destroy.call(this);
     }
 };

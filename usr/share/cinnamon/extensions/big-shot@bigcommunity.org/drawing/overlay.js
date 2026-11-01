@@ -27,6 +27,24 @@ const TextAction = Actions.TextAction;
 const NumberStampAction = Actions.NumberStampAction;
 const NumberArrowAction = Actions.NumberArrowAction;
 const NumberPointerAction = Actions.NumberPointerAction;
+const PixelEffectAction = Actions.PixelEffectAction;
+const Colors = imports.drawing.colors;
+const Pixels = imports.drawing.pixels;
+
+// Zoom callouts magnify what lies below them; nested callouts redraw their
+// own underlay, so cap the recursion to keep repaints bounded.
+const MAX_ZOOM_UNDERLAY_DEPTH = 3;
+
+/** Minimum pointer travel (logical px) before a pen point is recorded. */
+const MIN_STROKE_STEP = 1;
+
+/** Fold Latin uppercase keyvals (A-Z) to lowercase (muffin's Clutter has
+ * no keyval_to_lower). Keysyms for Latin letters equal their ASCII codes. */
+function _keyvalToLower(keyval) {
+    if (keyval >= 0x41 && keyval <= 0x5a)
+        return keyval + 0x20;
+    return keyval;
+}
 
 // Gettext fallback — can be overridden via DrawingOverlay.setGettext()
 let _ = function(str) { return str; };
@@ -119,12 +137,14 @@ var DrawingOverlay = class DrawingOverlay {
     }
 
     _getNextNumber(actionClass) {
-        let count = 0;
+        // Highest existing number + 1, so deleting "2" of 1,2,3 does not
+        // produce a duplicate "3".
+        let max = 0;
         for (const action of this._actions) {
-            if (action instanceof actionClass)
-                count++;
+            if (action instanceof actionClass && action.number > max)
+                max = action.number;
         }
-        return count + 1;
+        return max + 1;
     }
 
     _buildOverlay() {
@@ -137,8 +157,14 @@ var DrawingOverlay = class DrawingOverlay {
         // Connect repaint for Cairo drawing
         this._repaintId = this._actor.connect('repaint', (area) => {
             const cr = area.get_context();
-            const [width, height] = area.get_surface_size();
-            this._onDraw(cr, width, height);
+            try {
+                const [width, height] = area.get_surface_size();
+                this._onDraw(cr, width, height);
+            } catch (e) {
+                log('[Big Shot] Overlay repaint failed: ' + e.message);
+            } finally {
+                Pixels.disposeContext(cr);
+            }
         });
 
         // Direct event handlers on the actor.
@@ -158,6 +184,9 @@ var DrawingOverlay = class DrawingOverlay {
         // Key events for shortcuts (connected to the parent actor)
         this._keyId = this._keyActor.connect('key-press-event', (actor, event) => {
             if (!this._actor || !this._actor.visible) return Clutter.EVENT_PROPAGATE;
+            // Keys typed into the text popover belong to the entry
+            // (e.g. Ctrl+Z must not undo an annotation while typing).
+            if (this._textPopover) return Clutter.EVENT_PROPAGATE;
             return this._onKeyPress(event);
         });
 
@@ -170,13 +199,70 @@ var DrawingOverlay = class DrawingOverlay {
     }
 
     show(width, height) {
+        if (!this._actor) return;
         this._actor.set_size(width, height);
         this._actor.visible = true;
         this._actor.queue_repaint();
     }
 
     hide() {
-        this._actor.visible = false;
+        if (this._actor)
+            this._actor.visible = false;
+    }
+
+    _queueRepaint() {
+        if (this._actor)
+            this._actor.queue_repaint();
+    }
+
+    /** True while the user is editing (overlay captures input). */
+    _isEditing() {
+        if (this._actor && this._actor.reactive)
+            return true;
+        return !!(this._toolbar && this._toolbar.editMode);
+    }
+
+    /** Drop any pointer interaction in progress (drawing, drag, resize). */
+    _resetPointerState() {
+        this._isDrawing = false;
+        this._currentStroke = null;
+        this._startPoint = null;
+        this._currentEndPoint = null;
+        this._isDragging = false;
+        this._dragStart = null;
+        this._dragTotal = null;
+        this._isResizing = false;
+        this._resizeCenter = null;
+        this._isRectResizing = false;
+        this._rectResizeFixed = null;
+        this._rectResizeBefore = null;
+    }
+
+    /** Forget the selection (and any interaction bound to it). */
+    _clearSelectionState() {
+        this._selectedAction = null;
+        this._lastClickAction = null;
+        this._lastClickTime = 0;
+        this._isDragging = false;
+        this._dragStart = null;
+        this._dragTotal = null;
+        this._isResizing = false;
+        this._resizeCenter = null;
+        this._isRectResizing = false;
+        this._rectResizeFixed = null;
+        this._rectResizeBefore = null;
+    }
+
+    /** Clear the selection if it points to an action no longer present. */
+    _validateSelection() {
+        if (this._selectedAction &&
+            this._actions.indexOf(this._selectedAction) < 0)
+            this._clearSelectionState();
+        if (this._lastClickAction &&
+            this._actions.indexOf(this._lastClickAction) < 0) {
+            this._lastClickAction = null;
+            this._lastClickTime = 0;
+        }
     }
 
     /**
@@ -189,18 +275,7 @@ var DrawingOverlay = class DrawingOverlay {
         }
         if (!active) {
             // Reset drawing state when deactivating
-            this._isDrawing = false;
-            this._currentStroke = null;
-            this._startPoint = null;
-            this._currentEndPoint = null;
-            this._isDragging = false;
-            this._dragStart = null;
-            this._dragTotal = null;
-            this._isResizing = false;
-            this._resizeCenter = null;
-            this._isRectResizing = false;
-            this._rectResizeFixed = null;
-            this._rectResizeBefore = null;
+            this._resetPointerState();
         }
     }
 
@@ -212,28 +287,23 @@ var DrawingOverlay = class DrawingOverlay {
         const size = (toolbar ? toolbar.brushSize : null) || 3;
         const intensity = (toolbar ? toolbar.intensity : null) || 3;
 
+        const primaryColor = Colors.hexToRGBA(colorHex) ||
+            Colors.hexToRGBA(Colors.PALETTE[0]);
         let fillColor = null;
         if (mode === DrawingMode.NUMBER || mode === DrawingMode.NUMBER_ARROW || mode === DrawingMode.NUMBER_POINTER) {
-            fillColor = this._hexToRGBA(colorHex);
+            fillColor = primaryColor.slice();
         } else if (fillHex) {
-            fillColor = this._hexToRGBA(fillHex);
+            fillColor = Colors.hexToRGBA(fillHex);
         }
 
         return new DrawingOptions({
             mode,
-            primaryColor: this._hexToRGBA(colorHex),
+            primaryColor,
             size,
             fillColor,
             font: (toolbar ? toolbar.currentFont : null) || 'Sans',
             intensity,
         });
-    }
-
-    _hexToRGBA(hex) {
-        const r = parseInt(hex.slice(1, 3), 16) / 255;
-        const g = parseInt(hex.slice(3, 5), 16) / 255;
-        const b = parseInt(hex.slice(5, 7), 16) / 255;
-        return [r, g, b, 1.0];
     }
 
     _toImageCoords(x, y) {
@@ -260,6 +330,10 @@ var DrawingOverlay = class DrawingOverlay {
     // =========================================================================
 
     _onButtonPress(event) {
+        // Only the primary button draws / selects
+        if (event.get_button() !== 1)
+            return Clutter.EVENT_PROPAGATE;
+
         const [x, y] = event.get_coords();
         const [ix, iy] = this._toImageCoords(x, y);
         const now = GLib.get_monotonic_time();
@@ -274,6 +348,7 @@ var DrawingOverlay = class DrawingOverlay {
                 if (this._actions[i].containsPoint(ix, iy)) {
                     const action = this._actions.splice(i, 1)[0];
                     this._recordHistory({ type: 'remove', action, index: i });
+                    this._validateSelection();
                     this._actor.queue_repaint();
                     return Clutter.EVENT_STOP;
                 }
@@ -371,7 +446,18 @@ var DrawingOverlay = class DrawingOverlay {
         return Clutter.EVENT_STOP;
     }
 
+    _isInteracting() {
+        return this._isDrawing || this._isDragging || this._isResizing ||
+            this._isRectResizing;
+    }
+
     _onMotion(event) {
+        // The release may have happened outside the overlay (no implicit
+        // grab): finish the interaction instead of leaving it stuck.
+        if (this._isInteracting() &&
+            !(event.get_state() & Clutter.ModifierType.BUTTON1_MASK))
+            return this._finishInteraction(event);
+
         const [x, y] = event.get_coords();
         const [ix, iy] = this._toImageCoords(x, y);
 
@@ -420,7 +506,9 @@ var DrawingOverlay = class DrawingOverlay {
         const mode = TOOL_TO_MODE[this._toolbar.activeTool] || DrawingMode.PEN;
 
         if ((mode === DrawingMode.PEN || mode === DrawingMode.HIGHLIGHTER) && this._currentStroke) {
-            this._currentStroke.push([ix, iy]);
+            const last = this._currentStroke[this._currentStroke.length - 1];
+            if (!last || Math.hypot(ix - last[0], iy - last[1]) >= MIN_STROKE_STEP)
+                this._currentStroke.push([ix, iy]);
         }
 
         // Track current endpoint for all modes (needed for live shape preview)
@@ -431,9 +519,19 @@ var DrawingOverlay = class DrawingOverlay {
     }
 
     _onButtonRelease(event) {
+        if (event.get_button() !== 1)
+            return Clutter.EVENT_PROPAGATE;
+        return this._finishInteraction(event);
+    }
+
+    _finishInteraction(event) {
         if (this._isRectResizing) {
             const action = this._selectedAction;
             const before = this._rectResizeBefore;
+            if (!action || !before) {
+                this._resetPointerState();
+                return Clutter.EVENT_STOP;
+            }
             const after = {
                 start: [...action.start],
                 end: [...action.end],
@@ -458,6 +556,10 @@ var DrawingOverlay = class DrawingOverlay {
 
         if (this._isResizing) {
             const action = this._selectedAction;
+            if (!action) {
+                this._resetPointerState();
+                return Clutter.EVENT_STOP;
+            }
             const before = {
                 fontSize: this._resizeStartFont,
                 wrapWidth: this._resizeStartWrapWidth,
@@ -619,6 +721,10 @@ var DrawingOverlay = class DrawingOverlay {
                 break;
         }
 
+        // A plain click must not create an invisible shape in the history
+        if (action && !this._hasMinimumSize(action))
+            action = null;
+
         if (action) {
             this._actions.push(action);
             this._recordHistory({
@@ -646,6 +752,19 @@ var DrawingOverlay = class DrawingOverlay {
         this._actor.queue_repaint();
 
         return Clutter.EVENT_STOP;
+    }
+
+    _hasMinimumSize(action) {
+        const min = Actions.MIN_SHAPE_SIZE;
+        if (action instanceof Actions.ArrowAction) {
+            return Math.hypot(action.end[0] - action.start[0],
+                action.end[1] - action.start[1]) >= min;
+        }
+        if (action instanceof Actions.RectAction) {
+            const [minX, minY, maxX, maxY] = action.getBounds();
+            return maxX - minX >= min && maxY - minY >= min;
+        }
+        return true;
     }
 
     _onScroll(event) {
@@ -688,7 +807,7 @@ var DrawingOverlay = class DrawingOverlay {
                     action: selected,
                     before,
                     after,
-                });
+                }, true);
             }
             this._actor.queue_repaint();
             return Clutter.EVENT_STOP;
@@ -717,7 +836,7 @@ var DrawingOverlay = class DrawingOverlay {
                 action: selected,
                 before,
                 after,
-            });
+            }, true);
         }
         this._actor.queue_repaint();
         return Clutter.EVENT_STOP;
@@ -784,9 +903,30 @@ var DrawingOverlay = class DrawingOverlay {
     }
 
     _onKeyPress(event) {
-        const key = event.get_key_symbol();
+        // Normalise case so Shift / Caps Lock do not change the keyval
+        // (Ctrl+Shift+Z arrives as KEY_Z).
+        const key = _keyvalToLower(event.get_key_symbol());
         const ctrl = (event.get_state() & Clutter.ModifierType.CONTROL_MASK) !== 0;
         const shift = (event.get_state() & Clutter.ModifierType.SHIFT_MASK) !== 0;
+
+        // Escape → close the host editor or deselect current selection
+        if (key === Clutter.KEY_Escape) {
+            if (this._onCancel) {
+                this._onCancel();
+                return Clutter.EVENT_STOP;
+            }
+            if (this._selectedAction) {
+                this._clearSelectionState();
+                this._actor.queue_repaint();
+                return Clutter.EVENT_STOP;
+            }
+            return Clutter.EVENT_PROPAGATE;
+        }
+
+        // Everything below only applies while editing; otherwise the keys
+        // belong to the host UI (and must not silently change tools).
+        if (!this._isEditing())
+            return Clutter.EVENT_PROPAGATE;
 
         // Ctrl+Z = Undo
         if (ctrl && !shift && key === Clutter.KEY_z) {
@@ -807,9 +947,9 @@ var DrawingOverlay = class DrawingOverlay {
                 if (idx >= 0) {
                     const action = this._actions.splice(idx, 1)[0];
                     this._recordHistory({ type: 'remove', action, index: idx });
-                    this._selectedAction = null;
-                    this._actor.queue_repaint();
                 }
+                this._clearSelectionState();
+                this._actor.queue_repaint();
             } else if (this._actions.length > 0) {
                 const index = this._actions.length - 1;
                 const action = this._actions.pop();
@@ -844,19 +984,6 @@ var DrawingOverlay = class DrawingOverlay {
         if (!ctrl && !shift && (key === Clutter.KEY_0 || key === Clutter.KEY_s)) {
             if (this._toolbar) this._toolbar.selectTool('select');
             return Clutter.EVENT_STOP;
-        }
-
-        // Escape → close the host editor or deselect current selection
-        if (key === Clutter.KEY_Escape) {
-            if (this._onCancel) {
-                this._onCancel();
-                return Clutter.EVENT_STOP;
-            }
-            if (this._selectedAction) {
-                this._selectedAction = null;
-                this._actor.queue_repaint();
-                return Clutter.EVENT_STOP;
-            }
         }
 
         return Clutter.EVENT_PROPAGATE;
@@ -902,10 +1029,8 @@ var DrawingOverlay = class DrawingOverlay {
         textActor.set_activatable(!multiline);
 
         const fontSize = existingAction ? existingAction.fontSize : options.size * 5;
-        const fontDesc = Pango.FontDescription.from_string(
-            `${options.font} ${fontSize}`
-        );
-        textActor.set_font_description(fontDesc);
+        textActor.set_font_description(
+            Actions.fontDescription(options.font, fontSize));
 
         // Pre-fill with existing text when editing
         if (custom && custom.initialText) {
@@ -929,6 +1054,10 @@ var DrawingOverlay = class DrawingOverlay {
         });
 
         const confirmAction = () => {
+            if (!this._textEntry)
+                return;
+            // Confirming consumes the pending commit (see _closeTextPopover)
+            this._popoverCommit = null;
             const text = this._textEntry.get_text();
             const hasText = text.trim().length > 0;
             const wrapWidth = Math.max(
@@ -997,6 +1126,7 @@ var DrawingOverlay = class DrawingOverlay {
         textActor.connect('key-press-event', (_actor, event) => {
             const key = event.get_key_symbol();
             if (key === Clutter.KEY_Escape) {
+                this._popoverCommit = null;
                 if (custom && custom.onCancel)
                     custom.onCancel();
                 this._closeTextPopover();
@@ -1028,6 +1158,12 @@ var DrawingOverlay = class DrawingOverlay {
                 return Clutter.EVENT_STOP;
             return Clutter.EVENT_PROPAGATE;
         });
+
+        // If the popover is closed by anything other than confirm/Escape
+        // (another popover opening, the tool changing…), keep what was
+        // typed instead of silently dropping it or leaving live caption
+        // edits outside the undo history.
+        this._popoverCommit = confirmAction;
 
         this._textPopover.add_child(this._textEntry);
         if (custom && custom.extraChild)
@@ -1190,7 +1326,18 @@ var DrawingOverlay = class DrawingOverlay {
         });
     }
 
-    _closeTextPopover() {
+    /**
+     * Close the text popover.
+     * @param {boolean} discard - drop pending text (overlay teardown)
+     */
+    _closeTextPopover(discard) {
+        const commit = this._popoverCommit;
+        this._popoverCommit = null;
+        if (commit && !discard && this._textPopover) {
+            // commit() ends up calling _closeTextPopover() again
+            commit();
+            return;
+        }
         if (this._focusIdleId) {
             GLib.source_remove(this._focusIdleId);
             this._focusIdleId = 0;
@@ -1214,14 +1361,32 @@ var DrawingOverlay = class DrawingOverlay {
         this._textEntry = null;
 
         // Return focus to the parent UI so Enter key works for capture
-        if (this._ui) this._ui.grab_key_focus();
+        if (this._ui && !discard) {
+            try {
+                this._ui.grab_key_focus();
+            } catch (e) {
+                // Parent may be going away.
+            }
+        }
     }
 
     // =========================================================================
     // UNDO / REDO
     // =========================================================================
 
-    _recordHistory(command) {
+    _recordHistory(command, coalesce) {
+        const now = GLib.get_monotonic_time();
+        const last = this._undoStack[this._undoStack.length - 1];
+        // Consecutive scroll notches on the same object become one step
+        if (coalesce && last && last.type === command.type &&
+            last.action === command.action && last.after &&
+            now - (last._time || 0) < 800000) {
+            last.after = command.after;
+            last._time = now;
+            this._redoStack = [];
+            return;
+        }
+        command._time = now;
         this._undoStack.push(command);
         this._redoStack = [];
     }
@@ -1308,24 +1473,51 @@ var DrawingOverlay = class DrawingOverlay {
     }
 
     undo() {
-        if (this._undoStack.length === 0) return;
+        if (this._undoStack.length === 0 || !this._actor) return;
         const command = this._undoStack.pop();
         this._applyHistory(command, false);
         this._redoStack.push(command);
+        this._validateSelection();
         this._actor.queue_repaint();
     }
 
     redo() {
-        if (this._redoStack.length === 0) return;
+        if (this._redoStack.length === 0 || !this._actor) return;
         const command = this._redoStack.pop();
         this._applyHistory(command, true);
         this._undoStack.push(command);
+        this._validateSelection();
         this._actor.queue_repaint();
     }
 
     // =========================================================================
     // RENDERING
     // =========================================================================
+
+    /**
+     * Draw actions [0, end) in creation order. A zoom callout magnifies
+     * everything drawn before it (same semantics as the exporter), so
+     * effects under the zoomed area are never bypassed.
+     */
+    _drawActions(cr, toWidget, scale, end, depth) {
+        for (let i = 0; i < end; i++) {
+            const action = this._actions[i];
+            cr.save();
+            cr.newPath();
+            try {
+                if (action instanceof ZoomCalloutAction &&
+                    depth < MAX_ZOOM_UNDERLAY_DEPTH) {
+                    action.draw(cr, toWidget, scale, c =>
+                        this._drawActions(c, toWidget, scale, i, depth + 1));
+                } else {
+                    action.draw(cr, toWidget, scale);
+                }
+            } catch (e) {
+                log('[Big Shot] Failed to draw annotation: ' + e.message);
+            }
+            cr.restore();
+        }
+    }
 
     _onDraw(cr, width, height) {
         // Clear (Cairo.Operator.CLEAR = 0)
@@ -1338,12 +1530,7 @@ var DrawingOverlay = class DrawingOverlay {
         const toWidget = (x, y) => this._toWidgetCoords(x, y);
 
         // Draw all committed actions
-        for (const action of this._actions) {
-            cr.save();
-            cr.newPath();
-            action.draw(cr, toWidget, scale);
-            cr.restore();
-        }
+        this._drawActions(cr, toWidget, scale, this._actions.length, 0);
 
         // Draw current in-progress action (live preview while dragging)
         if (this._isDrawing && this._startPoint) {
@@ -1397,7 +1584,11 @@ var DrawingOverlay = class DrawingOverlay {
             if (tempAction) {
                 cr.save();
                 cr.newPath();
-                tempAction.draw(cr, toWidget, scale);
+                try {
+                    tempAction.draw(cr, toWidget, scale);
+                } catch (e) {
+                    log('[Big Shot] Failed to draw preview: ' + e.message);
+                }
                 cr.restore();
             }
 
@@ -1458,27 +1649,15 @@ var DrawingOverlay = class DrawingOverlay {
     // EFFECT PREVIEW (pixel effects and zoom source pixels)
     // =========================================================================
 
-    _ensurePixbufCache() {
-        // TODO: Cinnamon doesn't have Shell.Screenshot.composite_to_stream.
-        // In Cinnamon, the parent (screenshotUI) provides the cached pixbuf
-        // via this._cachedPixbuf set externally through setCachedPixbuf().
-        if (this._cachedPixbuf) return;
-        // Pixbuf must be set externally via setCachedPixbuf()
-    }
-
     setCachedPixbuf(pixbuf, bufScale) {
         this._cachedPixbuf = pixbuf;
         this._cachedBufScale = bufScale;
         for (let i = 0; i < this._actions.length; i++) {
             let action = this._actions[i];
-            if (typeof action.generatePreview !== 'function')
-                continue;
-            action._previewBlocks = null;
-            action._previewSurface = null;
-            action._sourceSurface = null;
-            action.generatePreview(pixbuf, bufScale);
+            if (typeof action.generatePreview === 'function')
+                this._runPreview(action);
         }
-        this._actor.queue_repaint();
+        this._queueRepaint();
     }
 
     clearPreviewCache() {
@@ -1486,15 +1665,22 @@ var DrawingOverlay = class DrawingOverlay {
         this._cachedBufScale = null;
     }
 
-    _generateEffectPreview(action) {
-        this._ensurePixbufCache();
-        if (!this._cachedPixbuf) return;
+    _runPreview(action) {
+        try {
+            action.generatePreview(this._cachedPixbuf, this._cachedBufScale);
+        } catch (e) {
+            log('[Big Shot] Effect preview failed: ' + e.message);
+            if (typeof action.clearPreview === 'function')
+                action.clearPreview();
+        }
+    }
 
-        action._previewBlocks = null;
-        action._previewSurface = null;
-        action._sourceSurface = null;
-        action.generatePreview(this._cachedPixbuf, this._cachedBufScale);
-        this._actor.queue_repaint();
+    _generateEffectPreview(action) {
+        if (!this._cachedPixbuf || !action ||
+            typeof action.generatePreview !== 'function')
+            return;
+        this._runPreview(action);
+        this._queueRepaint();
     }
 
     _computeCalloutDest(srcStart, srcEnd, zoom) {
@@ -1535,43 +1721,56 @@ var DrawingOverlay = class DrawingOverlay {
     // =========================================================================
 
     clear() {
+        this._closeTextPopover(true);
         this._actions = [];
         this._undoStack = [];
         this._redoStack = [];
+        this._resetPointerState();
+        this._clearSelectionState();
         // Number counters are dynamic — no reset needed
         this._cachedPixbuf = null;
         this._cachedBufScale = null;
-        this._actor.queue_repaint();
+        this._queueRepaint();
     }
 
     clearSelection() {
-        this._selectedAction = null;
-        if (this._actor)
-            this._actor.queue_repaint();
+        this._clearSelectionState();
+        this._queueRepaint();
     }
 
     destroy() {
-        this._closeTextPopover();
+        if (this._destroyed)
+            return;
+        this._destroyed = true;
+        this._closeTextPopover(true);
         this._cachedPixbuf = null;
         this._cachedBufScale = null;
-
-        // Ensure overlay is no longer reactive
-        if (this._actor)
-            this._actor.reactive = false;
-
-        if (this._repaintId) {
-            this._actor.disconnect(this._repaintId);
-        }
-        if (this._keyId) {
-            this._keyActor.disconnect(this._keyId);
-            this._keyId = 0;
-        }
+        this._resetPointerState();
+        this._clearSelectionState();
 
         if (this._actor) {
-            this._actor.destroy();
+            // Ensure overlay is no longer reactive
+            this._actor.reactive = false;
+            if (this._repaintId)
+                this._actor.disconnect(this._repaintId);
         }
+        this._repaintId = 0;
+        if (this._keyId && this._keyActor) {
+            try {
+                this._keyActor.disconnect(this._keyId);
+            } catch (e) {
+                // Key actor may already be destroyed.
+            }
+        }
+        this._keyId = 0;
+
+        if (this._actor)
+            this._actor.destroy();
         this._actor = null;
         this._keyActor = null;
+        this._actions = [];
+        this._undoStack = [];
+        this._redoStack = [];
     }
 };
 

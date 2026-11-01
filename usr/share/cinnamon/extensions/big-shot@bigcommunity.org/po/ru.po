@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: big-shot 1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/big-comm/cinnamon-big-shot/issues\n"
-"POT-Creation-Date: 2026-07-15 13:12-0300\n"
+"POT-Creation-Date: 2026-10-31 23:33-0300\n"
 "PO-Revision-Date: 2026-03-28 00:00+0000\n"
 "Last-Translator: BigCommunity <dev@bigcommunity.org>\n"
 "Language-Team: ru\n"
@@ -15,94 +15,126 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:886
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1161
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1013
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1297
 msgid "Text…"
 msgstr "Текст…"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:893
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1162
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1020
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1298
 msgid "Annotation text"
 msgstr "Текст аннотации"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:928
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1053
 msgid "Confirm"
 msgstr "Подтвердить"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1119
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/drawing/overlay.js:1255
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:64
 msgid "Highlighter"
 msgstr "Маркер"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:636
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2650
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:1260
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:657
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2708
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:1401
 msgid "Screenshot taken"
 msgstr "Скриншот сделан"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:637
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2651
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:658
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2709
 msgid "Click to open the Screenshots folder"
 msgstr "Нажмите, чтобы открыть папку «Скриншоты»"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1328
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:3322
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1376
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:3400
 msgid "Recording complete"
 msgstr "Запись завершена"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1329
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:3323
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1377
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:3401
 msgid "Click to open the BigShot folder"
 msgstr "Нажмите, чтобы открыть папку BigShot"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1697
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1401
+msgid "Recording could not be recovered"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1402
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:3395
+#, javascript-format
+msgid "Recovery files were kept in %s"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1831
 msgid "Screenshot copied"
 msgstr "Скриншот скопирован"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1962
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2623
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:1234
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1978
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2678
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:1351
 #, javascript-format
 msgid "Screenshot from %s"
 msgstr "Скриншот с %s"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1973
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partvideoannotation.js:442
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1989
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partvideoannotation.js:446
 msgid "Save Screenshot"
 msgstr "Сохранить скриншот"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1982
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:1999
 msgid "PNG Images"
 msgstr "Изображения PNG"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2333
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2228
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2237
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2345
+msgid "Screen recording unavailable"
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2229
+msgid "No compatible GStreamer video encoder was found."
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2238
+msgid "ffmpeg and ffprobe are required to record the screen."
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2346
+msgid "The screen sharing portal is not available on this session."
+msgstr ""
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2381
 #, javascript-format
 msgid "Screencast from %s"
 msgstr "Скринкаст от %s"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2607
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:1223
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:2662
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:1345
 msgid "Screenshots"
 msgstr "Скриншоты"
 
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/extension.js:3394
+msgid "Recording could not be saved"
+msgstr ""
+
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:88
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:180
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:185
 msgid "Desktop"
 msgstr "Десктоп"
 
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:99
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:188
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:689
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:193
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:712
 msgid "Mic"
 msgstr "Микрофон"
 
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:119
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:182
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:187
 msgid "Record Desktop Audio"
 msgstr "Записывать звук с рабочего стола"
 
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:124
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:190
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partaudio.js:195
 msgid "Record Microphone"
 msgstr "Запись микрофона"
 
@@ -152,8 +184,7 @@ msgid "Coral Pink"
 msgstr "Кораллово-розовый"
 
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partgradient.js:35
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:726
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:42
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:45
 msgid "None"
 msgstr "Нет"
 
@@ -186,8 +217,6 @@ msgid "Rectangle"
 msgstr "Прямоугольник"
 
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:62
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:728
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:44
 msgid "Oval"
 msgstr "Овал"
 
@@ -224,217 +253,236 @@ msgid "Number with Pointer"
 msgstr "Число с указателем"
 
 #: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:72
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partvideoannotation.js:437
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partvideoannotation.js:441
 msgid "Eraser"
 msgstr "Стиратель"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:164
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:172
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:181
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:189
 msgid "Show screenshot panel"
 msgstr "Показать панель скриншотов"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:172
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:189
 msgid "Hide screenshot panel"
 msgstr "Скрыть панель скриншотов"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:323
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:326
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:346
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:349
 msgid "Color"
 msgstr "Цвет"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:338
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:341
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:361
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:364
 msgid "Fill"
 msgstr "Заполнить"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:351
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:374
 msgid "Decrease Size"
 msgstr "Уменьшить размер"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:368
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:391
 msgid "Brush Size"
 msgstr "Размер кисти"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:392
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:415
 msgid "Increase Size"
 msgstr "Увеличить размер"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:411
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:415
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:434
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:438
 msgid "Font"
 msgstr "Шрифт"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:438
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:458
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1350
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:461
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:481
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1409
 msgid "Intensity"
 msgstr "Интенсивность"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:467
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:490
 msgid "Crop"
 msgstr "Обрезка"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:473
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:496
 msgid "Padding"
 msgstr "Отступ"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:479
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:502
 msgid "Gradient"
 msgstr "Градиент"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:494
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:497
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:517
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:520
 msgid "Undo"
 msgstr "Отменить"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:506
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:509
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:529
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:532
 msgid "Redo"
 msgstr "Повторить"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:521
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:524
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:544
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:547
 msgid "Copy to Clipboard"
 msgstr "Скопировать в буфер обмена"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:533
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:536
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:556
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:559
 msgid "Save As…"
 msgstr "Сохранить как…"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:556
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:568
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:579
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:591
 msgid "Close"
 msgstr "Закрыть"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:601
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:803
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:624
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:821
 msgid "Video Settings"
 msgstr "Настройки видео"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:645
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:668
 msgid "Quality"
 msgstr "Качество"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:651
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:674
 msgid "High"
 msgstr "Высокое"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:652
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:675
 msgid "Medium"
 msgstr "Среднее"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:653
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:676
 msgid "Low"
 msgstr "Низкий"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:666
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:689
 msgid "Recording quality (bitrate)"
 msgstr "Качество записи (битрейт)"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:676
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:699
 msgid "Codec"
 msgstr "Кодек"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:703
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:726
 msgid "Camera"
 msgstr "Камера"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:717
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:740
 msgid "Mask"
 msgstr "Маска"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:727
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:43
-msgid "Circle"
-msgstr "Круг"
-
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:729
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:45
-msgid "Soft"
-msgstr "Мягкий"
-
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:730
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:46
-msgid "Spot"
-msgstr "Пятно"
-
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:731
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:47
-msgid "Ornate"
-msgstr "Орнаментный"
-
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:732
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:48
-msgid "Checker"
-msgstr "Шахматный"
-
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:733
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:49
-msgid "Neon"
-msgstr "Неон"
-
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:756
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:774
 msgid "Size"
 msgstr "Размер"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:797
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partvideoannotation.js:432
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:815
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partvideoannotation.js:436
 msgid "Edit"
 msgstr "Редактировать"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:803
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:821
 msgid "Edit Screenshot"
 msgstr "Редактировать скриншот"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1206
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1256
 msgid "Custom"
 msgstr "Пользовательский"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1370
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1429
 #, javascript-format
 msgid "Intensity: %s"
 msgstr "Интенсивность: %s"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1454
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1513
 msgid "No Fill"
 msgstr "Без заливки"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1582
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1645
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1720
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1641
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1704
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1779
 msgid "Auto"
 msgstr "Авто"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1724
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1783
 msgid "Use best available codec"
 msgstr "Использовать лучший доступный кодек"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1741
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/parttoolbar.js:1800
 msgid "Video codec"
 msgstr "Видеокодек"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:129
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:46
+msgid "Circle"
+msgstr "Круг"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:47
+msgid "Halo"
+msgstr "Ореол"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:48
+msgid "Teardrop"
+msgstr "Капля"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:49
+msgid "Spot"
+msgstr "Пятно"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:50
+msgid "Rounded"
+msgstr "Скруглённое"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:51
+msgid "Widescreen"
+msgstr "Широкий экран"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:52
+msgid "Ornate"
+msgstr "Орнаментный"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:53
+msgid "Neon Pink"
+msgstr "Неоновый розовый"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:54
+msgid "Neon Blue"
+msgstr "Неоновый синий"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:55
+msgid "Neon Spectrum"
+msgstr "Неоновый спектр"
+
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:148
 msgid "Webcam"
 msgstr "Вебкамера"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:154
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:173
 msgid "Webcam Overlay"
 msgstr "Наложение с веб-камеры"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:245
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/parts/partwebcam.js:269
 #, javascript-format
 msgid "Camera %s"
 msgstr "Камера %s"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:263
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:267
 msgid "Area"
 msgstr "Область"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:275
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:279
 msgid "Fullscreen"
 msgstr "Полный экран"
 
-#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:286
+#: usr/share/cinnamon/extensions/big-shot@bigcommunity.org/screenshotUI.js:290
 msgid "Window"
 msgstr "Окно"
+
+#~ msgid "Soft"
+#~ msgstr "Мягкий"
+
+#~ msgid "Checker"
+#~ msgstr "Шахматный"
+
+#~ msgid "Neon"
+#~ msgstr "Неон"

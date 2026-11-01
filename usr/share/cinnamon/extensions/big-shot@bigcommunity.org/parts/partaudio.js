@@ -149,11 +149,16 @@ var PartAudio = class PartAudio extends PartUI {
 
     _showTooltip(button, tooltip) {
         tooltip.visible = true;
-        GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
-            if (!tooltip.visible) return GLib.SOURCE_REMOVE;
+        if (this._tooltipIdleId)
+            GLib.source_remove(this._tooltipIdleId);
+        this._tooltipIdleId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+            this._tooltipIdleId = 0;
+            if (this._destroyed || !tooltip.visible || !this._ui.actor)
+                return GLib.SOURCE_REMOVE;
             let pos = button.get_transformed_position();
-            let bx = pos[0];
-            let by = pos[1];
+            let origin = this._ui.actor.get_transformed_position();
+            let bx = pos[0] - origin[0];
+            let by = pos[1] - origin[1];
             let bw = button.width;
             let tw = tooltip.width;
             tooltip.set_position(bx + (bw - tw) / 2, by - tooltip.height - 4);
@@ -290,6 +295,10 @@ var PartAudio = class PartAudio extends PartUI {
     }
 
     destroy() {
+        if (this._tooltipIdleId) {
+            GLib.source_remove(this._tooltipIdleId);
+            this._tooltipIdleId = 0;
+        }
         if (this._desktopTooltip) {
             let p = this._desktopTooltip.get_parent();
             if (p) p.remove_child(this._desktopTooltip);

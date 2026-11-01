@@ -18,7 +18,6 @@ const St = imports.gi.St;
 const Clutter = imports.gi.Clutter;
 const Cinnamon = imports.gi.Cinnamon;
 const GdkPixbuf = imports.gi.GdkPixbuf;
-const Cairo = imports.gi.cairo;
 const Meta = imports.gi.Meta;
 const Main = imports.ui.main;
 const Gettext = imports.gettext;
@@ -498,7 +497,9 @@ function readProcessIdentity(pid, segmentPath) {
         let startTime = fields[19];
         let executable = GLib.file_read_link(procRoot + '/exe');
         let cmdlineLoaded = GLib.file_get_contents(procRoot + '/cmdline');
-        let cmdline = ByteArray.toString(cmdlineLoaded[1])
+        // ByteArray.toString() stops at the first NUL, which would keep
+        // only argv[0]; TextDecoder preserves the separators.
+        let cmdline = new TextDecoder().decode(cmdlineLoaded[1])
             .split('\0')
             .filter(value => value.length > 0);
         return {
@@ -567,8 +568,28 @@ var BigShotExtension = class BigShotExtension {
         this._disabled = false;
         this._recoveryRunning = false;
         this._recordingScreenshotPending = false;
+        this._sourceIds = new Set();
+        this._portalRequests = new Map(); // signal id -> temporary file
 
         this._screenshotUI = null;
+    }
+
+    /** GLib timeout that is removed automatically on disable(). */
+    _addTimeout(milliseconds, callback) {
+        let id = GLib.timeout_add(GLib.PRIORITY_DEFAULT, milliseconds, () => {
+            this._sourceIds.delete(id);
+            if (this._disabled)
+                return GLib.SOURCE_REMOVE;
+            callback();
+            return GLib.SOURCE_REMOVE;
+        });
+        this._sourceIds.add(id);
+        return id;
+    }
+
+    _removeTimeout(id) {
+        if (id && this._sourceIds.delete(id))
+            GLib.source_remove(id);
     }
 
     enable() {
@@ -675,103 +696,13 @@ var BigShotExtension = class BigShotExtension {
                     : null;
             }
 
-            let offsetX = Math.max(0, geom[0]);
-            let offsetY = Math.max(0, geom[1]);
-            let bufScale = ext._screenshotUI.captureScale;
-
-            let toWidget = function(ax, ay) {
-                return [
-                    (ax - offsetX) * bufScale,
-                    (ay - offsetY) * bufScale,
-                ];
-            };
-            let drawScale = bufScale;
-
-            // Apply pixel-manipulating effects (blur, censor, etc.)
-            let workPixbuf = croppedPixbuf;
-            for (let i = 0; i < actions.length; i++) {
-                let act = actions[i];
-                if (typeof act.drawReal === 'function') {
-                    try {
-                        let result = act.drawReal(workPixbuf, GdkPixbuf, GLib, toWidget, drawScale);
-                        if (result) workPixbuf = result;
-                    } catch (err) {
-                        log('[Big Shot] drawReal failed: ' + err.message);
-                    }
-                }
-            }
-
-            // Save pixbuf → PNG → Cairo surface → draw annotations → save
-            let tmpBase = GLib.build_filenamev([
-                GLib.get_tmp_dir(), 'bigshot-comp-' + Date.now() + '.png'
-            ]);
-            let tmpOut = GLib.build_filenamev([
-                GLib.get_tmp_dir(), 'bigshot-out-' + Date.now() + '.png'
-            ]);
-
             try {
-                workPixbuf.savev(tmpBase, 'png', [], []);
-                let expansion = computeCanvasExpansion(
-                    actions,
-                    workPixbuf.get_width(),
-                    workPixbuf.get_height(),
-                    offsetX,
-                    offsetY,
-                    bufScale
-                );
-                let surface;
-                let cr;
-                let drawToWidget = toWidget;
-                if (expansion.expanded) {
-                    let baseSurface = Cairo.ImageSurface.createFromPNG(tmpBase);
-                    surface = new Cairo.ImageSurface(
-                        Cairo.Format.ARGB32,
-                        expansion.newWidth,
-                        expansion.newHeight
-                    );
-                    cr = new Cairo.Context(surface);
-                    cr.setSourceRGBA(1, 1, 1, 1);
-                    cr.paint();
-                    cr.setSourceSurface(
-                        baseSurface,
-                        expansion.padLeft,
-                        expansion.padTop
-                    );
-                    cr.paint();
-                    baseSurface.finish();
-                    drawToWidget = function(ax, ay) {
-                        let point = toWidget(ax, ay);
-                        return [
-                            point[0] + expansion.padLeft,
-                            point[1] + expansion.padTop,
-                        ];
-                    };
-                } else {
-                    surface = Cairo.ImageSurface.createFromPNG(tmpBase);
-                    cr = new Cairo.Context(surface);
-                }
-
-                for (let i = 0; i < actions.length; i++) {
-                    let act = actions[i];
-                    if (typeof act.drawReal !== 'function') {
-                        cr.save();
-                        act.draw(cr, drawToWidget, drawScale);
-                        cr.restore();
-                    }
-                }
-
-                surface.writeToPNG(tmpOut);
-                surface.finish();
-
                 return ext._applyPresentation(
-                    GdkPixbuf.Pixbuf.new_from_file(tmpOut)
+                    ext._renderAnnotations(croppedPixbuf, geom, actions)
                 );
             } catch (e) {
                 log('[Big Shot] Annotation compositing error: ' + e.message);
                 return null;
-            } finally {
-                try { Gio.File.new_for_path(tmpBase).delete(null); } catch (e) { /* */ }
-                try { Gio.File.new_for_path(tmpOut).delete(null); } catch (e) { /* */ }
             }
         };
 
@@ -833,6 +764,31 @@ var BigShotExtension = class BigShotExtension {
             }
         }
         this._parts = [];
+        // Async recording callbacks may still run after disable(); make sure
+        // they never reach destroyed actors.
+        this._toolbar = null;
+        this._annotation = null;
+        this._videoAnnotation = null;
+        this._magnifier = null;
+        this._crop = null;
+        this._gradient = null;
+        this._gradientPainter = null;
+        this._audio = null;
+        this._webcam = null;
+        this._downsize = null;
+        this._framerate = null;
+        this._indicator = null;
+        this._quickstop = null;
+
+        for (let id of this._sourceIds)
+            GLib.source_remove(id);
+        this._sourceIds.clear();
+        for (let [subId, tmpPath] of this._portalRequests) {
+            Gio.DBus.session.signal_unsubscribe(subId);
+            deletePathIfExists(tmpPath);
+        }
+        this._portalRequests.clear();
+        this._recordingScreenshotPending = false;
 
         // Remove keybinding
         this._removeKeybinding();
@@ -945,11 +901,20 @@ var BigShotExtension = class BigShotExtension {
         }
 
         pending.sort((left, right) => left.id.localeCompare(right.id));
+        this._recoveryRetryPending = false;
         try {
             for (let i = 0; i < pending.length; i++)
                 await this._recoverRecordingSession(pending[i], recordingDir);
         } finally {
             this._recoveryRunning = false;
+        }
+        if (this._recoveryRetryPending && !this._disabled) {
+            this._recoveryRetryPending = false;
+            this._addTimeout(2000, () => {
+                this._recoverRecordingSessions().catch(e => {
+                    log('[Big Shot] Recording recovery scan failed: ' + e.message);
+                });
+            });
         }
     }
 
@@ -972,6 +937,7 @@ var BigShotExtension = class BigShotExtension {
             if (this._recordingWriterIsActive(writer)) {
                 log('[Big Shot] Recovery skipped for active writer in session ' +
                     item.id);
+                this._interruptOrphanedWriter(item.id, writer);
                 return null;
             }
             stableState = ageSeconds >= 2;
@@ -1048,6 +1014,37 @@ var BigShotExtension = class BigShotExtension {
 
         owners.add(item.id);
         return { path: claimPath, token: claimToken };
+    }
+
+    /**
+     * A recorder left running by a previous Cinnamon instance (crash,
+     * killed session) keeps capturing the screen with no UI to stop it.
+     * Its identity was already verified by _recordingWriterIsActive(), so
+     * ask it to finish (SIGINT → EOS with `gst-launch -e`, SIGTERM as a
+     * last resort) and rescan once it is gone.
+     */
+    _interruptOrphanedWriter(id, writer) {
+        if (!this._orphanInterrupts)
+            this._orphanInterrupts = new Map();
+        let attempts = (this._orphanInterrupts.get(id) || 0) + 1;
+        this._orphanInterrupts.set(id, attempts);
+        if (attempts > 6) {
+            log('[Big Shot] Orphaned recorder ' + writer.pid +
+                ' did not stop; leaving session ' + id + ' for later');
+            return;
+        }
+        log('[Big Shot] Stopping orphaned recorder ' + writer.pid +
+            ' of session ' + id);
+        try {
+            Gio.Subprocess.new(
+                ['kill', attempts > 4 ? '-TERM' : '-INT', String(writer.pid)],
+                Gio.SubprocessFlags.STDERR_SILENCE
+            );
+        } catch (e) {
+            log('[Big Shot] Could not signal orphaned recorder: ' + e.message);
+            return;
+        }
+        this._recoveryRetryPending = true;
     }
 
     _recordingWriterIsActive(writer) {
@@ -1254,6 +1251,52 @@ var BigShotExtension = class BigShotExtension {
         }
     }
 
+    _getRecoveryNotifiedPath() {
+        return GLib.build_filenamev([
+            GLib.path_get_dirname(this._getKeybindingBackupPath()),
+            'recovery-notified.json',
+        ]);
+    }
+
+    _readRecoveryNotified() {
+        try {
+            let ids = readJsonFile(this._getRecoveryNotifiedPath());
+            return Array.isArray(ids) ? ids : [];
+        } catch (_e) {
+            return [];
+        }
+    }
+
+    _writeRecoveryNotified(ids) {
+        let path = this._getRecoveryNotifiedPath();
+        try {
+            GLib.mkdir_with_parents(GLib.path_get_dirname(path), 0o700);
+            GLib.file_set_contents(path, JSON.stringify(ids.slice(-100)) + '\n');
+        } catch (e) {
+            log('[Big Shot] Could not store recovery notification state: ' +
+                e.message);
+        }
+    }
+
+    /** Returns true the first time a failed session is reported. */
+    _markRecoveryNotified(id) {
+        let ids = this._readRecoveryNotified();
+        if (ids.indexOf(id) >= 0)
+            return false;
+        ids.push(id);
+        this._writeRecoveryNotified(ids);
+        return true;
+    }
+
+    _forgetRecoveryNotification(id) {
+        let ids = this._readRecoveryNotified();
+        let index = ids.indexOf(id);
+        if (index >= 0) {
+            ids.splice(index, 1);
+            this._writeRecoveryNotified(ids);
+        }
+    }
+
     async _recoverRecordingSession(item, recordingDir) {
         let manifest;
         try {
@@ -1336,15 +1379,30 @@ var BigShotExtension = class BigShotExtension {
                 );
             }
         } catch (e) {
+            log('[Big Shot] Recording recovery failed for ' + item.path + ': ' +
+                e.message);
+            if (session && session.segments.length === 0 &&
+                !Gio.File.new_for_path(session.finalPath).query_exists(null)) {
+                // Nothing was ever recorded (e.g. the encoder failed at
+                // start-up): drop the session instead of retrying forever.
+                log('[Big Shot] Discarding empty recording session ' + item.id);
+                this._releaseRecordingReservation(session);
+                this._cleanupRecordingSession(session);
+                this._forgetRecoveryNotification(item.id);
+                return;
+            }
             if (session) {
                 session.status = 'recovery-required';
                 session.errorMessage = e.message;
                 this._writeRecordingManifest(session);
             }
-            log('[Big Shot] Recording recovery failed for ' + item.path + ': ' +
-                e.message);
-            if (!this._disabled)
-                this._showNotification('Big Shot', item.path, item.path);
+            if (!this._disabled && this._markRecoveryNotified(item.id)) {
+                this._showNotification(
+                    _('Recording could not be recovered'),
+                    _('Recovery files were kept in %s').format(item.path),
+                    item.path
+                );
+            }
         } finally {
             this._releaseRecordingRecovery(item.id, claim);
         }
@@ -1354,15 +1412,102 @@ var BigShotExtension = class BigShotExtension {
     // KEYBINDING
     // =========================================================================
 
+    _getKeybindingBackupPath() {
+        let stateDir = typeof GLib.get_user_state_dir === 'function'
+            ? GLib.get_user_state_dir()
+            : GLib.build_filenamev([GLib.get_home_dir(), '.local', 'state']);
+        return GLib.build_filenamev([stateDir, 'big-shot', 'keybindings-backup.json']);
+    }
+
+    _writeKeybindingBackup(bindings) {
+        let path = this._getKeybindingBackupPath();
+        if (Object.keys(bindings).length === 0) {
+            deletePathIfExists(path);
+            return;
+        }
+        GLib.mkdir_with_parents(GLib.path_get_dirname(path), 0o700);
+        GLib.file_set_contents(path, JSON.stringify(bindings) + '\n');
+    }
+
+    _readKeybindingBackup() {
+        let path = this._getKeybindingBackupPath();
+        if (!GLib.file_test(path, GLib.FileTest.EXISTS))
+            return null;
+        try {
+            let stored = readJsonFile(path);
+            if (stored && typeof stored === 'object' && !Array.isArray(stored))
+                return stored;
+        } catch (e) {
+            log('[Big Shot] Ignoring unreadable keybinding backup: ' + e.message);
+        }
+        return null;
+    }
+
+    _getCustomKeybindingSettings(customId) {
+        return new Gio.Settings({
+            schema_id: 'org.cinnamon.desktop.keybindings.custom-keybinding',
+            path: '/org/cinnamon/desktop/keybindings/custom-keybindings/' +
+                customId + '/',
+        });
+    }
+
+    /**
+     * Restore bindings from a backup. Only keys that are still empty are
+     * restored, so a change the user made meanwhile is never overwritten.
+     */
+    _applyKeybindingBackup(bindings) {
+        let mediaKeys = null;
+        let keys = Object.keys(bindings);
+        for (let i = 0; i < keys.length; i++) {
+            let fullKey = keys[i];
+            let val = bindings[fullKey];
+            if (!Array.isArray(val))
+                continue;
+            try {
+                let settings, key;
+                if (fullKey.indexOf('media:') === 0) {
+                    if (!mediaKeys) {
+                        mediaKeys = new Gio.Settings({
+                            schema_id: 'org.cinnamon.desktop.keybindings.media-keys',
+                        });
+                    }
+                    settings = mediaKeys;
+                    key = fullKey.substring(6);
+                } else if (fullKey.indexOf('custom:') === 0) {
+                    settings = this._getCustomKeybindingSettings(fullKey.substring(7));
+                    key = 'binding';
+                } else {
+                    continue;
+                }
+                let current = settings.get_strv(key);
+                if (!current || current.length === 0)
+                    settings.set_strv(key, val);
+            } catch (e) {
+                log('[Big Shot] Could not restore keybinding ' + fullKey + ': ' +
+                    e.message);
+            }
+        }
+    }
+
     /**
      * Disable native screenshot keybindings that conflict with ours.
-     * Saves original values for restoration on disable.
+     * The original values are persisted to disk *before* anything is
+     * changed, so they survive a Cinnamon crash and are restored on the
+     * next enable.
      */
     _disableNativeScreenshotKeys() {
-        this._savedBindings = {};
+        // A leftover backup means the previous session never ran disable()
+        // (crash, killed session): put the user's bindings back first.
+        let leftover = this._readKeybindingBackup();
+        if (leftover) {
+            log('[Big Shot] Restoring native keybindings from a previous session');
+            this._applyKeybindingBackup(leftover);
+            deletePathIfExists(this._getKeybindingBackupPath());
+        }
 
+        let saved = {};
+        let pending = [];
         try {
-            // Disable media-keys screenshot bindings that use Print variants
             let mediaKeys = new Gio.Settings({
                 schema_id: 'org.cinnamon.desktop.keybindings.media-keys',
             });
@@ -1371,44 +1516,47 @@ var BigShotExtension = class BigShotExtension {
                 'area-screenshot', 'area-screenshot-clip',
                 'window-screenshot', 'window-screenshot-clip',
             ];
+            let available = mediaKeys.settings_schema.list_keys();
             for (let i = 0; i < keysToDisable.length; i++) {
                 let key = keysToDisable[i];
+                if (available.indexOf(key) < 0)
+                    continue;
                 let val = mediaKeys.get_strv(key);
                 if (val && val.length > 0) {
-                    this._savedBindings['media:' + key] = val;
-                    mediaKeys.set_strv(key, []);
+                    saved['media:' + key] = val;
+                    pending.push([mediaKeys, key]);
                 }
             }
 
-            // Disable custom keybindings that use Print key
-            let kbSchema = 'org.cinnamon.desktop.keybindings';
-            let kbSettings = new Gio.Settings({ schema_id: kbSchema });
+            let kbSettings = new Gio.Settings({
+                schema_id: 'org.cinnamon.desktop.keybindings',
+            });
             let customList = kbSettings.get_strv('custom-list');
             for (let i = 0; i < customList.length; i++) {
                 let customId = customList[i];
                 try {
-                    let customPath = '/org/cinnamon/desktop/keybindings/custom-keybindings/' + customId + '/';
-                    let customSettings = new Gio.Settings({
-                        schema_id: 'org.cinnamon.desktop.keybindings.custom-keybinding',
-                        path: customPath,
-                    });
+                    let customSettings = this._getCustomKeybindingSettings(customId);
                     let binding = customSettings.get_strv('binding');
-                    if (binding) {
-                        for (let j = 0; j < binding.length; j++) {
-                            if (binding[j].indexOf('Print') >= 0) {
-                                this._savedBindings['custom:' + customId] = binding;
-                                customSettings.set_strv('binding', []);
-                                log('[Big Shot] Disabled conflicting custom keybinding: ' + customId + ' = ' + binding.join(', '));
-                                break;
-                            }
-                        }
+                    if (binding && binding.some(b => b.indexOf('Print') >= 0)) {
+                        saved['custom:' + customId] = binding;
+                        pending.push([customSettings, 'binding']);
+                        log('[Big Shot] Disabling conflicting custom keybinding: ' +
+                            customId + ' = ' + binding.join(', '));
                     }
-                } catch (e) {
+                } catch (_e) {
                     // custom keybinding might not exist
                 }
             }
 
-            Gio.Settings.sync();
+            // Persist first; only touch dconf once the backup is on disk.
+            this._writeKeybindingBackup(saved);
+            this._savedBindings = saved;
+            for (let i = 0; i < pending.length; i++)
+                pending[i][0].set_strv(pending[i][1], []);
+            // Flush so the media-keys handler releases Print before our
+            // addHotKey() call (rare path: only on enable).
+            if (pending.length > 0)
+                Gio.Settings.sync();
         } catch (e) {
             log('[Big Shot] Error disabling native keys: ' + e.message);
         }
@@ -1418,36 +1566,13 @@ var BigShotExtension = class BigShotExtension {
      * Restore previously disabled native screenshot keybindings.
      */
     _restoreNativeScreenshotKeys() {
-        if (!this._savedBindings) return;
-
-        try {
-            let mediaKeys = new Gio.Settings({
-                schema_id: 'org.cinnamon.desktop.keybindings.media-keys',
-            });
-
-            let keys = Object.keys(this._savedBindings);
-            for (let i = 0; i < keys.length; i++) {
-                let fullKey = keys[i];
-                let val = this._savedBindings[fullKey];
-                if (fullKey.indexOf('media:') === 0) {
-                    let key = fullKey.substring(6);
-                    mediaKeys.set_strv(key, val);
-                } else if (fullKey.indexOf('custom:') === 0) {
-                    let customId = fullKey.substring(7);
-                    let customPath = '/org/cinnamon/desktop/keybindings/custom-keybindings/' + customId + '/';
-                    let customSettings = new Gio.Settings({
-                        schema_id: 'org.cinnamon.desktop.keybindings.custom-keybinding',
-                        path: customPath,
-                    });
-                    customSettings.set_strv('binding', val);
-                }
-            }
-
-            Gio.Settings.sync();
-        } catch (e) {
-            log('[Big Shot] Error restoring native keys: ' + e.message);
-        }
+        let bindings = this._savedBindings || this._readKeybindingBackup();
         this._savedBindings = null;
+        if (!bindings) return;
+
+        this._applyKeybindingBackup(bindings);
+        Gio.Settings.sync();
+        deletePathIfExists(this._getKeybindingBackupPath());
     }
 
     _addKeybinding() {
@@ -1455,17 +1580,20 @@ var BigShotExtension = class BigShotExtension {
         this._disableNativeScreenshotKeys();
 
         try {
-            Main.keybindingManager.addHotKey(
+            let okShot = Main.keybindingManager.addHotKey(
                 'big-shot-screenshot',
                 'Print',
                 () => {
-                    this._screenshotUI.open(0); // UIMode.SCREENSHOT
+                    if (this._screenshotUI)
+                        this._screenshotUI.open(0); // UIMode.SCREENSHOT
                 }
             );
-            Main.keybindingManager.addHotKey(
+            let okCast = Main.keybindingManager.addHotKey(
                 'big-shot-screencast',
                 '<Shift>Print',
                 () => {
+                    if (!this._screenshotUI)
+                        return;
                     if (this._recordingState !== 'idle') {
                         this._quickStop();
                     } else {
@@ -1473,6 +1601,9 @@ var BigShotExtension = class BigShotExtension {
                     }
                 }
             );
+            if (okShot === false || okCast === false)
+                log('[Big Shot] Print / Shift+Print is already in use by ' +
+                    'another keybinding');
         } catch (e) {
             log('[Big Shot] Failed to register keybinding: ' + e.message);
         }
@@ -1688,9 +1819,7 @@ var BigShotExtension = class BigShotExtension {
             let pixbuf = result.pixbuf;
 
             if (action === 'copy') {
-                let tmpPath = GLib.build_filenamev([
-                    GLib.get_tmp_dir(), 'bigshot-copy-' + Date.now() + '.png'
-                ]);
+                let tmpPath = imports.compat.makeTempPath('bigshot-copy');
                 let tmpFile = Gio.File.new_for_path(tmpPath);
                 let outStream = tmpFile.create(Gio.FileCreateFlags.NONE, null);
                 outStream.write_bytes(bytes, null);
@@ -1704,16 +1833,16 @@ var BigShotExtension = class BigShotExtension {
                 this._screenshotUI.close();
             } else if (action === 'save-as') {
                 // Save to temp file, then open file chooser
-                let tmpPath = GLib.build_filenamev([
-                    GLib.get_tmp_dir(), 'bigshot-saveas-' + Date.now() + '.png'
-                ]);
+                let tmpPath = imports.compat.makeTempPath('bigshot-saveas');
                 let tmpFile = Gio.File.new_for_path(tmpPath);
                 let outStream = tmpFile.create(Gio.FileCreateFlags.NONE, null);
                 outStream.write_bytes(bytes, null);
                 outStream.close(null);
 
-                let clipboard = St.Clipboard.get_default();
-                clipboard.set_content(St.ClipboardType.CLIPBOARD, 'image/png', bytes);
+                if (imports.compat.canSetClipboardContent()) {
+                    let clipboard = St.Clipboard.get_default();
+                    clipboard.set_content(St.ClipboardType.CLIPBOARD, 'image/png', bytes);
+                }
 
                 this._screenshotUI.close();
                 this._openSaveDialog(tmpPath, pixbuf);
@@ -1744,11 +1873,11 @@ var BigShotExtension = class BigShotExtension {
             ];
         }
 
-        // Crop to selection if needed
-        let x = pixelGeom[0];
-        let y = pixelGeom[1];
-        let w = pixelGeom[2];
-        let h = pixelGeom[3];
+        // Crop to selection if needed (clamped to the captured pixbuf)
+        let x = Math.max(0, pixelGeom[0]);
+        let y = Math.max(0, pixelGeom[1]);
+        let w = Math.min(pixelGeom[2], pixbuf.get_width() - x);
+        let h = Math.min(pixelGeom[3], pixbuf.get_height() - y);
 
         if (w <= 0 || h <= 0) return null;
 
@@ -1757,107 +1886,40 @@ var BigShotExtension = class BigShotExtension {
             cropPixbuf = pixbuf.new_subpixbuf(x, y, w, h);
         }
 
-        if (!actions || actions.length === 0) {
-            let outputPixbuf = this._applyPresentation(cropPixbuf);
-            let buf = outputPixbuf.save_to_bufferv('png', [], []);
-            if (!buf[0]) return null;
-            return { bytes: GLib.Bytes.new(buf[1]), pixbuf: outputPixbuf };
-        }
+        let outputPixbuf = cropPixbuf;
+        if (actions && actions.length > 0)
+            outputPixbuf = this._renderAnnotations(cropPixbuf, geom, actions);
+        outputPixbuf = this._applyPresentation(outputPixbuf);
 
-        // Composite annotations onto the screenshot via Cairo
-        let offsetX = geom[0];
-        let offsetY = geom[1];
-        let tmpDir = GLib.get_tmp_dir();
-        let tmpBase = GLib.build_filenamev([tmpDir, 'bigshot-base-' + Date.now() + '.png']);
-        let tmpAnnotated = GLib.build_filenamev([tmpDir, 'bigshot-ann-' + Date.now() + '.png']);
+        let buf = outputPixbuf.save_to_bufferv('png', [], []);
+        if (!buf[0]) return null;
+        return { bytes: GLib.Bytes.new(buf[1]), pixbuf: outputPixbuf };
+    }
 
-        try {
-            let toWidget = function(ax, ay) {
-                return [
-                    (ax - offsetX) * bufScale,
-                    (ay - offsetY) * bufScale,
-                ];
-            };
-            let drawScale = bufScale;
-
-            // Apply pixel-manipulating effects
-            let workPixbuf = cropPixbuf;
-            for (let i = 0; i < actions.length; i++) {
-                let act = actions[i];
-                if (typeof act.drawReal === 'function') {
-                    try {
-                        let result = act.drawReal(workPixbuf, GdkPixbuf, GLib, toWidget, drawScale);
-                        if (result) workPixbuf = result;
-                    } catch (err) {
-                        log('[Big Shot] drawReal failed: ' + err.message);
-                    }
-                }
-            }
-
-            // Save pixbuf → PNG → Cairo surface → draw annotations → save
-            workPixbuf.savev(tmpBase, 'png', [], []);
-            let expansion = computeCanvasExpansion(
-                actions,
-                workPixbuf.get_width(),
-                workPixbuf.get_height(),
-                offsetX,
-                offsetY,
-                bufScale
-            );
-            let surface;
-            let cr;
-            let drawToWidget = toWidget;
-            if (expansion.expanded) {
-                let baseSurface = Cairo.ImageSurface.createFromPNG(tmpBase);
-                surface = new Cairo.ImageSurface(
-                    Cairo.Format.ARGB32,
-                    expansion.newWidth,
-                    expansion.newHeight
-                );
-                cr = new Cairo.Context(surface);
-                cr.setSourceRGBA(1, 1, 1, 1);
-                cr.paint();
-                cr.setSourceSurface(
-                    baseSurface,
-                    expansion.padLeft,
-                    expansion.padTop
-                );
-                cr.paint();
-                baseSurface.finish();
-                drawToWidget = function(ax, ay) {
-                    let point = toWidget(ax, ay);
-                    return [
-                        point[0] + expansion.padLeft,
-                        point[1] + expansion.padTop,
-                    ];
-                };
-            } else {
-                surface = Cairo.ImageSurface.createFromPNG(tmpBase);
-                cr = new Cairo.Context(surface);
-            }
-
-            for (let i = 0; i < actions.length; i++) {
-                let act = actions[i];
-                if (typeof act.drawReal !== 'function') {
-                    cr.save();
-                    act.draw(cr, drawToWidget, drawScale);
-                    cr.restore();
-                }
-            }
-
-            surface.writeToPNG(tmpAnnotated);
-            surface.finish();
-
-            let annotPixbuf = this._applyPresentation(
-                GdkPixbuf.Pixbuf.new_from_file(tmpAnnotated)
-            );
-            let buf = annotPixbuf.save_to_bufferv('png', [], []);
-            if (!buf[0]) return null;
-            return { bytes: GLib.Bytes.new(buf[1]), pixbuf: annotPixbuf };
-        } finally {
-            try { Gio.File.new_for_path(tmpBase).delete(null); } catch (e) { /* */ }
-            try { Gio.File.new_for_path(tmpAnnotated).delete(null); } catch (e) { /* */ }
-        }
+    /**
+     * Composite the annotations onto a cropped screenshot, honouring the
+     * order in which they were created (see drawing/compositor.js).
+     * `geom` is the logical selection the pixbuf corresponds to.
+     */
+    _renderAnnotations(pixbuf, geom, actions) {
+        let Compositor = imports.drawing.compositor;
+        let bufScale = this._screenshotUI.captureScale || 1;
+        let offsetX = Math.max(0, geom[0]);
+        let offsetY = Math.max(0, geom[1]);
+        let expansion = computeCanvasExpansion(
+            actions,
+            pixbuf.get_width(),
+            pixbuf.get_height(),
+            offsetX,
+            offsetY,
+            bufScale
+        );
+        return Compositor.renderAnnotations(pixbuf, actions, {
+            offsetX,
+            offsetY,
+            bufScale,
+            expansion,
+        });
     }
 
     _getPresentationCrop(selectionGeometry) {
@@ -1902,63 +1964,12 @@ var BigShotExtension = class BigShotExtension {
         if (padding === 0 && !gradient && radius === 0)
             return pixbuf;
 
-        let tmpBase = GLib.build_filenamev([
-            GLib.get_tmp_dir(),
-            'bigshot-presentation-base-' + Date.now() + '.png',
-        ]);
-        let tmpOut = GLib.build_filenamev([
-            GLib.get_tmp_dir(),
-            'bigshot-presentation-out-' + Date.now() + '.png',
-        ]);
-        try {
-            pixbuf.savev(tmpBase, 'png', [], []);
-            let image = Cairo.ImageSurface.createFromPNG(tmpBase);
-            let width = pixbuf.get_width() + padding * 2;
-            let height = pixbuf.get_height() + padding * 2;
-            let surface = new Cairo.ImageSurface(
-                Cairo.Format.ARGB32,
-                width,
-                height
-            );
-            let cr = new Cairo.Context(surface);
-            cr.setOperator(Cairo.Operator.CLEAR);
-            cr.paint();
-            cr.setOperator(Cairo.Operator.OVER);
-            if (gradient && this._gradientPainter)
-                this._gradientPainter(cr, gradient, 0, 0, width, height);
-
-            cr.save();
-            if (radius > 0) {
-                let x = padding;
-                let y = padding;
-                let w = pixbuf.get_width();
-                let h = pixbuf.get_height();
-                let r = Math.min(radius, w / 2, h / 2);
-                cr.newSubPath();
-                cr.arc(x + w - r, y + r, r, -Math.PI / 2, 0);
-                cr.arc(x + w - r, y + h - r, r, 0, Math.PI / 2);
-                cr.arc(x + r, y + h - r, r, Math.PI / 2, Math.PI);
-                cr.arc(x + r, y + r, r, Math.PI, Math.PI * 1.5);
-                cr.closePath();
-                cr.clip();
-            }
-            cr.setSourceSurface(image, padding, padding);
-            cr.paint();
-            cr.restore();
-            surface.writeToPNG(tmpOut);
-            surface.finish();
-            image.finish();
-            return GdkPixbuf.Pixbuf.new_from_file(tmpOut);
-        } finally {
-            deletePathIfExists(tmpBase);
-            deletePathIfExists(tmpOut);
-        }
-    }
-
-    _pixbufToBytes(pixbuf) {
-        let result = pixbuf.save_to_bufferv('png', [], []);
-        if (!result[0]) throw new Error('Failed to save pixbuf to buffer');
-        return GLib.Bytes.new(result[1]);
+        return imports.drawing.compositor.applyPresentation(pixbuf, {
+            padding,
+            gradient,
+            radius,
+            gradientPainter: this._gradientPainter,
+        });
     }
 
     _openSaveDialog(tmpPath, pixbuf) {
@@ -1978,10 +1989,11 @@ var BigShotExtension = class BigShotExtension {
                     _('Save Screenshot'),
                     {
                         'current_name': new GLib.Variant('s', suggestedName),
+                        // 'ay' bytestring: the portal expects it NUL-terminated
                         'current_folder': new GLib.Variant('ay',
                             new TextEncoder().encode(
-                                GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PICTURES) ||
-                                GLib.get_home_dir()
+                                (GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PICTURES) ||
+                                GLib.get_home_dir()) + '\0'
                             )),
                         'filters': new GLib.Variant('a(sa(us))', [
                             [_('PNG Images'), [
@@ -2000,6 +2012,10 @@ var BigShotExtension = class BigShotExtension {
                         let unpacked = result.deepUnpack();
                         let requestPath = unpacked[0];
 
+                        if (this._disabled) {
+                            deletePathIfExists(tmpPath);
+                            return;
+                        }
                         let subId = bus.signal_subscribe(
                             'org.freedesktop.portal.Desktop',
                             'org.freedesktop.portal.Request',
@@ -2009,6 +2025,7 @@ var BigShotExtension = class BigShotExtension {
                             Gio.DBusSignalFlags.NO_MATCH_RULE,
                             (c, sender, path, iface, signal, params) => {
                                 bus.signal_unsubscribe(subId);
+                                this._portalRequests.delete(subId);
                                 let respUnpacked = params.deepUnpack();
                                 let response = respUnpacked[0];
                                 let results = respUnpacked[1];
@@ -2030,6 +2047,7 @@ var BigShotExtension = class BigShotExtension {
                                 try { Gio.File.new_for_path(tmpPath).delete(null); } catch (e) { /* */ }
                             }
                         );
+                        this._portalRequests.set(subId, tmpPath);
                     } catch (e) {
                         log('[Big Shot] Portal SaveFile failed: ' + e.message);
                         try { Gio.File.new_for_path(tmpPath).delete(null); } catch (e2) { /* */ }
@@ -2095,10 +2113,21 @@ var BigShotExtension = class BigShotExtension {
                 elementNames.add(choices[c].element);
         }
 
+        // Probe elements with a small worker pool: launching ~15
+        // gst-inspect processes at once competes with Cinnamon at login.
         let names = Array.from(elementNames);
-        let checks = await Promise.all(names.map(async name => {
-            return [name, await checkElement(name)];
-        }));
+        let checks = [];
+        let nextName = 0;
+        let worker = async () => {
+            while (nextName < names.length) {
+                let name = names[nextName++];
+                checks.push([name, await checkElement(name)]);
+            }
+        };
+        let workers = [];
+        for (let w = 0; w < Math.min(4, names.length); w++)
+            workers.push(worker());
+        await Promise.all(workers);
         let availableElements = new Set();
         for (let i = 0; i < checks.length; i++) {
             if (checks[i][1])
@@ -2195,11 +2224,19 @@ var BigShotExtension = class BigShotExtension {
 
         if (this._availableConfigs.length === 0) {
             log('[Big Shot] No GStreamer pipeline available for screencast');
+            this._showNotification(
+                _('Screen recording unavailable'),
+                _('No compatible GStreamer video encoder was found.')
+            );
             return;
         }
         if (!GLib.find_program_in_path('ffprobe') ||
             !GLib.find_program_in_path('ffmpeg')) {
             log('[Big Shot] ffmpeg and ffprobe are required for safe recording finalization');
+            this._showNotification(
+                _('Screen recording unavailable'),
+                _('ffmpeg and ffprobe are required to record the screen.')
+            );
             return;
         }
 
@@ -2303,6 +2340,12 @@ var BigShotExtension = class BigShotExtension {
                 if (portal)
                     portal.close();
                 log('[Big Shot] ScreenCast portal failed: ' + e.message);
+                if (startGeneration === this._screencastStartGeneration) {
+                    this._showNotification(
+                        _('Screen recording unavailable'),
+                        _('The screen sharing portal is not available on this session.')
+                    );
+                }
                 return;
             }
         }
@@ -2363,8 +2406,7 @@ var BigShotExtension = class BigShotExtension {
                 ' startx=' + captureGeometry.x +
                 ' starty=' + captureGeometry.y +
                 ' endx=' + endX +
-                ' endy=' + endY +
-                ' ! videoconvert';
+                ' endy=' + endY;
         }
 
         let pipeline;
@@ -2540,6 +2582,7 @@ var BigShotExtension = class BigShotExtension {
             this._videoAnnotation.finishEditForStop();
         let session = this._recordingSession;
         if (!session || this._recordingState === 'idle' ||
+            this._recordingState === 'starting' ||
             this._recordingState === 'finalizing')
             return false;
 
@@ -2580,7 +2623,8 @@ var BigShotExtension = class BigShotExtension {
             ? this._videoAnnotation.suspendControlsForCapture()
             : () => {};
         let captureFinished = false;
-        let finishCapture = () => {
+        let finishCapture;
+        finishCapture = () => {
             if (captureFinished)
                 return;
             captureFinished = true;
@@ -2594,15 +2638,21 @@ var BigShotExtension = class BigShotExtension {
         };
         this._recordingScreenshotPending = true;
         global.stage.queue_redraw();
-        GLib.timeout_add(GLib.PRIORITY_DEFAULT, 5000, () => {
+        let watchdogId = this._addTimeout(5000, () => {
+            watchdogId = 0;
             if (!captureFinished) {
                 log('[Big Shot] Recording screenshot timed out');
                 finishCapture();
             }
-            return GLib.SOURCE_REMOVE;
         });
+        let finishOnce = finishCapture;
+        finishCapture = () => {
+            this._removeTimeout(watchdogId);
+            watchdogId = 0;
+            finishOnce();
+        };
 
-        GLib.timeout_add(GLib.PRIORITY_DEFAULT, 32, () => {
+        this._addTimeout(32, () => {
             let filePath = null;
             let dir = GLib.get_user_special_dir(
                 GLib.UserDirectory.DIRECTORY_PICTURES
@@ -2631,17 +2681,20 @@ var BigShotExtension = class BigShotExtension {
                 ]));
                 let scale = global.ui_scale || 1;
                 let screenshot = new Cinnamon.Screenshot();
-                screenshot.screenshot_area(
+                imports.compat.screenshotArea(
+                    screenshot,
                     session.includeCursor,
                     Math.round(geometry[0] * scale),
                     Math.round(geometry[1] * scale),
                     Math.round(geometry[2] * scale),
                     Math.round(geometry[3] * scale),
                     filePath,
-                    () => {
+                    success => {
                         finishCapture();
+                        if (this._disabled || !this._screenshotUI)
+                            return;
                         let file = Gio.File.new_for_path(filePath);
-                        if (!file.query_exists(null)) {
+                        if (!success || !file.query_exists(null)) {
                             log('[Big Shot] Recording screenshot failed');
                             return;
                         }
@@ -2662,7 +2715,6 @@ var BigShotExtension = class BigShotExtension {
                 finishCapture();
                 log('[Big Shot] Recording screenshot failed: ' + e.message);
             }
-            return GLib.SOURCE_REMOVE;
         });
         return true;
     }
@@ -3030,22 +3082,23 @@ var BigShotExtension = class BigShotExtension {
         this._destroyRecordingRegionMask();
         if (this._screenshotUI)
             this._screenshotUI.screencastInProgress = false;
-        if (this._webcam)
+        if (!this._disabled && this._webcam)
             this._webcam.stopPreview();
         if (!this._disabled && this._indicator &&
             typeof this._indicator.onFinalizing === 'function')
             this._indicator.onFinalizing();
         this._writeRecordingManifest(session);
 
+        let complete = (path, error) => {
+            try {
+                this._completeRecordingSession(session, path, error);
+            } catch (e) {
+                log('[Big Shot] Recording completion failed: ' + e.message);
+            }
+            return path;
+        };
         session.finalizePromise = this._publishRecordingSession(session)
-            .then(path => {
-                this._completeRecordingSession(session, path, null);
-                return path;
-            })
-            .catch(e => {
-                this._completeRecordingSession(session, null, e);
-                return null;
-            });
+            .then(path => complete(path, null), e => complete(null, e));
         return session.finalizePromise;
     }
 
@@ -3065,9 +3118,7 @@ var BigShotExtension = class BigShotExtension {
             if (!probe.valid)
                 throw new Error('Segment ' + session.segments[i].index +
                     ' failed validation: ' + probe.error);
-            let frameRateTolerance = Math.max(0.5, session.framerate * 0.05);
-            if (probe.frameRate <= 0 ||
-                Math.abs(probe.frameRate - session.framerate) > frameRateTolerance) {
+            if (!this._frameRateMatches(probe, session)) {
                 throw new Error('Segment ' + session.segments[i].index +
                     ' has an unexpected frame rate');
             }
@@ -3086,15 +3137,27 @@ var BigShotExtension = class BigShotExtension {
         };
     }
 
+    /**
+     * X11 (ximagesrc) output is constant frame rate and must match the
+     * requested rate. PipeWire/portal streams are variable frame rate
+     * (static screens produce fewer frames), so only require a sane rate.
+     */
+    _frameRateMatches(probe, session) {
+        if (!probe || probe.frameRate <= 0)
+            return false;
+        if (String(session.pipelineBase || '').indexOf('pipewiresrc') >= 0)
+            return probe.frameRate <= session.framerate * 1.05 + 0.5;
+        let tolerance = Math.max(0.5, session.framerate * 0.05);
+        return Math.abs(probe.frameRate - session.framerate) <= tolerance;
+    }
+
     _recordingOutputMatches(probe, validation, session) {
         if (!probe || !probe.valid || !validation)
             return false;
         if (JSON.stringify(probe.signature) !==
             JSON.stringify(validation.referenceSignature))
             return false;
-        let frameRateTolerance = Math.max(0.5, session.framerate * 0.05);
-        if (probe.frameRate <= 0 ||
-            Math.abs(probe.frameRate - session.framerate) > frameRateTolerance)
+        if (!this._frameRateMatches(probe, session))
             return false;
         let durationTolerance = Math.max(
             1.5,
@@ -3105,8 +3168,16 @@ var BigShotExtension = class BigShotExtension {
     }
 
     async _publishRecordingSession(session, validation) {
-        if (session.errorMessage && !session.recovering)
-            throw new Error(session.errorMessage);
+        // A forced stop or an unexpected gst-launch exit does not make the
+        // already-finalized segments invalid: each one is validated with
+        // ffprobe below, so publish whatever is valid instead of parking
+        // the whole recording in recovery.
+        if (session.errorMessage && !session.recovering) {
+            if (session.segments.length === 0)
+                throw new Error(session.errorMessage);
+            log('[Big Shot] Publishing validated segments despite: ' +
+                session.errorMessage);
+        }
         if (!validation)
             validation = await this._validateRecordingSegments(session);
 
@@ -3215,9 +3286,7 @@ var BigShotExtension = class BigShotExtension {
             throw new Error('Merged recording failed validation: ' + probe.error);
         if (JSON.stringify(probe.signature) !== JSON.stringify(referenceSignature))
             throw new Error('Merged recording stream format changed');
-        let frameRateTolerance = Math.max(0.5, session.framerate * 0.05);
-        if (probe.frameRate <= 0 ||
-            Math.abs(probe.frameRate - session.framerate) > frameRateTolerance)
+        if (!this._frameRateMatches(probe, session))
             throw new Error('Merged recording has an unexpected frame rate');
         let durationTolerance = Math.max(1.5, expectedDuration * 0.03);
         if (Math.abs(probe.duration - expectedDuration) > durationTolerance) {
@@ -3313,7 +3382,7 @@ var BigShotExtension = class BigShotExtension {
         }
         getRecordingOwnerRegistry().delete(session.id);
 
-        if (this._videoAnnotation)
+        if (!this._disabled && this._videoAnnotation)
             this._videoAnnotation.onRecordingStopped();
         if (!this._disabled && this._indicator)
             this._indicator.onRecordingStopped();
@@ -3321,7 +3390,11 @@ var BigShotExtension = class BigShotExtension {
             return;
 
         if (error) {
-            this._showNotification('Big Shot', session.sessionDir, session.sessionDir);
+            this._showNotification(
+                _('Recording could not be saved'),
+                _('Recovery files were kept in %s').format(session.sessionDir),
+                session.sessionDir
+            );
         } else {
             this._showNotification(
                 _('Recording complete'),

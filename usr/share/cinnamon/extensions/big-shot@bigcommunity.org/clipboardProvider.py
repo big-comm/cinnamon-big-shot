@@ -4,6 +4,7 @@
 import ctypes
 import os
 from pathlib import Path
+import signal
 import sys
 
 
@@ -20,9 +21,30 @@ if len(sys.argv) not in (2, 3):
 
 path = os.path.abspath(sys.argv[1])
 delete_on_clear = len(sys.argv) == 3 and sys.argv[2] == "--delete-on-clear"
+
+
+def remove_temp_file():
+    if not delete_on_clear:
+        return
+    try:
+        os.unlink(path)
+    except OSError:
+        pass
+
+
+def fail(message):
+    print("clipboardProvider: " + message, file=sys.stderr)
+    remove_temp_file()
+    raise SystemExit(1)
+
+
+try:
+    with open(path, "rb") as png_file:
+        png = png_file.read()
+except OSError as error:
+    fail("cannot read %s: %s" % (path, error))
+
 uri = Path(path).as_uri()
-with open(path, "rb") as png_file:
-    png = png_file.read()
 
 formats = {
     0: (b"image/png", png),
@@ -79,22 +101,31 @@ def provide_data(_clipboard, selection, info, _data):
 
 @ClearFunc
 def clipboard_cleared(_clipboard, _data):
-    if delete_on_clear:
-        try:
-            os.unlink(path)
-        except FileNotFoundError:
-            pass
+    remove_temp_file()
     gtk.gtk_main_quit()
 
 
+def handle_termination(_signum, _frame):
+    remove_temp_file()
+    raise SystemExit(0)
+
+
+signal.signal(signal.SIGTERM, handle_termination)
+signal.signal(signal.SIGHUP, handle_termination)
+
+gtk.gtk_init_check.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+gtk.gtk_init_check.restype = ctypes.c_int
 if not gtk.gtk_init_check(None, None):
-    raise SystemExit(1)
+    fail("cannot initialise GTK (no display?)")
 
 clipboard_atom = gdk.gdk_atom_intern(b"CLIPBOARD", 0)
 clipboard = gtk.gtk_clipboard_get(clipboard_atom)
 if not gtk.gtk_clipboard_set_with_data(
     clipboard, targets, len(targets), provide_data, clipboard_cleared, None
 ):
-    raise SystemExit(1)
+    fail("cannot take clipboard ownership")
 
-gtk.gtk_main()
+try:
+    gtk.gtk_main()
+finally:
+    remove_temp_file()

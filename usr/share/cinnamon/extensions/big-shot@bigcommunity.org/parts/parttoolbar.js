@@ -106,6 +106,23 @@ var PartToolbar = class PartToolbar extends PartUI {
         return [x - monitor.x, y - monitor.y];
     }
 
+    /** Keep a dragged floating actor fully inside the active monitor. */
+    _clampFloatingPosition(actor, pos) {
+        const monitor = this._ui.monitorGeometry;
+        if (!monitor || !actor)
+            return pos;
+        // Recording chrome lives in stage coordinates, the UI in
+        // monitor-local ones (see _stageToLocal).
+        const originX = this._recordingToolbarAttached ? monitor.x : 0;
+        const originY = this._recordingToolbarAttached ? monitor.y : 0;
+        const maxX = originX + Math.max(0, monitor.width - actor.width);
+        const maxY = originY + Math.max(0, monitor.height - actor.height);
+        return [
+            Math.max(originX, Math.min(pos[0], maxX)),
+            Math.max(originY, Math.min(pos[1], maxY)),
+        ];
+    }
+
     _connectDragEventActor(actor) {
         if (this._dragEventActor && this._dragMotionId) {
             try {
@@ -246,9 +263,12 @@ var PartToolbar = class PartToolbar extends PartUI {
                     if (Math.abs(dx) < 4 && Math.abs(dy) < 4)
                         return Clutter.EVENT_PROPAGATE;
                     this._editContainer.set_position(
-                        ...this._stageToLocal(
-                            mx + this._dragOffsetX,
-                            my + this._dragOffsetY
+                        ...this._clampFloatingPosition(
+                            this._editContainer,
+                            this._stageToLocal(
+                                mx + this._dragOffsetX,
+                                my + this._dragOffsetY
+                            )
                         )
                     );
                 } else if (this._videoDragging) {
@@ -257,9 +277,12 @@ var PartToolbar = class PartToolbar extends PartUI {
                     if (Math.abs(dx) < 4 && Math.abs(dy) < 4)
                         return Clutter.EVENT_PROPAGATE;
                     this._videoContainer.set_position(
-                        ...this._stageToLocal(
-                            mx + this._videoDragOffsetX,
-                            my + this._videoDragOffsetY
+                        ...this._clampFloatingPosition(
+                            this._videoContainer,
+                            this._stageToLocal(
+                                mx + this._videoDragOffsetX,
+                                my + this._videoDragOffsetY
+                            )
                         )
                     );
                 }
@@ -722,16 +745,11 @@ var PartToolbar = class PartToolbar extends PartUI {
         this._maskButtons = new Map();
         this._selectedMaskId = 'circle';
 
-        const maskOptions = [
-            { id: 'none', label: _('None') },
-            { id: 'circle', label: _('Circle') },
-            { id: 'ellipse', label: _('Oval') },
-            { id: 'soft-circle', label: _('Soft') },
-            { id: 'spotlight', label: _('Spot') },
-            { id: 'ornate-frame', label: _('Ornate') },
-            { id: 'checker', label: _('Checker') },
-            { id: 'neon', label: _('Neon') },
-        ];
+        // Single source of truth: the masks the webcam part can render.
+        const maskOptions = imports.parts.partwebcam.BUILTIN_MASKS.map(m => ({
+            id: m.id,
+            label: m.label(),
+        }));
         for (let mi = 0; mi < maskOptions.length; mi++) {
             const m = maskOptions[mi];
             const btn = new St.Button({
@@ -1091,8 +1109,12 @@ var PartToolbar = class PartToolbar extends PartUI {
 
         // Defer to next allocation so the container knows its new size
         this._videoContainer.queue_relayout();
-        GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
-            if (!this._videoContainer.get_parent()) return GLib.SOURCE_REMOVE;
+        if (this._videoRepositionId)
+            GLib.source_remove(this._videoRepositionId);
+        this._videoRepositionId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+            this._videoRepositionId = 0;
+            if (!this._videoContainer || !this._videoContainer.get_parent())
+                return GLib.SOURCE_REMOVE;
             const panel = this._ui.panel;
             const monRect = this._ui.monitorGeometry;
             const cw = this._videoContainer.get_preferred_width(-1)[1] || 300;
@@ -1149,7 +1171,9 @@ var PartToolbar = class PartToolbar extends PartUI {
             return;
         }
         const btn = this._toolButtons.get(toolId);
-        if (!btn) return;
+        // Tools disabled in the current context (e.g. effects while
+        // recording) must not be reachable through keyboard shortcuts.
+        if (!btn || !btn.reactive) return;
         this._toolButtons.forEach(function(otherBtn, id) {
             otherBtn.checked = (id === toolId);
         });
@@ -1161,9 +1185,35 @@ var PartToolbar = class PartToolbar extends PartUI {
 
     get activeTool() { return this._activeTool; }
 
-    _showSizePopup() {
-        this._closeSizePopup();
+    /** Whether the user is currently in annotation edit mode. */
+    get editMode() { return !!this._editMode; }
+
+    /** Close every toolbar popup (they are mutually exclusive). */
+    _closeAllPopups() {
         this._closeColorPopup();
+        this._closeSizePopup();
+        this._closeFontPopup();
+        this._closeIntensityPopup();
+    }
+
+    /**
+     * Close a popup on the next click outside of it. Armed after a short
+     * delay so the click that opened it does not close it right away.
+     */
+    _armOutsideClose(popupKey, timeoutKey, clickKey, closeFn) {
+        this[timeoutKey] = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+            this[timeoutKey] = 0;
+            if (this._destroyed || !this[popupKey]) return GLib.SOURCE_REMOVE;
+            this[clickKey] = global.stage.connect('button-press-event', () => {
+                closeFn();
+                return Clutter.EVENT_PROPAGATE;
+            });
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+
+    _showSizePopup() {
+        this._closeAllPopups();
 
         this._sizePopup = new St.BoxLayout({
             style_class: 'big-shot-edit-popup',
@@ -1225,9 +1275,20 @@ var PartToolbar = class PartToolbar extends PartUI {
             by - this._sizePopup.height - 8
         );
         this._sizePopup.set_position(sizeLocal[0], sizeLocal[1]);
+
+        this._armOutsideClose('_sizePopup', '_sizePopupTimeoutId',
+            '_sizePopupClickId', () => this._closeSizePopup());
     }
 
     _closeSizePopup() {
+        if (this._sizePopupTimeoutId) {
+            GLib.source_remove(this._sizePopupTimeoutId);
+            this._sizePopupTimeoutId = 0;
+        }
+        if (this._sizePopupClickId) {
+            global.stage.disconnect(this._sizePopupClickId);
+            this._sizePopupClickId = null;
+        }
         if (this._sizePopup) {
             this._destroyFloatingActor(this._sizePopup);
             this._sizePopup = null;
@@ -1235,7 +1296,7 @@ var PartToolbar = class PartToolbar extends PartUI {
     }
 
     _showFontPopup() {
-        this._closeFontPopup();
+        this._closeAllPopups();
 
         this._fontPopup = new St.BoxLayout({
             style_class: 'big-shot-edit-popup',
@@ -1257,7 +1318,7 @@ var PartToolbar = class PartToolbar extends PartUI {
 
         for (let fi = 0; fi < fontNames.length; fi++) {
             const name = fontNames[fi];
-            const escapedName = name.replace(/'/g, "\\'");
+            const escapedName = name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
             const btn = new St.Button({
                 style_class: 'big-shot-edit-tool-btn',
                 can_focus: true,
@@ -1335,9 +1396,7 @@ var PartToolbar = class PartToolbar extends PartUI {
     }
 
     _showIntensityPopup() {
-        this._closeIntensityPopup();
-        this._closeColorPopup();
-        this._closeSizePopup();
+        this._closeAllPopups();
 
         this._intensityPopup = new St.BoxLayout({
             style_class: 'big-shot-edit-popup',
@@ -1421,7 +1480,7 @@ var PartToolbar = class PartToolbar extends PartUI {
     }
 
     _showColorPopup(target) {
-        this._closeColorPopup();
+        this._closeAllPopups();
 
         this._colorPopup = new St.BoxLayout({
             style_class: 'big-shot-edit-popup',
@@ -1914,17 +1973,22 @@ var PartToolbar = class PartToolbar extends PartUI {
 
     destroy() {
         this.detachEditForRecording();
-        if (this._dragMotionId) {
-            this._dragEventActor.disconnect(this._dragMotionId);
-            this._dragMotionId = 0;
+        if (this._dragMotionId && this._dragEventActor) {
+            try {
+                this._dragEventActor.disconnect(this._dragMotionId);
+            } catch (e) {
+                // Actor may already be destroyed during shutdown.
+            }
         }
+        this._dragMotionId = 0;
         this._dragEventActor = null;
+        if (this._videoRepositionId) {
+            GLib.source_remove(this._videoRepositionId);
+            this._videoRepositionId = 0;
+        }
         this._detachEditFromPanel();
         this._detachVideoFromPanel();
-        this._closeColorPopup();
-        this._closeSizePopup();
-        this._closeFontPopup();
-        this._closeIntensityPopup();
+        this._closeAllPopups();
         this._hideTooltip();
         this._clearInlineMessage();
 

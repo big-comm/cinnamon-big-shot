@@ -4,3 +4,8 @@ GNOME_PARITY_PLAN.md
 node_modules/
 .idea/
 .vscode/
+
+# Editor backups / Python cache
+*~
+__pycache__/
+*.pyc
