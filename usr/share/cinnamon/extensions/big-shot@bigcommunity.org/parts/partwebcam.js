@@ -25,14 +25,16 @@ const PartUI = PartBase.PartUI;
 let _ = function(str) { return str; };
 
 let Gst = null;
+// Without the GstApp typelib loaded, appsink elements are plain Gst.Element
+// and try_pull_sample() does not exist, so the webcam needs both.
+let GstApp = null;
 try {
     Gst = imports.gi.Gst;
-    // Loaded for its side effect: without the GstApp typelib, appsink
-    // elements are plain Gst.Element and try_pull_sample() does not exist.
-    imports.gi.GstApp;
+    GstApp = imports.gi.GstApp;
 } catch(e) {
     // GStreamer not available
     Gst = null;
+    GstApp = null;
 }
 
 const WEBCAM_DEFAULT_WIDTH = 320;
@@ -239,7 +241,7 @@ var PartWebcam = class PartWebcam extends PartUI {
             label: mask.label(),
         }));
     }
-    get available() { return Gst !== null; }
+    get available() { return Gst !== null && GstApp !== null; }
 
     get selectedDevice() { return this._selectedDevice ? this._selectedDevice : null; }
     set selectedDevice(val) {
