@@ -12,10 +12,29 @@ const OBJECT_PATH = '/org/freedesktop/portal/desktop';
 const SCREENCAST_IFACE = 'org.freedesktop.portal.ScreenCast';
 const REQUEST_IFACE = 'org.freedesktop.portal.Request';
 const SESSION_IFACE = 'org.freedesktop.portal.Session';
+// Generous: Start/SelectSources may wait for the user in a dialog
+const REQUEST_TIMEOUT_SECONDS = 300;
 
 function _token(prefix) {
     return prefix + '_' + GLib.get_monotonic_time().toString() + '_' +
         Math.floor(Math.random() * 0x1000000).toString(16);
+}
+
+function _closeFd(fd) {
+    if (typeof GLib.close === 'function') {
+        GLib.close(fd);
+        return;
+    }
+    // Older GLib: let a Unix stream own and close the descriptor
+    let UnixInputStream = Gio.UnixInputStream;
+    if (!UnixInputStream) {
+        try {
+            UnixInputStream = imports.gi.GioUnix.InputStream;
+        } catch (e) {
+            return;
+        }
+    }
+    new UnixInputStream({ fd: fd, close_fd: true }).close(null);
 }
 
 function _call(connection, interfaceName, method, parameters, replyType) {
@@ -48,6 +67,7 @@ var ScreenCastPortal = class ScreenCastPortal {
         this._fdList = null;
         this._fdIndex = -1;
         this._sessionClosedId = 0;
+        this._pendingRequests = new Set();
         this.stream = null;
         this.closed = false;
     }
@@ -135,9 +155,29 @@ var ScreenCastPortal = class ScreenCastPortal {
         let requestPath = '/org/freedesktop/portal/desktop/request/' +
             sender + '/' + handleToken;
 
-        let signalId = 0;
+        let pending = {
+            signalId: 0,
+            timeoutId: 0,
+            requestPath: requestPath,
+            reject: null,
+        };
+        let finish = () => {
+            if (pending.signalId) {
+                this._connection.signal_unsubscribe(pending.signalId);
+                pending.signalId = 0;
+            }
+            if (pending.timeoutId) {
+                GLib.source_remove(pending.timeoutId);
+                pending.timeoutId = 0;
+            }
+            this._pendingRequests.delete(pending);
+        };
         let responsePromise = new Promise((resolve, reject) => {
-            signalId = this._connection.signal_subscribe(
+            pending.reject = error => {
+                finish();
+                reject(error);
+            };
+            pending.signalId = this._connection.signal_subscribe(
                 BUS_NAME,
                 REQUEST_IFACE,
                 'Response',
@@ -146,7 +186,7 @@ var ScreenCastPortal = class ScreenCastPortal {
                 Gio.DBusSignalFlags.NONE,
                 (connection, senderName, objectPath, interfaceName,
                     signalName, parameters) => {
-                    connection.signal_unsubscribe(signalId);
+                    finish();
                     let unpacked = parameters.deepUnpack();
                     if (Number(unpacked[0]) !== 0) {
                         reject(new Error('ScreenCast portal request was denied'));
@@ -155,7 +195,21 @@ var ScreenCastPortal = class ScreenCastPortal {
                     resolve(unpacked[1] || {});
                 }
             );
+            // A portal that dies without answering must not hang us forever
+            pending.timeoutId = GLib.timeout_add_seconds(
+                GLib.PRIORITY_DEFAULT,
+                REQUEST_TIMEOUT_SECONDS,
+                () => {
+                    pending.timeoutId = 0;
+                    this._closeRequest(requestPath);
+                    pending.reject(new Error('ScreenCast portal request timed out'));
+                    return GLib.SOURCE_REMOVE;
+                }
+            );
         });
+        // The response may be rejected before we await it below
+        responsePromise.catch(() => {});
+        this._pendingRequests.add(pending);
 
         let parameters;
         if (method === 'CreateSession') {
@@ -181,11 +235,25 @@ var ScreenCastPortal = class ScreenCastPortal {
                 new GLib.VariantType('(o)')
             );
         } catch (e) {
-            if (signalId)
-                this._connection.signal_unsubscribe(signalId);
+            finish();
             throw e;
         }
         return await responsePromise;
+    }
+
+    _closeRequest(requestPath) {
+        this._connection.call(
+            BUS_NAME,
+            requestPath,
+            REQUEST_IFACE,
+            'Close',
+            null,
+            null,
+            Gio.DBusCallFlags.NONE,
+            -1,
+            null,
+            null
+        );
     }
 
     _openPipeWireRemote() {
@@ -221,15 +289,21 @@ var ScreenCastPortal = class ScreenCastPortal {
     takeDuplicateFd(targetFd) {
         if (!this._fdList || this._fdIndex < 0 || this.closed)
             throw new Error('PipeWire portal session is not available');
-        let duplicates = new Gio.UnixFDList();
-        duplicates.append(this._fdList.get(this._fdIndex));
-        let fds = duplicates.steal_fds();
-        if (!fds || fds.length !== 1)
+        // UnixFDList.get() already returns a new dup()ed descriptor owned
+        // by the caller (SubprocessLauncher.take_fd() closes it later).
+        let fd = this._fdList.get(this._fdIndex);
+        if (fd < 0)
             throw new Error('Could not duplicate the PipeWire file descriptor');
-        return { fd: fds[0], targetFd: targetFd };
+        return { fd: fd, targetFd: targetFd };
     }
 
     close() {
+        // Cancel requests still waiting for a portal response
+        for (let pending of Array.from(this._pendingRequests)) {
+            this._closeRequest(pending.requestPath);
+            pending.reject(new Error('ScreenCast portal session was closed'));
+        }
+        this._pendingRequests.clear();
         if (this._sessionClosedId) {
             this._connection.signal_unsubscribe(this._sessionClosedId);
             this._sessionClosedId = 0;
@@ -250,6 +324,15 @@ var ScreenCastPortal = class ScreenCastPortal {
         }
         this.closed = true;
         this._sessionHandle = null;
+        if (this._fdList) {
+            // Close the portal-owned descriptors held by the list
+            try {
+                for (let fd of this._fdList.steal_fds() || [])
+                    _closeFd(fd);
+            } catch (e) {
+                // ignore
+            }
+        }
         this._fdList = null;
         this._fdIndex = -1;
     }

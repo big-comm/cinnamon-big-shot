@@ -19,6 +19,7 @@ const Cinnamon = imports.gi.Cinnamon;
 const Cairo = imports.gi.cairo;
 const Signals = imports.signals;
 const Main = imports.ui.main;
+const Compat = imports.compat;
 
 let _ = function(str) { return str; };
 
@@ -72,6 +73,9 @@ var ScreenshotUI = class ScreenshotUI {
         this._mode = UIMode.SCREENSHOT;
         this._selectionMode = SelectionMode.AREA;
         this._isModal = false;
+        this._opening = false;
+        this._openGeneration = 0;
+        this._destroyed = false;
         this._screenshotPixbuf = null;
         this._screenshotSurface = null;
         this._scale = 1;
@@ -455,10 +459,6 @@ var ScreenshotUI = class ScreenshotUI {
     }
 
     /**
-     * Schedule a bar reposition on the next idle cycle, ensuring the
-     * bar's preferred size has been computed after children are added.
-     */
-    /**
      * Schedule a bar reposition with enough delay for children to be laid out.
      * Uses two phases: immediate layout tick + delayed followup.
      */
@@ -619,7 +619,7 @@ var ScreenshotUI = class ScreenshotUI {
      * @param {number} mode — UIMode.SCREENSHOT (0) or UIMode.SCREENCAST (1)
      */
     open(mode) {
-        if (this._visible) return;
+        if (this._visible || this._opening || this._destroyed) return;
 
         if (mode !== undefined) {
             this._mode = mode;
@@ -628,8 +628,21 @@ var ScreenshotUI = class ScreenshotUI {
 
         this._setActiveMonitor(global.display.get_current_monitor());
 
+        this._opening = true;
+        let generation = ++this._openGeneration;
+
         // Capture the screen before showing the UI
-        this._captureScreen(() => {
+        this._captureScreen(ok => {
+            if (this._destroyed || generation !== this._openGeneration)
+                return;
+            this._opening = false;
+            if (!ok) {
+                log('[Big Shot] Screen capture failed; not opening UI');
+                this._screenshotPixbuf = null;
+                this._previewActor.set_content(null);
+                return;
+            }
+
             let monitor = this._monitor;
 
             // Default to area selection
@@ -641,6 +654,20 @@ var ScreenshotUI = class ScreenshotUI {
             this._areaBtn.checked = true;
             this._screenBtn.checked = false;
             this._windowBtn.checked = false;
+            this._resetDragState();
+
+            // Grab input first: without a modal grab the fullscreen overlay
+            // would block the desktop while keys (Esc) never reach it.
+            if (!this._isModal) {
+                this._isModal = Main.pushModal(this.actor);
+                if (!this._isModal) {
+                    log('[Big Shot] pushModal failed; aborting screenshot UI');
+                    this.actor.hide();
+                    this._screenshotPixbuf = null;
+                    this._previewActor.set_content(null);
+                    return;
+                }
+            }
 
             // Mark visible BEFORE _setUIMode so parts see correct state
             this._visible = true;
@@ -653,11 +680,6 @@ var ScreenshotUI = class ScreenshotUI {
 
             this.actor.show();
 
-            // Push modal
-            if (!this._isModal) {
-                this._isModal = Main.pushModal(this.actor);
-            }
-
             // Position bar immediately + schedule deferred reposition
             // (deferred handles cases where children aren't laid out yet)
             this._positionBottomBar();
@@ -668,10 +690,22 @@ var ScreenshotUI = class ScreenshotUI {
         });
     }
 
+    _resetDragState() {
+        this._isSelecting = false;
+        this._dragHandle = null;
+        this._dragStartX = 0;
+        this._dragStartY = 0;
+    }
+
     /**
      * Close the screenshot UI.
      */
     close() {
+        if (this._opening) {
+            // Cancel a pending open whose capture has not finished yet
+            this._opening = false;
+            this._openGeneration++;
+        }
         if (!this._visible) return;
 
         if (this._layoutIdleId !== 0) {
@@ -692,8 +726,11 @@ var ScreenshotUI = class ScreenshotUI {
             this._isModal = false;
         }
 
-        this.actor.hide();
+        // Update state before hiding: actor 'notify::visible' handlers
+        // (e.g. the magnifier) read this.visible synchronously.
         this._visible = false;
+        this._resetDragState();
+        this.actor.hide();
 
         // Clean up screenshot data
         this._screenshotPixbuf = null;
@@ -713,60 +750,72 @@ var ScreenshotUI = class ScreenshotUI {
      * @param {Function} callback — called when capture is done
      */
     _captureScreen(callback) {
-        let tmpFile = GLib.build_filenamev([
-            GLib.get_tmp_dir(),
-            'bigshot-capture-' + Date.now() + '.png'
-        ]);
+        let tmpFile = Compat.makeTempPath('bigshot-capture', 'png');
 
         let screenshot = new Cinnamon.Screenshot();
         let scale = global.ui_scale || 1;
-        screenshot.screenshot_area(
-            this._includeCursor,
-            Math.round(this._monitor.x * scale),
-            Math.round(this._monitor.y * scale),
-            Math.round(this._monitor.width * scale),
-            Math.round(this._monitor.height * scale),
-            tmpFile,
-            (obj, result) => {
-            try {
-                // Load as pixbuf for annotation compositing
-                this._screenshotPixbuf = GdkPixbuf.Pixbuf.new_from_file(tmpFile);
-                this._scale = this._screenshotPixbuf.get_width() /
-                    this._monitor.width;
+        let done = ok => {
+            Compat.deleteQuietly(tmpFile);
+            if (callback) callback(ok);
+        };
+        try {
+            Compat.screenshotArea(
+                screenshot,
+                this._includeCursor,
+                Math.round(this._monitor.x * scale),
+                Math.round(this._monitor.y * scale),
+                Math.round(this._monitor.width * scale),
+                Math.round(this._monitor.height * scale),
+                tmpFile,
+                success => {
+                    if (this._destroyed) {
+                        done(false);
+                        return;
+                    }
+                    if (!success) {
+                        log('[Big Shot] Cinnamon.Screenshot reported failure');
+                        done(false);
+                        return;
+                    }
+                    let ok = false;
+                    try {
+                        // Load as pixbuf for annotation compositing
+                        this._screenshotPixbuf =
+                            GdkPixbuf.Pixbuf.new_from_file(tmpFile);
+                        this._scale = this._screenshotPixbuf.get_width() /
+                            this._monitor.width;
 
-                // Load as Clutter texture for preview
-                let image = new Clutter.Image();
-                let pixbuf = this._screenshotPixbuf;
-                let success = image.set_data(
-                    pixbuf.get_pixels(),
-                    pixbuf.get_has_alpha()
-                        ? Cogl.PixelFormat.RGBA_8888
-                        : Cogl.PixelFormat.RGB_888,
-                    pixbuf.get_width(),
-                    pixbuf.get_height(),
-                    pixbuf.get_rowstride()
-                );
+                        // Load as Clutter texture for preview
+                        let image = new Clutter.Image();
+                        let pixbuf = this._screenshotPixbuf;
+                        let loaded = image.set_data(
+                            pixbuf.get_pixels(),
+                            pixbuf.get_has_alpha()
+                                ? Cogl.PixelFormat.RGBA_8888
+                                : Cogl.PixelFormat.RGB_888,
+                            pixbuf.get_width(),
+                            pixbuf.get_height(),
+                            pixbuf.get_rowstride()
+                        );
 
-                if (success) {
-                    this._previewActor.set_content(image);
+                        if (loaded)
+                            this._previewActor.set_content(image);
+
+                        // Provide the pixbuf to the drawing overlay
+                        this.emit('screenshot-ready', this._screenshotPixbuf);
+                        ok = true;
+                    } catch (e) {
+                        log('[Big Shot] Failed to load screenshot: ' +
+                            e.message);
+                        this._screenshotPixbuf = null;
+                    }
+                    done(ok);
                 }
-
-                // Provide the pixbuf to the drawing overlay
-                this.emit('screenshot-ready', this._screenshotPixbuf);
-            } catch (e) {
-                log('[Big Shot] Failed to load screenshot: ' + e.message);
-            } finally {
-                // Clean up temp file
-                try {
-                    Gio.File.new_for_path(tmpFile).delete(null);
-                } catch (e) {
-                    // ignore cleanup failure
-                }
-            }
-
-            if (callback) callback();
-            }
-        );
+            );
+        } catch (e) {
+            log('[Big Shot] Screen capture failed: ' + e.message);
+            done(false);
+        }
     }
 
     /**
@@ -823,6 +872,14 @@ var ScreenshotUI = class ScreenshotUI {
 
     _paintSelection(area) {
         let cr = area.get_context();
+        try {
+            this._drawSelection(cr, area);
+        } finally {
+            cr.$dispose();
+        }
+    }
+
+    _drawSelection(cr, area) {
         let surfaceSize = area.get_surface_size();
         let width = surfaceSize[0];
         let height = surfaceSize[1];
@@ -1153,6 +1210,10 @@ var ScreenshotUI = class ScreenshotUI {
 
     /**
      * Publish a PNG as image data and as a copyable file.
+     *
+     * The Python provider stays alive while it owns the clipboard and exits
+     * when another application takes it over, so only an early failing
+     * exit is treated as an error (then we fall back to St.Clipboard).
      */
     copyFileToClipboard(filePath, deleteOnClear) {
         let python = GLib.find_program_in_path('python3');
@@ -1162,28 +1223,83 @@ var ScreenshotUI = class ScreenshotUI {
         ]);
         if (!python || !Gio.File.new_for_path(provider).query_exists(null)) {
             log('[Big Shot] Multi-format clipboard provider unavailable');
-            this._copyImageToClipboard(filePath);
+            this._copyImageToClipboard(filePath, deleteOnClear);
             return;
         }
 
-        let argv = [python, provider, filePath];
+        let argv = [python, '-I', provider, filePath];
         if (deleteOnClear) argv.push('--delete-on-clear');
+        let proc;
         try {
-            Gio.Subprocess.new(argv, Gio.SubprocessFlags.STDERR_SILENCE);
+            proc = Gio.Subprocess.new(argv, Gio.SubprocessFlags.STDERR_PIPE);
         } catch (e) {
             log('[Big Shot] Clipboard provider failed: ' + e.message);
-            this._copyImageToClipboard(filePath);
+            this._copyImageToClipboard(filePath, deleteOnClear);
+            return;
         }
+
+        proc.communicate_utf8_async(null, null, (p, res) => {
+            let stderr = '';
+            try {
+                let [, , err] = p.communicate_utf8_finish(res);
+                stderr = (err || '').trim();
+            } catch (e) {
+                stderr = e.message;
+            }
+            if (p.get_if_exited() && p.get_exit_status() === 0)
+                return; // normal: clipboard was taken over by someone else
+            log('[Big Shot] Clipboard provider exited with failure' +
+                (stderr ? ': ' + stderr : ''));
+            // Provider never owned the clipboard (or crashed): fall back,
+            // unless the file is already gone.
+            if (Gio.File.new_for_path(filePath).query_exists(null))
+                this._copyImageToClipboard(filePath, deleteOnClear);
+        });
     }
 
-    _copyImageToClipboard(filePath) {
-        let loaded = GLib.file_get_contents(filePath);
-        if (!loaded[0]) return;
-        St.Clipboard.get_default().set_content(
-            St.ClipboardType.CLIPBOARD,
-            'image/png',
-            loaded[1]
-        );
+    _copyImageToClipboard(filePath, deleteAfter) {
+        if (!Compat.canSetClipboardContent()) {
+            log('[Big Shot] St.Clipboard.set_content unavailable on this Cinnamon');
+            if (deleteAfter) Compat.deleteQuietly(filePath);
+            return;
+        }
+        Gio.File.new_for_path(filePath).load_contents_async(null, (f, res) => {
+            try {
+                let [ok, contents] = f.load_contents_finish(res);
+                if (ok) {
+                    St.Clipboard.get_default().set_content(
+                        St.ClipboardType.CLIPBOARD,
+                        'image/png',
+                        contents
+                    );
+                }
+            } catch (e) {
+                log('[Big Shot] Clipboard fallback failed: ' + e.message);
+            }
+            // St.Clipboard keeps its own copy of the bytes
+            if (deleteAfter) Compat.deleteQuietly(filePath);
+        });
+    }
+
+    /**
+     * Create a new, unique file in `dir` (O_EXCL — no check-then-create
+     * race). Returns [Gio.File, Gio.FileOutputStream].
+     */
+    _createUniqueFile(dir, baseName, ext) {
+        for (let counter = 0; counter < 1000; counter++) {
+            let name = counter === 0
+                ? baseName + '.' + ext
+                : baseName + '-' + counter + '.' + ext;
+            let file = Gio.File.new_for_path(GLib.build_filenamev([dir, name]));
+            try {
+                let stream = file.create(Gio.FileCreateFlags.NONE, null);
+                return [file, stream];
+            } catch (e) {
+                if (!e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.EXISTS))
+                    throw e;
+            }
+        }
+        throw new Error('Could not find a free file name in ' + dir);
     }
 
     /**
@@ -1229,54 +1345,68 @@ var ScreenshotUI = class ScreenshotUI {
         let screenshotsDir = GLib.build_filenamev([dir, _('Screenshots')]);
 
         // Ensure directory exists
-        try {
-            Gio.File.new_for_path(screenshotsDir).make_directory_with_parents(null);
-        } catch (e) {
-            if (!e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.EXISTS)) {
-                log('[Big Shot] Failed to create screenshots dir: ' + e.message);
-            }
-        }
+        if (GLib.mkdir_with_parents(screenshotsDir, 0o755) !== 0)
+            log('[Big Shot] Failed to create screenshots dir: ' + screenshotsDir);
 
         let baseName = _('Screenshot from %s').format(
             time.format('%Y-%m-%d %H-%M-%S'));
-        let filePath = GLib.build_filenamev([screenshotsDir, baseName + '.png']);
 
-        // Resolve filename conflicts
-        let fileObj = Gio.File.new_for_path(filePath);
-        let counter = 1;
-        while (fileObj.query_exists(null)) {
-            filePath = GLib.build_filenamev([
-                screenshotsDir, baseName + '-' + counter + '.png'
-            ]);
-            fileObj = Gio.File.new_for_path(filePath);
-            counter++;
-        }
-
+        let file, stream;
         try {
-            pixbuf.savev(filePath, 'png', [], []);
-
-            this.copyFileToClipboard(filePath, false);
-
-            // Play capture sound
-            try {
-                let player = global.display.get_sound_player();
-                if (player) {
-                    player.play_from_theme(
-                        'screen-capture',
-                        _('Screenshot taken'),
-                        null
-                    );
-                }
-            } catch (e) {
-                // ignore sound errors
-            }
-
-            this.emit('screenshot-taken', filePath);
+            [file, stream] = this._createUniqueFile(screenshotsDir, baseName, 'png');
         } catch (e) {
-            log('[Big Shot] Failed to save screenshot: ' + e.message);
+            log('[Big Shot] Failed to create screenshot file: ' + e.message);
+            this.close();
+            return;
         }
 
+        // Hide the UI right away; PNG encoding happens asynchronously so the
+        // compositor is not blocked while large images are written.
         this.close();
+
+        let filePath = file.get_path();
+        pixbuf.save_to_streamv_async(stream, 'png', [], [], null, (pb, res) => {
+            let ok = false;
+            try {
+                ok = GdkPixbuf.Pixbuf.save_to_stream_finish(res);
+            } catch (e) {
+                log('[Big Shot] Failed to save screenshot: ' + e.message);
+            }
+            stream.close_async(GLib.PRIORITY_DEFAULT, null, (st, r) => {
+                try {
+                    st.close_finish(r);
+                } catch (e) {
+                    log('[Big Shot] Failed to close screenshot: ' + e.message);
+                    ok = false;
+                }
+                if (!ok) {
+                    Compat.deleteQuietly(filePath);
+                    return;
+                }
+                if (this._destroyed) return;
+                this._onScreenshotSaved(filePath);
+            });
+        });
+    }
+
+    _onScreenshotSaved(filePath) {
+        this.copyFileToClipboard(filePath, false);
+
+        // Play capture sound
+        try {
+            let player = global.display.get_sound_player();
+            if (player) {
+                player.play_from_theme(
+                    'screen-capture',
+                    _('Screenshot taken'),
+                    null
+                );
+            }
+        } catch (e) {
+            // ignore sound errors
+        }
+
+        this.emit('screenshot-taken', filePath);
     }
 
     // =========================================================================
@@ -1285,6 +1415,7 @@ var ScreenshotUI = class ScreenshotUI {
 
     destroy() {
         this.close();
+        this._destroyed = true;
 
         if (this._layoutIdleId !== 0) {
             GLib.source_remove(this._layoutIdleId);

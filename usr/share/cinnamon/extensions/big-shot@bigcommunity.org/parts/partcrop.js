@@ -361,6 +361,14 @@ var PartCrop = class PartCrop extends PartUI {
         if (!this._cropRect)
             return;
         let cr = area.get_context();
+        try {
+            this._drawPresentation(cr, area);
+        } finally {
+            cr.$dispose();
+        }
+    }
+
+    _drawPresentation(cr, area) {
         let size = area.get_surface_size();
         let width = size[0];
         let height = size[1];

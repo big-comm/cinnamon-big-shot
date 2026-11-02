@@ -148,7 +148,9 @@ var PartMagnifier = class PartMagnifier extends PartUI {
     }
 
     _onUIVisibilityChanged() {
-        if (this._ui.visible) {
+        // Require both the logical state and the actor visibility so a
+        // transient notify::visible during close() can never restart polling.
+        if (this._ui.visible && this._ui.actor && this._ui.actor.visible) {
             this._setPollRate(POLL_IDLE_MS);
         } else {
             this._deactivate();
@@ -197,6 +199,11 @@ var PartMagnifier = class PartMagnifier extends PartUI {
     }
 
     _tick() {
+        if (!this._ui.visible) {
+            this._deactivate();
+            this._stopPolling();
+            return;
+        }
         const pointer = global.get_pointer();
         const shiftHeld = (pointer[2] &
             Clutter.ModifierType.SHIFT_MASK) !== 0;

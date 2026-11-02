@@ -141,36 +141,44 @@ var PartGradient = class PartGradient extends PartUI {
         });
         preview.connect('repaint', area => {
             let cr = area.get_context();
-            let size = area.get_surface_size();
-            let width = size[0];
-            let height = size[1];
-            if (gradient.stops.length > 0) {
-                Gradients.paintGradient(
-                    cr,
-                    gradient,
-                    0,
-                    0,
-                    width,
-                    height
-                );
-            } else {
-                let block = 5;
-                for (let y = 0; y < height; y += block) {
-                    for (let x = 0; x < width; x += block) {
-                        let light = ((x / block + y / block) % 2) === 0;
-                        cr.setSourceRGBA(
-                            light ? 0.65 : 0.25,
-                            light ? 0.65 : 0.25,
-                            light ? 0.65 : 0.25,
-                            1
-                        );
-                        cr.rectangle(x, y, block, block);
-                        cr.fill();
-                    }
-                }
+            try {
+                this._paintSwatch(cr, area, gradient);
+            } finally {
+                cr.$dispose();
             }
         });
         return preview;
+    }
+
+    _paintSwatch(cr, area, gradient) {
+        let size = area.get_surface_size();
+        let width = size[0];
+        let height = size[1];
+        if (gradient.stops.length > 0) {
+            Gradients.paintGradient(
+                cr,
+                gradient,
+                0,
+                0,
+                width,
+                height
+            );
+        } else {
+            let block = 5;
+            for (let y = 0; y < height; y += block) {
+                for (let x = 0; x < width; x += block) {
+                    let light = ((x / block + y / block) % 2) === 0;
+                    cr.setSourceRGBA(
+                        light ? 0.65 : 0.25,
+                        light ? 0.65 : 0.25,
+                        light ? 0.65 : 0.25,
+                        1
+                    );
+                    cr.rectangle(x, y, block, block);
+                    cr.fill();
+                }
+            }
+        }
     }
 
     _onSwatchClicked(index) {
@@ -225,8 +233,12 @@ var PartGradient = class PartGradient extends PartUI {
             let parent = this._picker.get_parent();
             if (parent)
                 parent.set_child_above_sibling(this._picker, null);
-            GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
-                this._repositionPicker();
+            if (this._repositionIdleId)
+                GLib.source_remove(this._repositionIdleId);
+            this._repositionIdleId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+                this._repositionIdleId = 0;
+                if (this._picker)
+                    this._repositionPicker();
                 return GLib.SOURCE_REMOVE;
             });
         }
@@ -268,6 +280,10 @@ var PartGradient = class PartGradient extends PartUI {
     }
 
     destroy() {
+        if (this._repositionIdleId) {
+            GLib.source_remove(this._repositionIdleId);
+            this._repositionIdleId = 0;
+        }
         let anchor = this._toolbar && this._toolbar._editContainer;
         if (anchor) {
             try {

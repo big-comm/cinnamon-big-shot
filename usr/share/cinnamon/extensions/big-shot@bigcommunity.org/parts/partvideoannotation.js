@@ -10,7 +10,6 @@
 const Clutter = imports.gi.Clutter;
 const Cinnamon = imports.gi.Cinnamon;
 const GdkPixbuf = imports.gi.GdkPixbuf;
-const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
 const St = imports.gi.St;
 const Main = imports.ui.main;
@@ -19,6 +18,7 @@ const PartBase = imports.parts.partbase;
 const PartUI = PartBase.PartUI;
 const Overlay = imports.drawing.overlay;
 const DrawingOverlay = Overlay.DrawingOverlay;
+const Compat = imports.compat;
 
 let _ = function(str) { return str; };
 
@@ -108,6 +108,8 @@ var PartVideoAnnotation = class PartVideoAnnotation extends PartUI {
     }
 
     _startEdit(mode) {
+        if (!this._toolbar)
+            return;
         this._ensureOverlay();
         if (!this._overlay)
             return;
@@ -152,10 +154,7 @@ var PartVideoAnnotation = class PartVideoAnnotation extends PartUI {
         let geometry = this._virtualGeometry();
         let scale = global.ui_scale || 1;
         let generation = ++this._previewCaptureGeneration;
-        let tmpPath = GLib.build_filenamev([
-            GLib.get_tmp_dir(),
-            'big-shot-video-preview-' + GLib.get_monotonic_time() + '.png',
-        ]);
+        let tmpPath = Compat.makeTempPath('big-shot-video-preview', 'png');
 
         this._hideCaptureActors(true);
         global.stage.queue_redraw();
@@ -169,33 +168,37 @@ var PartVideoAnnotation = class PartVideoAnnotation extends PartUI {
                     return GLib.SOURCE_REMOVE;
                 }
                 let screenshot = new Cinnamon.Screenshot();
-                screenshot.screenshot_area(
-                    false,
-                    Math.round(geometry.x * scale),
-                    Math.round(geometry.y * scale),
-                    Math.round(geometry.width * scale),
-                    Math.round(geometry.height * scale),
-                    tmpPath,
-                    () => {
-                        let pixbuf = null;
-                        try {
-                            if (generation === this._previewCaptureGeneration)
-                                pixbuf = GdkPixbuf.Pixbuf.new_from_file(tmpPath);
-                        } catch (e) {
-                            log('[Big Shot] Annotation frame failed: ' +
-                                e.message);
-                        } finally {
-                            try {
-                                Gio.File.new_for_path(tmpPath).delete(null);
-                            } catch (e) {
-                                // Temporary file may not exist after failure.
-                            }
-                            this._restoreOverlayVisibility();
-                        }
-                        if (generation === this._previewCaptureGeneration)
-                            callback(pixbuf, scale);
+                let onCaptured = success => {
+                    let pixbuf = null;
+                    try {
+                        if (success &&
+                            generation === this._previewCaptureGeneration)
+                            pixbuf = GdkPixbuf.Pixbuf.new_from_file(tmpPath);
+                    } catch (e) {
+                        log('[Big Shot] Annotation frame failed: ' +
+                            e.message);
+                    } finally {
+                        Compat.deleteQuietly(tmpPath);
+                        this._restoreOverlayVisibility();
                     }
-                );
+                    if (generation === this._previewCaptureGeneration)
+                        callback(pixbuf, scale);
+                };
+                try {
+                    Compat.screenshotArea(
+                        screenshot,
+                        false,
+                        Math.round(geometry.x * scale),
+                        Math.round(geometry.y * scale),
+                        Math.round(geometry.width * scale),
+                        Math.round(geometry.height * scale),
+                        tmpPath,
+                        onCaptured
+                    );
+                } catch (e) {
+                    log('[Big Shot] Annotation capture failed: ' + e.message);
+                    onCaptured(false);
+                }
                 return GLib.SOURCE_REMOVE;
             }
         );
@@ -214,7 +217,7 @@ var PartVideoAnnotation = class PartVideoAnnotation extends PartUI {
         this._restoreOverlayVisibility();
         let actors = [
             includeOverlay ? this._overlayHost : null,
-            ...(this._toolbar.previewHiddenActors
+            ...(this._toolbar && this._toolbar.previewHiddenActors
                 ? this._toolbar.previewHiddenActors()
                 : []),
             this._ext._indicator
@@ -399,7 +402,8 @@ var PartVideoAnnotation = class PartVideoAnnotation extends PartUI {
                 // Webcam may be reparenting between preview and recording.
             }
         }
-        this._toolbar.raiseRecordingToolbar();
+        if (this._toolbar)
+            this._toolbar.raiseRecordingToolbar();
         let parent = this._panelBox ? this._panelBox.get_parent() : null;
         if (parent && this._panelBox) {
             try {

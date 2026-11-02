@@ -157,6 +157,18 @@ var PartPopupSelect = class PartPopupSelect extends PartUI {
         // Popup is added to the screenshot UI for proper z-ordering
         this._ui.actor.add_child(this._popup);
 
+        // Close the popup when clicking anywhere outside of it
+        this._connectSignal(this._ui.actor, 'captured-event', (_a, event) => {
+            if (this._popup && this._popup.visible &&
+                event.type() === Clutter.EventType.BUTTON_PRESS) {
+                let source = event.get_source();
+                if (!this._popup.contains(source) &&
+                    !this._button.contains(source))
+                    this._popup.visible = false;
+            }
+            return Clutter.EVENT_PROPAGATE;
+        });
+
         // Only visible in cast mode
         this._button.visible = false;
         this._popup.visible = false;
@@ -169,10 +181,14 @@ var PartPopupSelect = class PartPopupSelect extends PartUI {
     _showPopup() {
         this._popup.visible = !this._popup.visible;
         if (this._popup.visible) {
+            // Popup lives inside the UI actor: convert stage → local coords.
+            // The popup is not allocated yet, so ask for its preferred size.
             let pos = this._button.get_transformed_position();
-            let bx = pos[0];
-            let by = pos[1];
-            this._popup.set_position(bx, by - this._popup.height - 8);
+            let origin = this._ui.actor.get_transformed_position();
+            let bx = pos[0] - origin[0];
+            let by = pos[1] - origin[1];
+            let height = this._popup.get_preferred_height(-1)[1];
+            this._popup.set_position(bx, Math.max(0, by - height - 8));
         }
     }
 
@@ -188,11 +204,13 @@ var PartPopupSelect = class PartPopupSelect extends PartUI {
             style: 'background: rgba(0,0,0,0.85); color: #ffffff; padding: 4px 8px; border-radius: 4px; font-size: 11px;',
         });
         this._ui.actor.add_child(this._tooltip);
-        GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
-            if (!this._tooltip) return GLib.SOURCE_REMOVE;
+        this._tooltipIdleId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+            this._tooltipIdleId = 0;
+            if (!this._tooltip || !this._ui.actor) return GLib.SOURCE_REMOVE;
             let pos = button.get_transformed_position();
-            let bx = pos[0];
-            let by = pos[1];
+            let origin = this._ui.actor.get_transformed_position();
+            let bx = pos[0] - origin[0];
+            let by = pos[1] - origin[1];
             let bw = button.width;
             let tw = this._tooltip.width;
             this._tooltip.set_position(bx + (bw - tw) / 2, by - this._tooltip.height - 4);
@@ -201,6 +219,10 @@ var PartPopupSelect = class PartPopupSelect extends PartUI {
     }
 
     _hideButtonTooltip() {
+        if (this._tooltipIdleId) {
+            GLib.source_remove(this._tooltipIdleId);
+            this._tooltipIdleId = 0;
+        }
         if (this._tooltip) {
             this._tooltip.destroy();
             this._tooltip = null;

@@ -10,7 +10,43 @@
 const Pango = imports.gi.Pango;
 const PangoCairo = imports.gi.PangoCairo;
 const cairo = imports.gi.cairo;
-const GLib = imports.gi.GLib;
+const GdkPixbuf = imports.gi.GdkPixbuf;
+
+const Pixels = imports.drawing.pixels;
+
+/** Extra slack (logical px) when hit-testing thin strokes. */
+const HIT_TOLERANCE = 6;
+
+/** Minimum drag (logical px) for a shape to be committed. */
+var MIN_SHAPE_SIZE = 3;
+
+/**
+ * Build a Pango font description from a family name and a point size.
+ * Using set_family() keeps families such as "Foo Light" intact, which
+ * FontDescription.from_string() would parse as a weight.
+ */
+function _fontDescription(family, size) {
+    const desc = new Pango.FontDescription();
+    desc.set_family(family || 'Sans');
+    desc.set_size(Math.max(1, Math.round(size * Pango.SCALE)));
+    return desc;
+}
+var fontDescription = _fontDescription;
+
+/** Distance from a point to a polyline (array of [x, y]). */
+function _pointToPolylineDist(px, py, points) {
+    if (!points.length) return Infinity;
+    if (points.length === 1)
+        return Math.hypot(px - points[0][0], py - points[0][1]);
+    let best = Infinity;
+    for (let i = 1; i < points.length; i++) {
+        const d = _pointToSegmentDist(px, py,
+            points[i - 1][0], points[i - 1][1],
+            points[i][0], points[i][1]);
+        if (d < best) best = d;
+    }
+    return best;
+}
 
 // =============================================================================
 // DRAWING MODES
@@ -128,13 +164,27 @@ var StrokeAction = class StrokeAction extends DrawingAction {
         cr.stroke();
     }
 
+    _halfWidth() {
+        return this.options.size / 2;
+    }
+
     getBounds() {
         if (!this.stroke.length) return [0, 0, 0, 0];
-        const xs = this.stroke.map(p => p[0]);
-        const ys = this.stroke.map(p => p[1]);
-        const pad = this.options.size / 2;
-        return [Math.min(...xs) - pad, Math.min(...ys) - pad,
-                Math.max(...xs) + pad, Math.max(...ys) + pad];
+        let minX = Infinity, minY = Infinity;
+        let maxX = -Infinity, maxY = -Infinity;
+        for (const [x, y] of this.stroke) {
+            if (x < minX) minX = x;
+            if (y < minY) minY = y;
+            if (x > maxX) maxX = x;
+            if (y > maxY) maxY = y;
+        }
+        const pad = this._halfWidth();
+        return [minX - pad, minY - pad, maxX + pad, maxY + pad];
+    }
+
+    containsPoint(x, y) {
+        return _pointToPolylineDist(x, y, this.stroke) <=
+            this._halfWidth() + HIT_TOLERANCE;
     }
 
     translate(dx, dy) {
@@ -221,6 +271,17 @@ var ArrowAction = class ArrowAction extends DrawingAction {
         ];
     }
 
+    containsPoint(x, y) {
+        const half = this.options.size * 1.75 / 2;
+        const shaft = _pointToSegmentDist(x, y,
+            this.start[0], this.start[1], this.end[0], this.end[1]);
+        if (shaft <= half + HIT_TOLERANCE)
+            return true;
+        // Arrowhead area around the tip
+        const head = this.options.size * 3 * 1.75;
+        return Math.hypot(x - this.end[0], y - this.end[1]) <= head;
+    }
+
     translate(dx, dy) {
         this.start = [this.start[0] + dx, this.start[1] + dy];
         this.end = [this.end[0] + dx, this.end[1] + dy];
@@ -243,6 +304,23 @@ var LineAction = class LineAction extends ArrowAction {
         cr.moveTo(sx, sy);
         cr.lineTo(ex, ey);
         cr.stroke();
+    }
+
+    getBounds() {
+        const pad = this.options.size * 1.75 / 2;
+        return [
+            Math.min(this.start[0], this.end[0]) - pad,
+            Math.min(this.start[1], this.end[1]) - pad,
+            Math.max(this.start[0], this.end[0]) + pad,
+            Math.max(this.start[1], this.end[1]) + pad,
+        ];
+    }
+
+    containsPoint(x, y) {
+        const half = this.options.size * 1.75 / 2;
+        return _pointToSegmentDist(x, y,
+            this.start[0], this.start[1], this.end[0], this.end[1]) <=
+            half + HIT_TOLERANCE;
     }
 }
 
@@ -289,13 +367,48 @@ var RectAction = class RectAction extends DrawingAction {
         cr.stroke();
     }
 
-    getBounds() {
+    /** End point after applying the Shift (square / circle) constraint. */
+    _effectiveEnd() {
+        if (!this.shift)
+            return this.end;
+        const [x1, y1] = this.start;
+        const [x2, y2] = this.end;
+        const size = Math.max(Math.abs(x2 - x1), Math.abs(y2 - y1));
         return [
-            Math.min(this.start[0], this.end[0]),
-            Math.min(this.start[1], this.end[1]),
-            Math.max(this.start[0], this.end[0]),
-            Math.max(this.start[1], this.end[1]),
+            x2 < x1 ? x1 - size : x1 + size,
+            y2 < y1 ? y1 - size : y1 + size,
         ];
+    }
+
+    getBounds() {
+        const end = this._effectiveEnd();
+        return [
+            Math.min(this.start[0], end[0]),
+            Math.min(this.start[1], end[1]),
+            Math.max(this.start[0], end[0]),
+            Math.max(this.start[1], end[1]),
+        ];
+    }
+
+    /** Whether clicks inside the shape (not just on its outline) hit it. */
+    _isSolid() {
+        return !!this.options.fillColor;
+    }
+
+    containsPoint(x, y) {
+        const [minX, minY, maxX, maxY] = this.getBounds();
+        const inside = x >= minX && x <= maxX && y >= minY && y <= maxY;
+        if (this._isSolid())
+            return inside;
+        const tol = this.options.size / 2 + HIT_TOLERANCE;
+        if (x < minX - tol || x > maxX + tol ||
+            y < minY - tol || y > maxY + tol)
+            return false;
+        // Near any of the four edges
+        const dx = Math.min(Math.abs(x - minX), Math.abs(x - maxX));
+        const dy = Math.min(Math.abs(y - minY), Math.abs(y - maxY));
+        return (dx <= tol && y >= minY - tol && y <= maxY + tol) ||
+            (dy <= tol && x >= minX - tol && x <= maxX + tol);
     }
 
     translate(dx, dy) {
@@ -341,11 +454,48 @@ var CircleAction = class CircleAction extends RectAction {
         cr.setLineWidth(this.options.size * scale);
         cr.stroke();
     }
+
+    containsPoint(x, y) {
+        const [minX, minY, maxX, maxY] = this.getBounds();
+        const rx = (maxX - minX) / 2;
+        const ry = (maxY - minY) / 2;
+        if (rx <= 0 || ry <= 0)
+            return false;
+        const cx = minX + rx;
+        const cy = minY + ry;
+        const d = Math.hypot((x - cx) / rx, (y - cy) / ry);
+        if (this._isSolid())
+            return d <= 1;
+        const tol = this.options.size / 2 + HIT_TOLERANCE;
+        return Math.abs(d - 1) * Math.min(rx, ry) <= tol;
+    }
 }
 
 // =============================================================================
 // TEXT
 // =============================================================================
+
+// One shared 1x1 context for text measuring (avoids a surface + context
+// allocation on every metrics lookup).
+let _measureSurface = null;
+let _measureContext = null;
+function _getMeasureContext() {
+    if (!_measureContext) {
+        _measureSurface = new cairo.ImageSurface(cairo.Format.ARGB32, 1, 1);
+        _measureContext = new cairo.Context(_measureSurface);
+    }
+    return _measureContext;
+}
+
+/** Release module-level Cairo resources (call on extension disable). */
+var releaseResources = function() {
+    Pixels.disposeContext(_measureContext);
+    _measureContext = null;
+    if (_measureSurface)
+        _measureSurface.finish();
+    _measureSurface = null;
+    _checkerSurface = null;
+};
 
 var TextAction = class TextAction extends DrawingAction {
     constructor(position, text, options, fontSize = 16, wrapWidth = 0) {
@@ -359,10 +509,7 @@ var TextAction = class TextAction extends DrawingAction {
 
     _createLayout(cr, size) {
         const layout = PangoCairo.create_layout(cr);
-        const fontDesc = Pango.FontDescription.from_string(
-            `${this.options.font} ${size}`
-        );
-        layout.set_font_description(fontDesc);
+        layout.set_font_description(_fontDescription(this.options.font, size));
         layout.set_text(this.text, -1);
         if (this.wrapWidth > 0) {
             layout.set_width(Math.max(
@@ -379,8 +526,7 @@ var TextAction = class TextAction extends DrawingAction {
         if (this._metrics && this._metrics.key === key)
             return this._metrics;
 
-        const surface = new cairo.ImageSurface(cairo.Format.ARGB32, 1, 1);
-        const cr = new cairo.Context(surface);
+        const cr = _getMeasureContext();
         const layout = this._createLayout(cr, this.fontSize);
         const extents = layout.get_pixel_extents();
         const logicalRect = extents[1];
@@ -495,66 +641,168 @@ var HighlighterAction = class HighlighterAction extends StrokeAction {
         cr.restore();
     }
 
+    _halfWidth() {
+        // Highlighter strokes are drawn with a width of size * 2
+        return this.options.size;
+    }
 }
 
 // =============================================================================
-// CENSOR — mosaic pattern to hide content
+// CENSOR / BLUR / INVERT — rectangular pixel effects
+//
+// Preview: each effect caches a small surface (one pixel per mosaic block,
+// a downscaled copy for blur, an inverted copy for invert) and paints it
+// with a single scaled paint() — no per-block fill() on every repaint.
+// Export: applyEffect() runs on the exact region buffer of the composite,
+// in the order the user created the annotations.
 // =============================================================================
 
-var CensorAction = class CensorAction extends RectAction {
-    draw(cr, toWidget, _scale) {
-        // If we have a real pixelation preview, draw it
-        if (this._previewBlocks) {
-            const baseX = Math.min(this.start[0], this.end[0]);
-            const baseY = Math.min(this.start[1], this.end[1]);
+// 2x2 checkerboard tile used as the censor placeholder while dragging.
+let _checkerSurface = null;
+function _getCheckerSurface() {
+    if (_checkerSurface)
+        return _checkerSurface;
+    const surface = new cairo.ImageSurface(cairo.Format.ARGB32, 2, 2);
+    const cr = new cairo.Context(surface);
+    try {
+        const cells = [[0, 0, 0.3], [1, 0, 0.5], [0, 1, 0.5], [1, 1, 0.3]];
+        for (const [x, y, shade] of cells) {
+            cr.setSourceRGBA(shade, shade, shade, 0.9);
+            cr.rectangle(x, y, 1, 1);
+            cr.fill();
+        }
+    } finally {
+        Pixels.disposeContext(cr);
+    }
+    surface.flush();
+    _checkerSurface = surface;
+    return surface;
+}
 
-            cr.save();
-            for (const block of this._previewBlocks) {
-                const [wx, wy] = toWidget(baseX + block.rx, baseY + block.ry);
-                const [wx2, wy2] = toWidget(
-                    baseX + block.rx + block.rw,
-                    baseY + block.ry + block.rh
-                );
-                cr.setSourceRGBA(block.r, block.g, block.b, 1.0);
-                cr.rectangle(wx, wy, wx2 - wx, wy2 - wy);
-                cr.fill();
-            }
-            cr.restore();
+var PixelEffectAction = class PixelEffectAction extends RectAction {
+    constructor(start, end, shift, options) {
+        super(start, end, false, options);
+        this._preview = null;
+    }
+
+    _isSolid() {
+        return true;
+    }
+
+    /** Logical region [left, top, right, bottom]. */
+    _logicalRect() {
+        return [
+            Math.min(this.start[0], this.end[0]),
+            Math.min(this.start[1], this.end[1]),
+            Math.max(this.start[0], this.end[0]),
+            Math.max(this.start[1], this.end[1]),
+        ];
+    }
+
+    /** Pixel region of `pixbuf` covered by the effect (clamped), or null. */
+    _pixbufRegion(pixbuf, bufScale) {
+        const [l, t, r, b] = this._logicalRect();
+        return Pixels.clampRect(
+            l * bufScale, t * bufScale, r * bufScale, b * bufScale,
+            pixbuf.get_width(), pixbuf.get_height(), 2
+        );
+    }
+
+    /** Export target box [left, top, right, bottom] in output pixels. */
+    getEffectRect(toWidget) {
+        const [x1, y1] = toWidget(...this.start);
+        const [x2, y2] = toWidget(...this.end);
+        return [
+            Math.min(x1, x2), Math.min(y1, y2),
+            Math.max(x1, x2), Math.max(y1, y2),
+        ];
+    }
+
+    clearPreview() {
+        this._preview = null;
+    }
+
+    _setPreview(surface, region, bufScale, cellPixW, cellPixH, filter) {
+        this._preview = {
+            surface,
+            ox: region.x / bufScale,
+            oy: region.y / bufScale,
+            w: region.w / bufScale,
+            h: region.h / bufScale,
+            cellW: cellPixW / bufScale,
+            cellH: cellPixH / bufScale,
+            filter,
+        };
+    }
+
+    /** Paint the cached preview surface into its (clipped) region. */
+    _paintPreview(cr, toWidget) {
+        const p = this._preview;
+        const [ax, ay] = toWidget(p.ox, p.oy);
+        const [bx, by] = toWidget(p.ox + p.w, p.oy + p.h);
+        const [cx, cy] = toWidget(p.ox + p.cellW, p.oy + p.cellH);
+        if (bx - ax < 1 || by - ay < 1 || cx === ax || cy === ay)
+            return;
+        cr.save();
+        cr.rectangle(ax, ay, bx - ax, by - ay);
+        cr.clip();
+        cr.translate(ax, ay);
+        cr.scale(cx - ax, cy - ay);
+        cr.setSourceSurface(p.surface, 0, 0);
+        const pattern = cr.getSource();
+        if (pattern.setFilter)
+            pattern.setFilter(p.filter);
+        if (pattern.setExtend)
+            pattern.setExtend(3); // PAD — no faded edges when smoothing
+        cr.paint();
+        cr.restore();
+    }
+
+    /** Region of the pixbuf plus a view of its bytes (rows of that region). */
+    _readRegion(pixbuf, region) {
+        const sub = pixbuf.new_subpixbuf(region.x, region.y, region.w, region.h);
+        return {
+            sub,
+            data: sub.read_pixel_bytes().get_data(),
+            rowstride: sub.get_rowstride(),
+            nChannels: sub.get_n_channels(),
+        };
+    }
+};
+
+// -----------------------------------------------------------------------------
+// CENSOR — mosaic pattern to hide content
+// -----------------------------------------------------------------------------
+
+var CensorAction = class CensorAction extends PixelEffectAction {
+    draw(cr, toWidget, _scale) {
+        if (this._preview) {
+            this._paintPreview(cr, toWidget);
             return;
         }
 
         // Fallback: checkerboard placeholder (shown during drag)
-        let [x1, y1] = toWidget(...this.start);
-        let [x2, y2] = toWidget(...this.end);
-
+        const [x1, y1] = toWidget(...this.start);
+        const [x2, y2] = toWidget(...this.end);
         const x = Math.min(x1, x2);
         const y = Math.min(y1, y2);
         const w = Math.abs(x2 - x1);
         const h = Math.abs(y2 - y1);
-
         if (w < 1 || h < 1) return;
 
+        const blockSize = this._blockSizeForIntensity(1);
         cr.save();
         cr.rectangle(x, y, w, h);
         cr.clip();
-
-        const blockSize = this._blockSizeForIntensity(1);
-        const blocksX = Math.max(1, Math.floor(w / blockSize));
-        const blocksY = Math.max(1, Math.floor(h / blockSize));
-
-        for (let bx = 0; bx < blocksX; bx++) {
-            for (let by = 0; by < blocksY; by++) {
-                const shade = ((bx + by) % 2 === 0) ? 0.3 : 0.5;
-                cr.setSourceRGBA(shade, shade, shade, 0.9);
-                cr.rectangle(
-                    x + bx * blockSize,
-                    y + by * blockSize,
-                    blockSize,
-                    blockSize
-                );
-                cr.fill();
-            }
-        }
+        cr.translate(x, y);
+        cr.scale(blockSize, blockSize);
+        cr.setSourceSurface(_getCheckerSurface(), 0, 0);
+        const pattern = cr.getSource();
+        if (pattern.setFilter)
+            pattern.setFilter(Pixels.Filter.NEAREST);
+        if (pattern.setExtend)
+            pattern.setExtend(1); // REPEAT
+        cr.paint();
         cr.restore();
     }
 
@@ -571,152 +819,43 @@ var CensorAction = class CensorAction extends RectAction {
     }
 
     /**
-     * Generate real pixelation preview from screenshot pixel data.
-     * Called by DrawingOverlay after the rectangle is committed.
+     * Generate real pixelation preview from screenshot pixel data:
+     * one surface pixel per mosaic block, painted with NEAREST scaling.
      */
     generatePreview(pixbuf, bufScale) {
-        const regionX = Math.min(this.start[0], this.end[0]);
-        const regionY = Math.min(this.start[1], this.end[1]);
-        const regionW = Math.abs(this.end[0] - this.start[0]);
-        const regionH = Math.abs(this.end[1] - this.start[1]);
-
-        const imgW = pixbuf.get_width();
-        const imgH = pixbuf.get_height();
-
-        const x = Math.round(Math.max(0, Math.min(regionX * bufScale, imgW - 1)));
-        const y = Math.round(Math.max(0, Math.min(regionY * bufScale, imgH - 1)));
-        const w = Math.round(Math.min(regionW * bufScale, imgW - x));
-        const h = Math.round(Math.min(regionH * bufScale, imgH - y));
-
-        if (w < 2 || h < 2) return;
+        this._preview = null;
+        const region = this._pixbufRegion(pixbuf, bufScale);
+        if (!region) return;
 
         const blockSize = this._blockSizeForIntensity(bufScale);
-        const bytes = pixbuf.read_pixel_bytes();
-        const data = bytes.get_data();
-        const rowstride = pixbuf.get_rowstride();
-        const nChannels = pixbuf.get_n_channels();
-
-        const blocks = [];
-        const blocksX = Math.ceil(w / blockSize);
-        const blocksY = Math.ceil(h / blockSize);
-
-        for (let bxi = 0; bxi < blocksX; bxi++) {
-            for (let byi = 0; byi < blocksY; byi++) {
-                const bx0 = x + bxi * blockSize;
-                const by0 = y + byi * blockSize;
-                const bx1 = Math.min(bx0 + blockSize, x + w, imgW);
-                const by1 = Math.min(by0 + blockSize, y + h, imgH);
-
-                let rSum = 0, gSum = 0, bSum = 0, count = 0;
-                for (let py = by0; py < by1; py++) {
-                    for (let px = bx0; px < bx1; px++) {
-                        const off = py * rowstride + px * nChannels;
-                        rSum += data[off];
-                        gSum += data[off + 1];
-                        bSum += data[off + 2];
-                        count++;
-                    }
-                }
-
-                if (count > 0) {
-                    blocks.push({
-                        rx: (bx0 - x) / bufScale,
-                        ry: (by0 - y) / bufScale,
-                        rw: (bx1 - bx0) / bufScale,
-                        rh: (by1 - by0) / bufScale,
-                        r: rSum / count / 255,
-                        g: gSum / count / 255,
-                        b: bSum / count / 255,
-                    });
-                }
-            }
-        }
-
-        this._previewBlocks = blocks;
-    }
-
-    /**
-     * Apply real pixelation on GdkPixbuf at save time.
-     */
-    drawReal(pixbuf, GdkPixbuf, GLib, toWidget, scale) {
-        let [x1, y1] = toWidget(...this.start);
-        let [x2, y2] = toWidget(...this.end);
-
-        const imgW = pixbuf.get_width();
-        const imgH = pixbuf.get_height();
-
-        const x = Math.round(Math.max(0, Math.min(Math.min(x1, x2), imgW - 1)));
-        const y = Math.round(Math.max(0, Math.min(Math.min(y1, y2), imgH - 1)));
-        const w = Math.round(Math.min(Math.abs(x2 - x1), imgW - x));
-        const h = Math.round(Math.min(Math.abs(y2 - y1), imgH - y));
-
-        if (w < 2 || h < 2) return pixbuf;
-
-        const blockSize = this._blockSizeForIntensity(scale);
-
-        const bytes = pixbuf.read_pixel_bytes();
-        const data = bytes.get_data();
-        const rowstride = pixbuf.get_rowstride();
-        const nChannels = pixbuf.get_n_channels();
-
-        const arr = new Uint8Array(data.length);
-        for (let i = 0; i < data.length; i++) arr[i] = data[i];
-
-        const blocksX = Math.ceil(w / blockSize);
-        const blocksY = Math.ceil(h / blockSize);
-
-        for (let bx = 0; bx < blocksX; bx++) {
-            for (let by = 0; by < blocksY; by++) {
-                const bx0 = x + bx * blockSize;
-                const by0 = y + by * blockSize;
-                const bx1 = Math.min(bx0 + blockSize, x + w, imgW);
-                const by1 = Math.min(by0 + blockSize, y + h, imgH);
-
-                let rSum = 0, gSum = 0, bSum = 0, aSum = 0, count = 0;
-                for (let py = by0; py < by1; py++) {
-                    for (let px = bx0; px < bx1; px++) {
-                        const off = py * rowstride + px * nChannels;
-                        rSum += arr[off]; gSum += arr[off + 1];
-                        bSum += arr[off + 2];
-                        if (nChannels === 4) aSum += arr[off + 3];
-                        count++;
-                    }
-                }
-                if (count === 0) continue;
-
-                const avgR = (rSum / count) | 0;
-                const avgG = (gSum / count) | 0;
-                const avgB = (bSum / count) | 0;
-                const avgA = nChannels === 4 ? ((aSum / count) | 0) : 255;
-
-                for (let py = by0; py < by1; py++) {
-                    for (let px = bx0; px < bx1; px++) {
-                        const off = py * rowstride + px * nChannels;
-                        arr[off] = avgR;
-                        arr[off + 1] = avgG;
-                        arr[off + 2] = avgB;
-                        if (nChannels === 4) arr[off + 3] = avgA;
-                    }
-                }
-            }
-        }
-
-        const newBytes = GLib.Bytes.new(arr);
-        return GdkPixbuf.Pixbuf.new_from_bytes(
-            newBytes, pixbuf.get_colorspace(),
-            pixbuf.get_has_alpha(), pixbuf.get_bits_per_sample(),
-            imgW, imgH, rowstride
+        const src = this._readRegion(pixbuf, region);
+        const blocks = Pixels.averageBlocks(
+            src.data, 0, 0, region.w, region.h,
+            src.rowstride, src.nChannels, blockSize
+        );
+        const small = Pixels.pixbufFromData(
+            blocks.rgb, false, blocks.cols, blocks.rows, blocks.cols * 3
+        );
+        this._setPreview(
+            Pixels.pixbufToSurface(small), region, bufScale,
+            blockSize, blockSize, Pixels.Filter.NEAREST
         );
     }
-}
 
-// =============================================================================
+    /** Apply real pixelation to an export region buffer (in place). */
+    applyEffect(data, w, h, rowstride, nChannels, scale) {
+        Pixels.pixelateBuffer(data, w, h, rowstride, nChannels,
+            this._blockSizeForIntensity(scale));
+    }
+};
+
+// -----------------------------------------------------------------------------
 // BLUR — Gaussian-like blur effect
-// Preview: shows a semi-transparent frosted overlay.
-// Real blur is performed at save time using box-blur on pixel data.
-// =============================================================================
+// Preview: a downscaled copy painted back with bilinear filtering.
+// Export: 3-pass running-sum box blur (O(pixels), radius independent).
+// -----------------------------------------------------------------------------
 
-var BlurAction = class BlurAction extends RectAction {
+var BlurAction = class BlurAction extends PixelEffectAction {
     /**
      * Compute blur intensity multiplier from level (1-5).
      * Higher intensity → larger radius → stronger blur.
@@ -727,37 +866,34 @@ var BlurAction = class BlurAction extends RectAction {
         return mults[Math.max(0, Math.min(level - 1, 4))];
     }
 
+    /** Blur radius in output pixels, clamped to the region and a hard cap. */
+    _radius(scale, w, h) {
+        const raw = Math.max(3, Math.round(
+            (this.options?.size || 8) * scale * this._blurIntensityMultiplier()
+        ));
+        let limit = Pixels.MAX_BLUR_RADIUS;
+        if (w && h)
+            limit = Math.min(limit, Math.max(1, Math.floor(Math.max(w, h) / 2)));
+        return Math.max(1, Math.min(raw, limit));
+    }
+
     /**
      * Preview draw — uses cached downscaled surface for real blur preview,
      * or falls back to frosted/hatched overlay during drag.
      */
     draw(cr, toWidget, scale) {
-        let [x1, y1] = toWidget(...this.start);
-        let [x2, y2] = toWidget(...this.end);
+        if (this._preview) {
+            this._paintPreview(cr, toWidget);
+            return;
+        }
 
+        const [x1, y1] = toWidget(...this.start);
+        const [x2, y2] = toWidget(...this.end);
         const x = Math.min(x1, x2);
         const y = Math.min(y1, y2);
         const w = Math.abs(x2 - x1);
         const h = Math.abs(y2 - y1);
-
         if (w < 1 || h < 1) return;
-
-        // Real blur preview from cached downscaled surface
-        if (this._previewSurface) {
-            cr.save();
-            cr.rectangle(x, y, w, h);
-            cr.clip();
-            cr.translate(x, y);
-            cr.scale(w / this._previewSmallW, h / this._previewSmallH);
-            cr.setSourceSurface(this._previewSurface, 0, 0);
-            // BILINEAR filter (enum value 4) for smooth blur effect
-            const pattern = cr.getSource();
-            if (pattern.setFilter)
-                pattern.setFilter(4);
-            cr.paint();
-            cr.restore();
-            return;
-        }
 
         // Fallback: frosted/hatched overlay (shown during drag)
         cr.save();
@@ -781,222 +917,54 @@ var BlurAction = class BlurAction extends RectAction {
     }
 
     /**
-     * Generate real blur preview from screenshot pixel data.
-     * Creates a small downscaled Cairo ImageSurface; when painted back
-     * at full size with bilinear filtering, it produces a blur effect.
+     * Generate real blur preview: a downscaled copy of the region
+     * (native GdkPixbuf scaling) painted back with bilinear filtering.
      */
     generatePreview(pixbuf, bufScale) {
-        const regionX = Math.min(this.start[0], this.end[0]);
-        const regionY = Math.min(this.start[1], this.end[1]);
-        const regionW = Math.abs(this.end[0] - this.start[0]);
-        const regionH = Math.abs(this.end[1] - this.start[1]);
+        this._preview = null;
+        const region = this._pixbufRegion(pixbuf, bufScale);
+        if (!region) return;
 
-        const imgW = pixbuf.get_width();
-        const imgH = pixbuf.get_height();
-
-        const x = Math.round(Math.max(0, Math.min(regionX * bufScale, imgW - 1)));
-        const y = Math.round(Math.max(0, Math.min(regionY * bufScale, imgH - 1)));
-        const w = Math.round(Math.min(regionW * bufScale, imgW - x));
-        const h = Math.round(Math.min(regionH * bufScale, imgH - y));
-
-        if (w < 2 || h < 2) return;
-
-        const bytes = pixbuf.read_pixel_bytes();
-        const data = bytes.get_data();
-        const rowstride = pixbuf.get_rowstride();
-        const nChannels = pixbuf.get_n_channels();
-
-        // Downscale factor — larger = more blur
-        // Intensity 1-5 maps to multiplier [0.5, 0.8, 1.0, 1.5, 2.5]
-        const intensityMult = this._blurIntensityMultiplier();
-        const radius = Math.max(3, Math.round((this.options?.size || 8) * bufScale * intensityMult));
+        const radius = this._radius(bufScale);
         const downFactor = Math.max(2, Math.round(radius * 1.5));
+        const smallW = Math.max(2, Math.ceil(region.w / downFactor));
+        const smallH = Math.max(2, Math.ceil(region.h / downFactor));
 
-        const smallW = Math.max(2, Math.ceil(w / downFactor));
-        const smallH = Math.max(2, Math.ceil(h / downFactor));
-
-        const surface = new cairo.ImageSurface(cairo.Format.ARGB32, smallW, smallH);
-        const scr = new cairo.Context(surface);
-
-        for (let sy = 0; sy < smallH; sy++) {
-            for (let sx = 0; sx < smallW; sx++) {
-                const srcX0 = x + sx * downFactor;
-                const srcY0 = y + sy * downFactor;
-                const srcX1 = Math.min(srcX0 + downFactor, x + w, imgW);
-                const srcY1 = Math.min(srcY0 + downFactor, y + h, imgH);
-
-                let rSum = 0, gSum = 0, bSum = 0, count = 0;
-                for (let py = srcY0; py < srcY1; py++) {
-                    for (let px = srcX0; px < srcX1; px++) {
-                        const off = py * rowstride + px * nChannels;
-                        rSum += data[off];
-                        gSum += data[off + 1];
-                        bSum += data[off + 2];
-                        count++;
-                    }
-                }
-
-                if (count > 0) {
-                    scr.setSourceRGBA(
-                        rSum / count / 255,
-                        gSum / count / 255,
-                        bSum / count / 255,
-                        1.0
-                    );
-                    scr.rectangle(sx, sy, 1, 1);
-                    scr.fill();
-                }
-            }
-        }
-
-        surface.flush();
-        this._previewSurface = surface;
-        this._previewSmallW = smallW;
-        this._previewSmallH = smallH;
-    }
-
-    /**
-     * Apply real blur on a GdkPixbuf at save time.
-     * Uses iterative box blur on the pixel data (RGBA).
-     * @param {object} pixbuf - GdkPixbuf.Pixbuf
-     * @param {object} GdkPixbuf - GdkPixbuf module
-     * @param {object} GLib - GLib module
-     * @param {Function} toWidget - coordinate transform
-     * @param {number} scale - draw scale
-     * @returns {object} modified GdkPixbuf.Pixbuf
-     */
-    drawReal(pixbuf, GdkPixbuf, GLib, toWidget, scale) {
-        let [x1, y1] = toWidget(...this.start);
-        let [x2, y2] = toWidget(...this.end);
-
-        const imgW = pixbuf.get_width();
-        const imgH = pixbuf.get_height();
-
-        const x = Math.round(Math.max(0, Math.min(Math.min(x1, x2), imgW - 1)));
-        const y = Math.round(Math.max(0, Math.min(Math.min(y1, y2), imgH - 1)));
-        const w = Math.round(Math.min(Math.abs(x2 - x1), imgW - x));
-        const h = Math.round(Math.min(Math.abs(y2 - y1), imgH - y));
-
-        if (w < 2 || h < 2) return pixbuf;
-
-        const intensityMult = this._blurIntensityMultiplier();
-        const radius = Math.max(3, Math.round((this.options?.size || 8) * scale * intensityMult));
-        const passes = 3;
-
-        const bytes = pixbuf.read_pixel_bytes();
-        const data = bytes.get_data();
-        const rowstride = pixbuf.get_rowstride();
-        const nChannels = pixbuf.get_n_channels();
-
-        // Make a mutable copy
-        const arr = new Uint8Array(data.length);
-        for (let i = 0; i < data.length; i++) arr[i] = data[i];
-
-        // Extract region into flat buffer
-        const regionBuf = new Uint8Array(w * h * nChannels);
-        for (let ry = 0; ry < h; ry++) {
-            for (let rx = 0; rx < w; rx++) {
-                const srcOff = (y + ry) * rowstride + (x + rx) * nChannels;
-                const dstOff = (ry * w + rx) * nChannels;
-                for (let c = 0; c < nChannels; c++)
-                    regionBuf[dstOff + c] = arr[srcOff + c];
-            }
-        }
-
-        // Box blur (horizontal then vertical), repeated for Gaussian approximation
-        const tmp = new Uint8Array(w * h * nChannels);
-        let src = regionBuf;
-        let dst = tmp;
-
-        for (let pass = 0; pass < passes; pass++) {
-            // Horizontal pass
-            for (let ry = 0; ry < h; ry++) {
-                for (let rx = 0; rx < w; rx++) {
-                    const sums = new Float64Array(nChannels);
-                    let cnt = 0;
-                    for (let k = -radius; k <= radius; k++) {
-                        const sx = Math.max(0, Math.min(rx + k, w - 1));
-                        const off = (ry * w + sx) * nChannels;
-                        for (let c = 0; c < nChannels; c++)
-                            sums[c] += src[off + c];
-                        cnt++;
-                    }
-                    const off = (ry * w + rx) * nChannels;
-                    for (let c = 0; c < nChannels; c++)
-                        dst[off + c] = (sums[c] / cnt) | 0;
-                }
-            }
-            [src, dst] = [dst, src];
-
-            // Vertical pass
-            for (let rx = 0; rx < w; rx++) {
-                for (let ry = 0; ry < h; ry++) {
-                    const sums = new Float64Array(nChannels);
-                    let cnt = 0;
-                    for (let k = -radius; k <= radius; k++) {
-                        const sy = Math.max(0, Math.min(ry + k, h - 1));
-                        const off = (sy * w + rx) * nChannels;
-                        for (let c = 0; c < nChannels; c++)
-                            sums[c] += src[off + c];
-                        cnt++;
-                    }
-                    const off = (ry * w + rx) * nChannels;
-                    for (let c = 0; c < nChannels; c++)
-                        dst[off + c] = (sums[c] / cnt) | 0;
-                }
-            }
-            [src, dst] = [dst, src];
-        }
-
-        // Write blurred region back
-        for (let ry = 0; ry < h; ry++) {
-            for (let rx = 0; rx < w; rx++) {
-                const srcOff = (ry * w + rx) * nChannels;
-                const dstOff = (y + ry) * rowstride + (x + rx) * nChannels;
-                for (let c = 0; c < nChannels; c++)
-                    arr[dstOff + c] = src[srcOff + c];
-            }
-        }
-
-        const newBytes = GLib.Bytes.new(arr);
-        return GdkPixbuf.Pixbuf.new_from_bytes(
-            newBytes, pixbuf.get_colorspace(),
-            pixbuf.get_has_alpha(), pixbuf.get_bits_per_sample(),
-            imgW, imgH, rowstride
+        const sub = pixbuf.new_subpixbuf(region.x, region.y, region.w, region.h);
+        const small = sub.scale_simple(smallW, smallH,
+            GdkPixbuf.InterpType.BILINEAR);
+        if (!small) return;
+        this._setPreview(
+            Pixels.pixbufToSurface(small), region, bufScale,
+            region.w / smallW, region.h / smallH, Pixels.Filter.BILINEAR
         );
     }
-}
 
-// =============================================================================
+    /** Apply real blur to an export region buffer (in place). */
+    applyEffect(data, w, h, rowstride, nChannels, scale) {
+        Pixels.boxBlurBuffer(data, w, h, rowstride, nChannels,
+            this._radius(scale, w, h), 3);
+    }
+};
+
+// -----------------------------------------------------------------------------
 // INVERT — Invert colors of a rectangular region
-// =============================================================================
+// -----------------------------------------------------------------------------
 
-var InvertAction = class InvertAction extends RectAction {
+var InvertAction = class InvertAction extends PixelEffectAction {
     draw(cr, toWidget, _scale) {
+        if (this._preview) {
+            this._paintPreview(cr, toWidget);
+            return;
+        }
+
         const [x1, y1] = toWidget(...this.start);
         const [x2, y2] = toWidget(...this.end);
-
         const x = Math.min(x1, x2);
         const y = Math.min(y1, y2);
         const w = Math.abs(x2 - x1);
         const h = Math.abs(y2 - y1);
-
         if (w < 1 || h < 1) return;
-
-        if (this._previewSurface) {
-            cr.save();
-            cr.rectangle(x, y, w, h);
-            cr.clip();
-            cr.translate(x, y);
-            cr.scale(w / this._previewW, h / this._previewH);
-            cr.setSourceSurface(this._previewSurface, 0, 0);
-            const pattern = cr.getSource();
-            if (pattern.setFilter)
-                pattern.setFilter(4);
-            cr.paint();
-            cr.restore();
-            return;
-        }
 
         cr.save();
         cr.rectangle(x, y, w, h);
@@ -1017,114 +985,45 @@ var InvertAction = class InvertAction extends RectAction {
     }
 
     generatePreview(pixbuf, bufScale) {
-        const imgW = pixbuf.get_width();
-        const imgH = pixbuf.get_height();
-
-        const left = Math.min(this.start[0], this.end[0]) * bufScale;
-        const top = Math.min(this.start[1], this.end[1]) * bufScale;
-        const right = Math.max(this.start[0], this.end[0]) * bufScale;
-        const bottom = Math.max(this.start[1], this.end[1]) * bufScale;
-        const x = Math.max(0, Math.min(imgW, Math.round(left)));
-        const y = Math.max(0, Math.min(imgH, Math.round(top)));
-        const xEnd = Math.max(0, Math.min(imgW, Math.round(right)));
-        const yEnd = Math.max(0, Math.min(imgH, Math.round(bottom)));
-        const w = xEnd - x;
-        const h = yEnd - y;
-
-        if (w < 2 || h < 2) return;
+        this._preview = null;
+        const region = this._pixbufRegion(pixbuf, bufScale);
+        if (!region) return;
 
         const maxPreviewPixels = 160000;
-        let previewW = w;
-        let previewH = h;
-        if (w * h > maxPreviewPixels) {
-            const factor = Math.sqrt((w * h) / maxPreviewPixels);
-            previewW = Math.max(2, Math.round(w / factor));
-            previewH = Math.max(2, Math.round(h / factor));
+        let previewW = region.w;
+        let previewH = region.h;
+        let src = pixbuf.new_subpixbuf(region.x, region.y, region.w, region.h);
+        if (region.w * region.h > maxPreviewPixels) {
+            const factor = Math.sqrt((region.w * region.h) / maxPreviewPixels);
+            previewW = Math.max(2, Math.round(region.w / factor));
+            previewH = Math.max(2, Math.round(region.h / factor));
+            src = src.scale_simple(previewW, previewH,
+                GdkPixbuf.InterpType.BILINEAR);
+            if (!src) return;
         }
 
-        const bytes = pixbuf.read_pixel_bytes();
-        const data = bytes.get_data();
-        const rowstride = pixbuf.get_rowstride();
-        const nChannels = pixbuf.get_n_channels();
-
-        const surface = new cairo.ImageSurface(
-            cairo.Format.ARGB32,
-            previewW,
-            previewH
-        );
-        const previewCr = new cairo.Context(surface);
-
-        for (let py = 0; py < previewH; py++) {
-            const srcY = y + Math.min(h - 1, Math.floor(py * h / previewH));
-            for (let px = 0; px < previewW; px++) {
-                const srcX = x + Math.min(w - 1, Math.floor(px * w / previewW));
-                const offset = srcY * rowstride + srcX * nChannels;
-                const red = (255 - data[offset]) / 255;
-                const green = (255 - data[offset + 1]) / 255;
-                const blue = (255 - data[offset + 2]) / 255;
-                const alpha = nChannels === 4 ? data[offset + 3] / 255 : 1.0;
-                previewCr.setSourceRGBA(red, green, blue, alpha);
-                previewCr.rectangle(px, py, 1, 1);
-                previewCr.fill();
-            }
+        // Invert natively: white DIFFERENCE over the copied pixels
+        const surface = Pixels.pixbufToSurface(src);
+        const cr = new cairo.Context(surface);
+        try {
+            cr.setOperator(Pixels.Operator.DIFFERENCE);
+            cr.setSourceRGBA(1, 1, 1, 1);
+            cr.paint();
+        } finally {
+            Pixels.disposeContext(cr);
         }
-
         surface.flush();
-        this._previewSurface = surface;
-        this._previewW = previewW;
-        this._previewH = previewH;
-    }
-
-    drawReal(pixbuf, GdkPixbuf, GLib, toWidget, _scale) {
-        const [x1, y1] = toWidget(...this.start);
-        const [x2, y2] = toWidget(...this.end);
-
-        const imgW = pixbuf.get_width();
-        const imgH = pixbuf.get_height();
-
-        const left = Math.min(x1, x2);
-        const top = Math.min(y1, y2);
-        const right = Math.max(x1, x2);
-        const bottom = Math.max(y1, y2);
-        const x = Math.max(0, Math.min(imgW, Math.round(left)));
-        const y = Math.max(0, Math.min(imgH, Math.round(top)));
-        const xEnd = Math.max(0, Math.min(imgW, Math.round(right)));
-        const yEnd = Math.max(0, Math.min(imgH, Math.round(bottom)));
-        const w = xEnd - x;
-        const h = yEnd - y;
-
-        if (w < 2 || h < 2) return pixbuf;
-
-        const bytes = pixbuf.read_pixel_bytes();
-        const data = bytes.get_data();
-        const rowstride = pixbuf.get_rowstride();
-        const nChannels = pixbuf.get_n_channels();
-
-        const result = new Uint8Array(data.length);
-        for (let i = 0; i < data.length; i++)
-            result[i] = data[i];
-
-        for (let py = y; py < y + h && py < imgH; py++) {
-            for (let px = x; px < x + w && px < imgW; px++) {
-                const offset = py * rowstride + px * nChannels;
-                result[offset] = 255 - result[offset];
-                result[offset + 1] = 255 - result[offset + 1];
-                result[offset + 2] = 255 - result[offset + 2];
-            }
-        }
-
-        const resultBytes = GLib.Bytes.new(result);
-        return GdkPixbuf.Pixbuf.new_from_bytes(
-            resultBytes,
-            pixbuf.get_colorspace(),
-            pixbuf.get_has_alpha(),
-            pixbuf.get_bits_per_sample(),
-            imgW,
-            imgH,
-            rowstride
+        this._setPreview(
+            surface, region, bufScale,
+            region.w / previewW, region.h / previewH, Pixels.Filter.BILINEAR
         );
     }
-}
+
+    /** Invert an export region buffer (in place). */
+    applyEffect(data, w, h, rowstride, nChannels, _scale) {
+        Pixels.invertBuffer(data, w, h, rowstride, nChannels);
+    }
+};
 
 // =============================================================================
 // ZOOM CALLOUT — Magnified source region with connector
@@ -1211,17 +1110,14 @@ var ZoomCalloutAction = class ZoomCalloutAction extends DrawingAction {
         const srcEndY = Math.max(0, Math.min(imgH, Math.round(bottom)));
         const srcW = srcEndX - srcX;
         const srcH = srcEndY - srcY;
+        this._sourceSurface = null;
+        this._srcPixW = 0;
+        this._srcPixH = 0;
         if (srcW < 1 || srcH < 1) return;
 
-        const tmpPath = GLib.build_filenamev([
-            GLib.get_tmp_dir(),
-            'big-shot-zoom-' + GLib.get_monotonic_time() + '.png',
-        ]);
-
         try {
-            const source = pixbuf.new_subpixbuf(srcX, srcY, srcW, srcH).copy();
-            source.savev(tmpPath, 'png', [], []);
-            this._sourceSurface = cairo.ImageSurface.createFromPNG(tmpPath);
+            const source = pixbuf.new_subpixbuf(srcX, srcY, srcW, srcH);
+            this._sourceSurface = Pixels.pixbufToSurface(source);
             this._srcPixW = srcW;
             this._srcPixH = srcH;
         } catch (e) {
@@ -1229,12 +1125,24 @@ var ZoomCalloutAction = class ZoomCalloutAction extends DrawingAction {
             this._sourceSurface = null;
             this._srcPixW = 0;
             this._srcPixH = 0;
-        } finally {
-            try { GLib.unlink(tmpPath); } catch (e) { /* */ }
         }
     }
 
-    draw(cr, toWidget, scale) {
+    clearPreview() {
+        this._sourceSurface = null;
+        this._srcPixW = 0;
+        this._srcPixH = 0;
+    }
+
+    /**
+     * Draw the callout.
+     *
+     * `underlay(cr)` (optional) draws, in source coordinates, everything
+     * that lies below this callout (earlier annotations and effects). It is
+     * painted on top of the raw source pixels inside the magnified area so
+     * that censor/blur/invert applied before the zoom are never bypassed.
+     */
+    draw(cr, toWidget, scale, underlay) {
         const [destX, destY] = toWidget(this.destPos[0], this.destPos[1]);
         const [destEndX, destEndY] = toWidget(
             this.destPos[0] + this.destW,
@@ -1265,23 +1173,37 @@ var ZoomCalloutAction = class ZoomCalloutAction extends DrawingAction {
         cr.stroke();
         cr.restore();
 
-        if (this._sourceSurface && destW > 1 && destH > 1) {
+        if (destW > 1 && destH > 1) {
             cr.save();
             cr.rectangle(destX, destY, destW, destH);
             cr.clip();
-            cr.translate(destX, destY);
-            cr.scale(destW / this._srcPixW, destH / this._srcPixH);
-            cr.setSourceSurface(this._sourceSurface, 0, 0);
-            const pattern = cr.getSource();
-            if (pattern.setFilter)
-                pattern.setFilter(2);
-            cr.paint();
-            cr.restore();
-        } else if (destW > 1 && destH > 1) {
-            cr.save();
-            cr.setSourceRGBA(0.15, 0.15, 0.15, 0.85);
-            cr.rectangle(destX, destY, destW, destH);
-            cr.fill();
+            if (this._sourceSurface) {
+                cr.save();
+                cr.translate(destX, destY);
+                cr.scale(destW / this._srcPixW, destH / this._srcPixH);
+                cr.setSourceSurface(this._sourceSurface, 0, 0);
+                const pattern = cr.getSource();
+                if (pattern.setFilter)
+                    pattern.setFilter(2);
+                cr.paint();
+                cr.restore();
+            } else {
+                cr.setSourceRGBA(0.15, 0.15, 0.15, 0.85);
+                cr.paint();
+            }
+
+            const srcWidgetW = srcEndX - srcX;
+            const srcWidgetH = srcEndY - srcY;
+            if (underlay && srcWidgetW > 0 && srcWidgetH > 0) {
+                // Map the source rectangle onto the destination rectangle
+                cr.translate(destX, destY);
+                cr.scale(destW / srcWidgetW, destH / srcWidgetH);
+                cr.translate(-srcX, -srcY);
+                cr.rectangle(srcX, srcY, srcWidgetW, srcWidgetH);
+                cr.clip();
+                cr.newPath();
+                underlay(cr);
+            }
             cr.restore();
         }
 
@@ -1314,10 +1236,8 @@ var ZoomCalloutAction = class ZoomCalloutAction extends DrawingAction {
         const gap = Math.max(4, 4 * scale);
         const highlight = this.captionStyle === 'highlight';
         const layout = PangoCairo.create_layout(cr);
-        const family = this.options.font || 'Sans';
-        layout.set_font_description(Pango.FontDescription.from_string(
-            family + ' ' + fontSize
-        ));
+        layout.set_font_description(
+            _fontDescription(this.options.font, fontSize));
         layout.set_text(this.caption, -1);
         const extents = layout.get_pixel_extents();
         const logicalRect = extents[1];

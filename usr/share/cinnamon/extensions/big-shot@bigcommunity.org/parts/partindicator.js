@@ -55,6 +55,7 @@ var PartIndicator = class PartIndicator extends PartUI {
 
     onPaused() {
         this._isPaused = true;
+        this._refreshElapsed();
         this._pausedElapsed += this._elapsed;
         this._elapsed = 0;
         this._stopTimer();
@@ -224,11 +225,20 @@ var PartIndicator = class PartIndicator extends PartUI {
 
     _startTimer() {
         this._stopTimer();
+        // Derive elapsed time from the monotonic clock: counting ticks
+        // drifts whenever the compositor is busy and delays the timeout.
+        this._segmentStartUs = GLib.get_monotonic_time();
+        this._elapsed = 0;
         this._timerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
-            this._elapsed++;
+            this._refreshElapsed();
             this._updateTimerLabel();
             return GLib.SOURCE_CONTINUE;
         });
+    }
+
+    _refreshElapsed() {
+        if (this._timerId && this._segmentStartUs)
+            this._elapsed = (GLib.get_monotonic_time() - this._segmentStartUs) / 1e6;
     }
 
     _stopTimer() {
@@ -240,7 +250,7 @@ var PartIndicator = class PartIndicator extends PartUI {
 
     _updateTimerLabel() {
         if (!this._timerLabel) return;
-        let total = this._pausedElapsed + this._elapsed;
+        let total = Math.floor(this._pausedElapsed + this._elapsed);
         let minutes = Math.floor(total / 60);
         let seconds = total % 60;
         this._timerLabel.text = String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');

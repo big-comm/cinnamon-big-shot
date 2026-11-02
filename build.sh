@@ -1,38 +1,50 @@
 #!/usr/bin/env bash
 # Big Shot for Cinnamon — Build & Pack Script
+# Builds big-shot-cinnamon.zip from a staging copy, so the tracked files
+# (metadata.json, extension.js) are never modified by a build.
 set -euo pipefail
 
 UUID="big-shot@bigcommunity.org"
 EXT_DIR="usr/share/cinnamon/extensions/${UUID}"
-PO_DIR="${EXT_DIR}/po"
-LOCALE_DIR="${EXT_DIR}/locale"
 OUTPUT="big-shot-cinnamon.zip"
 
 cd "$(dirname "$0")"
+ROOT="$PWD"
 
 echo "=== Big Shot (Cinnamon) Build ==="
 
-# Inject version into metadata.json
+STAGE=$(mktemp -d)
+trap 'rm -rf "$STAGE"' EXIT
+DEST="${STAGE}/${UUID}"
+mkdir -p "$DEST"
+
+# Copy every runtime file; leave out sources/tooling that are not needed
+# at runtime.
+tar -C "$EXT_DIR" \
+    --exclude='./po' --exclude='./locale' --exclude='__pycache__' \
+    --exclude='*.pyc' --exclude='*~' --exclude='./auto-enable.sh' \
+    -cf - . | tar -C "$DEST" -xf -
+
+# Inject version into the staged metadata.json / extension.js only
 VERSION_INT=$(date +%y%m%d)
 VERSION_STR=$(date +%y.%m.%d)
-sed -i "s/\"version\": [0-9]*/\"version\": ${VERSION_INT}/" "${EXT_DIR}/metadata.json"
-sed -i "s/^var APP_VERSION = '.*';/var APP_VERSION = '${VERSION_STR}';/" "${EXT_DIR}/extension.js"
+sed -i "s/\"version\": \"\{0,1\}[0-9]*\"\{0,1\}/\"version\": \"${VERSION_INT}\"/" "${DEST}/metadata.json"
+sed -i "s/^var APP_VERSION = '.*';/var APP_VERSION = '${VERSION_STR}';/" "${DEST}/extension.js"
 
-# Compile .po → .mo
-for po_file in "${PO_DIR}"/*.po; do
+# Compile .po → .mo (validated)
+for po_file in "${EXT_DIR}/po"/*.po; do
     [ -f "$po_file" ] || continue
     lang=$(basename "$po_file" .po)
-    mo_dir="${LOCALE_DIR}/${lang}/LC_MESSAGES"
+    mo_dir="${DEST}/locale/${lang}/LC_MESSAGES"
     mkdir -p "$mo_dir"
-    msgfmt "$po_file" -o "${mo_dir}/${UUID}.mo"
+    msgfmt --check-format "$po_file" -o "${mo_dir}/${UUID}.mo"
     echo "  ${lang}: OK"
 done
 
-# Pack the extension
-cd "${EXT_DIR}"
-zip -r "../../../../${OUTPUT}" \
-    metadata.json extension.js clipboardProvider.py stylesheet.css \
-    parts/ drawing/ data/ locale/ \
-    --exclude '*.po' --exclude '*.pot' --exclude 'po/'
-cd "../../../.."
+rm -f "${ROOT}/${OUTPUT}"
+if command -v zip >/dev/null 2>&1; then
+    (cd "$DEST" && zip -qr "${ROOT}/${OUTPUT}" .)
+else
+    (cd "$DEST" && python3 -m zipfile -c "${ROOT}/${OUTPUT}" ./*)
+fi
 echo "=== Built: ${OUTPUT} ==="
